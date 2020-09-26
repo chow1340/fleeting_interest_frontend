@@ -24,11 +24,12 @@ const { width, height } = Dimensions.get("screen");
 
 
 
-const Register = () => {
+const Login = () => {
     const [phoneInput, setPhoneInput] = useState();
     const [phoneNumberIsVerified, setPhoneNumberIsVerified] = useState()
     const [password, setPassword] = useState();
     const onChangeText = ({dialCode, unmaskedPhoneNumber, phoneNumber, isVerified}) => {
+      console.log(dialCode, unmaskedPhoneNumber, phoneNumber, isVerified);
       if(isVerified) {
         setPhoneNumberIsVerified(true)
         setPhoneInput(dialCode + unmaskedPhoneNumber)
@@ -36,9 +37,9 @@ const Register = () => {
     };
 
     // TODO take care of this garbage error handling
-    const register = () =>{
+    const login = () =>{
       if(password, phoneNumberIsVerified, phoneInput){
-        axios.post(global.server + '/api/register', 
+        axios.post(global.server + '/api/login', 
         {
           params: {
             phone_number: phoneInput,
@@ -52,8 +53,8 @@ const Register = () => {
         }
         
         )
-        .then(function (response) {
-          console.log(response);
+        .then(res=>{
+            console.log(res)
         })
         .catch(function (error) {
           console.log(error);
@@ -111,9 +112,9 @@ const Register = () => {
                       />
                     </Block>
                     <Block middle>
-                      <Button color="primary" onPress = {register} style={styles.createButton}>
+                      <Button color="primary" onPress = {login} style={styles.createButton}>
                         <Text bold size={14} color={argonTheme.COLORS.WHITE}>
-                          CREATE ACCOUNT
+                          Log In
                         </Text>
                       </Button>
                     </Block>
@@ -190,4 +191,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Register;
+export default Login;
