@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="4d18af14-21f4-4b73-8e34-91caa1132c4c" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ProjectId" id="1i0ZsXyhgzSFhQQKGlHvD4oLpWc" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="android.sdk.path" value="$USER_HOME$/Android/Sdk" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="preferences.editor" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4d18af14-21f4-4b73-8e34-91caa1132c4c" name="Default Changelist" comment="" />
+      <created>1601046678089</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1601046678089</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="2338" y="198" width="1084" height="699" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1601047050983">
+      <screen x="1920" y="0" width="1920" height="1080" />
+    </state>
+    <state x="2338" y="198" width="1084" height="699" key="#com.intellij.execution.impl.EditConfigurationsDialog/1920.0.1920.1080/0.27.1920.1053@1920.0.1920.1080" timestamp="1601047050983" />
+    <state x="755" y="325" width="274" height="498" key="AndroidProcessChooserDialog" timestamp="1601065033677">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="755" y="325" width="274" height="498" key="AndroidProcessChooserDialog/1920.0.1920.1080/0.27.1920.1053@0.27.1920.1053" timestamp="1601065033677" />
+    <state x="513" y="162" width="1135" height="912" key="SettingsEditor" timestamp="1601065253538">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="513" y="162" width="1135" height="912" key="SettingsEditor/1920.0.1920.1080/0.27.1920.1053@0.27.1920.1053" timestamp="1601065253537" />
+    <state x="2369" y="175" width="1022" height="737" key="SettingsEditor/1920.0.1920.1080/0.27.1920.1053@1920.0.1920.1080" timestamp="1601052792111" />
+    <state x="360" y="164" width="1200" height="781" key="com.android.tools.idea.avdmanager.AvdListDialog" timestamp="1601065260593">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="360" y="164" width="1200" height="781" key="com.android.tools.idea.avdmanager.AvdListDialog/1920.0.1920.1080/0.27.1920.1053@0.27.1920.1053" timestamp="1601065260593" />
+    <state x="2280" y="140" width="1200" height="800" key="com.android.tools.idea.avdmanager.AvdListDialog/1920.0.1920.1080/0.27.1920.1053@1920.0.1920.1080" timestamp="1601055861534" />
+    <state x="616" y="385" key="com.intellij.ide.util.TipDialog" timestamp="1601064693851">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="616" y="385" key="com.intellij.ide.util.TipDialog/1920.0.1920.1080/0.27.1920.1053@0.27.1920.1053" timestamp="1601064693851" />
+    <state x="2536" y="367" key="com.intellij.ide.util.TipDialog/1920.0.1920.1080/0.27.1920.1053@1920.0.1920.1080" timestamp="1601051725867" />
+    <state x="2344" y="150" width="696" height="780" key="find.popup" timestamp="1601052085005">
+      <screen x="1920" y="0" width="1920" height="1080" />
+    </state>
+    <state x="2344" y="150" width="696" height="780" key="find.popup/1920.0.1920.1080/0.27.1920.1053@1920.0.1920.1080" timestamp="1601052085005" />
+  </component>
+</project>
