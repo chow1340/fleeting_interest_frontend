@@ -35,6 +35,7 @@ const Onboarding = ({navigation}) => {
       }
       if(isLoggedIn == false){
         getCurrentProfile();
+        setIsLoggedIn(true)
       }
     }, [])
 

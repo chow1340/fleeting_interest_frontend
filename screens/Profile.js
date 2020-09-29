@@ -14,8 +14,7 @@ import { HeaderHeight } from "../constants/utils";
 import axios from 'axios';
 import {useSelector} from 'react-redux';
 
-import * as Location from 'expo-location';
-import * as Permissions from 'expo-permissions';
+
 
 const { width, height } = Dimensions.get("screen");
 
@@ -23,8 +22,8 @@ const thumbMeasure = (width - 48 - 32) / 3;
 
 
 const Profile  = ({navigation}) => {
-
     const currentProfile = useSelector(state=>state.profile.currentProfile);
+    
     return (
       <Block flex style={styles.profile}>
         <Block flex>
@@ -109,7 +108,7 @@ const Profile  = ({navigation}) => {
                       {currentProfile?.first_name} {currentProfile?.last_name}
                     </Text>
                     <Text size={16} color="#32325D" style={{ marginTop: 10 }}>
-                      San Francisco, USA
+                      {currentProfile.geocode[0].city}, {currentProfile.geocode[0].region}
                     </Text>
                   </Block>
                   <Block middle style={{ marginTop: 30, marginBottom: 16 }}>

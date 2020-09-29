@@ -1,65 +1,75 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import { StyleSheet, Dimensions, ScrollView } from 'react-native';
 import { Block, theme } from 'galio-framework';
-
+import axios from 'axios';
 import { Card } from '../components';
 import articles from '../constants/articles';
 
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 
+import {useSelector, useDispatch} from 'react-redux';
+import {SET_CURRENT_PROFILE} from '../redux/actionTypes/profileTypes'
+
 const { width } = Dimensions.get('screen');
 
 const Home = () => {
-  console.log("ran")
-  //LOCATION SERVICES
-  // const getGeocodeAsync = async (location) => {
-  //   let geocode = await Location.reverseGeocodeAsync(location)
-  //   console.log(geocode)
-  // }
-
-  // getLocationAsync = async () => {
-  //   let { status } = await Permissions.askAsync(Permissions.LOCATION);
-  //   if (status !== 'granted') {
-  //     // this.setState({
-  //     //   errorMessage: 'Permission to access location was denied',
-  //     // });
-  //     console.log("no permission")
-  //   }
-
-  //   let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Highest});
-  //   const { latitude , longitude } = location.coords
-
-  //   console.log(location)
-  //   getGeocodeAsync({latitude, longitude});
-  // };
-  // getLocationAsync();
-
+  const dispatch = useDispatch();
+  const [location, setLocation] = useState();
+  const [geocode, setGeocode] = useState();
+  const [isLoaded, setIsLoaded] = useState();
+  //LOCATION SERVICE
   useEffect(()=>{
-    
-    async function getGeocodeAsync(location){
-      let geocode = await Location.reverseGeocodeAsync(location);
-      console.log(geocode)
-    }
-
-    async function getLocationAsync(){
-      let { status } = await Permissions.askAsync(Permissions.LOCATION);
-      if (status !== 'granted') {
-        // this.setState({
-        //   errorMessage: 'Permission to access location was denied',
-        // });
-        console.log("no permission")
+    let mounted = true;
+      async function getGeocodeAsync(location){
+        let geocode = await Location.reverseGeocodeAsync(location);
+        if(mounted){
+          setGeocode(geocode);
+        }
       }
   
-      let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Highest});
-      const { latitude , longitude } = location.coords
+      async function getLocationAsync(){
+        let { status } = await Permissions.askAsync(Permissions.LOCATION);
+        if (status !== 'granted') {
+          console.log("no permission")
+        }
+    
+        let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Highest});
+        const { latitude , longitude } = location.coords
+        if(mounted){
+          setLocation(location)
+        }
+        getGeocodeAsync({latitude, longitude});
+      }
   
-      console.log(location)
-      getGeocodeAsync({latitude, longitude});
-    }
+      async function updateLocation(){
+        axios.post(global.server + '/api/location/updateLocation', 
+        {
+          params: {
+            location : location,
+            geocode : geocode
+          }
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(res=>{
+          dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
+        })
+        .catch(function (error) {
+          console.log(error);
+        })
+      }
+      if(location){
+        getLocationAsync();
+        updateLocation();
+        setIsLoaded(true);
+      }
+    return () => mounted = false
+  }, [])
 
-    getLocationAsync();
-  })
   const renderArticles = () => {
     return (
       <ScrollView

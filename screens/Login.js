@@ -37,7 +37,6 @@ const Login = ({navigation}) => {
       async function getCurrentProfile() {
         axios.get(global.server + '/api/user/getCurrentUser')
         .then(res => {
-          // console.log(res.data);
           dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
         })
         .catch(err => {
@@ -79,9 +78,6 @@ const Login = ({navigation}) => {
         .catch(function (error) {
           console.log(error);
         })
-        .then(function () {
-          // always executed
-        });  
       }
     }
     return (

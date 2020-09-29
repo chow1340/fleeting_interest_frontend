@@ -22,14 +22,14 @@ import { Button, Icon, Input } from "../components";
 import { Images, argonTheme } from "../constants";
 import { NavigationContext } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
+import {SET_CURRENT_PROFILE} from '../redux/actionTypes/profileTypes'
 
 const { width, height } = Dimensions.get("screen");
 
 
 
-const EditProfile = () => {
-
-    const [currentProfile, setCurrentProfile] = useState(useSelector(state => state.profile.currentProfile));
+const EditProfile = ({navigation}) => {
+    const currentProfile = useSelector(state=>state.profile.currentProfile)
     const dispatch = useDispatch();
     const [phoneNumberIsVerified, setPhoneNumberIsVerified] = useState()
     const [password, setPassword] = useState();
@@ -52,11 +52,10 @@ const EditProfile = () => {
         headers: {
           'Content-Type': 'application/json'
         }
-      }
-      
-      )
+      })
       .then(res=>{
-          console.log(res)
+          dispatch({type: SET_CURRENT_PROFILE, payload: res.data});
+          navigation.goBack()
       })
       .catch(function (error) {
         console.log(error);
@@ -66,10 +65,10 @@ const EditProfile = () => {
     return (
       <Block flex middle>
         <StatusBar hidden />
-        <ImageBackground
+        {/* <ImageBackground
           source={Images.RegisterBackground}
           style={{ width, height}}
-        >
+        > */}
           <Block flex middle>
             <Block style={styles.registerContainer}>
 
@@ -84,7 +83,7 @@ const EditProfile = () => {
                         placeholder="First Name"
                         onChangeText={value =>onChangeFirstName(value)}
                       >
-                        {currentProfile?.firstName ? currentProfile.firstName : ""}
+                        {currentProfile?.first_name ? currentProfile.first_name : ""}
 
                         </Input>
                   </Block>
@@ -97,7 +96,7 @@ const EditProfile = () => {
                         placeholder="Last Name"
                         onChangeText={value=>onChangeLastName(value)}
                         >
-                        {currentProfile?.lastName ? currentProfile.lastName : ""}
+                        {currentProfile?.last_name ? currentProfile.last_name : ""}
 
                         </Input>
                   </Block>
@@ -118,7 +117,7 @@ const EditProfile = () => {
               </Block>
             </Block>
           </Block>
-        </ImageBackground>
+        {/* </ImageBackground> */}
       </Block>
     );
   
