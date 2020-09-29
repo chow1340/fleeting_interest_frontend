@@ -14,6 +14,9 @@ enableScreens();
 import Screens from "./navigation/Screens";
 import { Images, articles, argonTheme } from "./constants";
 
+import { Provider } from "react-redux";
+import store from './redux/store';
+
 // cache app images
 const assetImages = [
   Images.Onboarding,
@@ -79,44 +82,45 @@ function cacheImages(images) {
 //  }
 //}
 
- export default class App extends React.Component {
-   state = {
-     isLoadingComplete: false
-   };
+const App = () => {
 
-   render() {
-     if (!this.state.isLoadingComplete) {
+   const [isLoadingComplete, setIsLoadingComplete] = useState(false);
+    _loadResourcesAsync = async () => {
+      return Promise.all([...cacheImages(assetImages)]);
+    };
+
+    _handleLoadingError = error => {
+      // In this case, you might want to report the error to your error
+      // reporting service, for example Sentry
+      console.warn(error);
+    };
+
+    _handleFinishLoading = () => {
+      setIsLoadingComplete(true);
+    };
+     if (!isLoadingComplete) {
        return (
          <AppLoading
-           startAsync={this._loadResourcesAsync}
-           onError={this._handleLoadingError}
-           onFinish={this._handleFinishLoading}
+           startAsync={_loadResourcesAsync}
+           onError={_handleLoadingError}
+           onFinish={_handleFinishLoading}
          />
        );
      } else {
        return (
-         <NavigationContainer>
-           <GalioProvider theme={argonTheme}>
-             <Block flex>
-               <Screens />
-             </Block>
-           </GalioProvider>
-         </NavigationContainer>
+         <Provider store={store}>
+          <NavigationContainer>
+            <GalioProvider theme={argonTheme}>
+              <Block flex>
+                <Screens />
+              </Block>
+            </GalioProvider>
+          </NavigationContainer>
+         </Provider>
        );
      }
    }
 
-   _loadResourcesAsync = async () => {
-     return Promise.all([...cacheImages(assetImages)]);
-   };
 
-   _handleLoadingError = error => {
-     // In this case, you might want to report the error to your error
-     // reporting service, for example Sentry
-     console.warn(error);
-   };
 
-   _handleFinishLoading = () => {
-     this.setState({ isLoadingComplete: true });
-   };
- }
+export default App

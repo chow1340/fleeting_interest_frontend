@@ -13,13 +13,13 @@ const iPhoneX = () => Platform.OS === 'ios' && (height === 812 || width === 812 
 
 const BellButton = ({isWhite, style, navigation}) => (
   <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Pro')}>
-    <Icon
+    {/* <Icon
       family="ArgonExtra"
       size={16}
       name="bell"
       color={argonTheme.COLORS[isWhite ? 'WHITE' : 'ICON']}
     />
-    <Block middle style={styles.notify} />
+    <Block middle style={styles.notify} /> */}
   </TouchableOpacity>
 );
 
@@ -52,7 +52,6 @@ class Header extends React.Component {
   }
   renderRight = () => {
     const { white, title, navigation } = this.props;
-
     if (title === 'Title') {
       return [
         <BellButton key='chat-title' navigation={navigation} isWhite={white} />,
@@ -101,6 +100,8 @@ class Header extends React.Component {
           <BellButton key='chat-search' navigation={navigation} isWhite={white} />,
           <BasketButton key='basket-search' navigation={navigation} isWhite={white} />
         ]);
+
+
       default:
         break;
     }
@@ -127,7 +128,7 @@ class Header extends React.Component {
         <Button shadowless style={[styles.tab, styles.divider]} onPress={() => navigation.navigate('Pro')}>
           <Block row middle>
             <Icon name="diamond" family="ArgonExtra" style={{ paddingRight: 8 }} color={argonTheme.COLORS.ICON} />
-            <Text size={16} style={styles.tabTitle}>{optionLeft || 'Beauty'}</Text>
+            <Text size={16} style={styles.tabTitle}>{optionLeft || 'Beautys'}</Text>
           </Block>
         </Button>
         <Button shadowless style={styles.tab} onPress={() => navigation.navigate('Pro')}>
@@ -157,9 +158,9 @@ class Header extends React.Component {
     if (search || tabs || options) {
       return (
         <Block center>
-          {search ? this.renderSearch() : null}
-          {options ? this.renderOptions() : null}
-          {tabs ? this.renderTabs() : null}
+          {/* {search ? this.renderSearch() : null} */}
+          {/* {options ? this.renderOptions() : null} */}
+          {/* {tabs ? this.renderTabs() : null} */}
         </Block>
       );
     }

@@ -38,10 +38,10 @@ const Register = () => {
     // TODO take care of this garbage error handling
     const register = () =>{
       if(password, phoneNumberIsVerified, phoneInput){
-        axios.post(global.server + '/api/register', 
+        axios.post(global.server + '/api/user/register', 
         {
           params: {
-            phone_number: phoneInput,
+            phone_number: phoneInput.substring(1), //takes out the +
             password: password
           }
         },

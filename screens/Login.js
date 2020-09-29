@@ -1,11 +1,8 @@
-import React, {useState, useRef} from "react";
+import React, {useState, useEffect} from "react";
 import axios from 'axios';
-import PhoneInput from 'react-native-phone-input';
-import CountryPicker from 'react-native-country-picker-modal';
 import IntlPhoneInput from 'react-native-intl-phone-input';
-
-// import '../node_modules/react-phone-input-2/lib/style.css'
-// import '../node_modules/react-phone-input-2/lib/bootstrap.css
+import {useSelector, useDispatch} from 'react-redux';
+import {SET_CURRENT_PROFILE} from '../redux/actionTypes/profileTypes'
 import {
   StyleSheet,
   ImageBackground,
@@ -15,34 +12,51 @@ import {
   SafeAreaView,
 } from "react-native";
 import { Block, Checkbox, Text, theme } from "galio-framework";
-
 import { Button, Icon, Input } from "../components";
 import { Images, argonTheme } from "../constants";
-import { NavigationContext } from "@react-navigation/native";
 
 const { width, height } = Dimensions.get("screen");
 
 
-
-const Login = () => {
+const Login = ({navigation}) => {
     const [phoneInput, setPhoneInput] = useState();
     const [phoneNumberIsVerified, setPhoneNumberIsVerified] = useState()
     const [password, setPassword] = useState();
+    const dispatch = useDispatch()
     const onChangeText = ({dialCode, unmaskedPhoneNumber, phoneNumber, isVerified}) => {
-      console.log(dialCode, unmaskedPhoneNumber, phoneNumber, isVerified);
       if(isVerified) {
         setPhoneNumberIsVerified(true)
         setPhoneInput(dialCode + unmaskedPhoneNumber)
       }
     };
 
+
+    const currentProfile = useSelector(state=>state.profile.currentProfile);
+
+    useEffect(() => {
+      async function getCurrentProfile() {
+        axios.get(global.server + '/api/user/getCurrentUser')
+        .then(res => {
+          // console.log(res.data);
+          dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      }
+      getCurrentProfile();
+    }, [])
+
+    if(currentProfile) {
+
+    }
     // TODO take care of this garbage error handling
     const login = () =>{
       if(password, phoneNumberIsVerified, phoneInput){
-        axios.post(global.server + '/api/login', 
+        axios.post(global.server + '/api/user/login', 
         {
           params: {
-            phone_number: phoneInput,
+            phone_number: phoneInput.substring(1), //take out the +
             password: password
           }
         },
@@ -54,7 +68,13 @@ const Login = () => {
         
         )
         .then(res=>{
-            console.log(res)
+            if(res.data == "Login Successful") {
+              navigation.reset({
+                index: 0,
+                routes:[{name: 'AppStack'}]
+              })
+              // navigation.push("AppStack")
+            } 
         })
         .catch(function (error) {
           console.log(error);
@@ -90,7 +110,7 @@ const Login = () => {
                       filterInputStyle={{textTransform: 'capitalize'}}
                       onChangeText = {onChangeText}
                       lang="EN"
-                      
+                
                       />
                     </SafeAreaView>
 

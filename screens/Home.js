@@ -1,13 +1,66 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { StyleSheet, Dimensions, ScrollView } from 'react-native';
 import { Block, theme } from 'galio-framework';
 
 import { Card } from '../components';
 import articles from '../constants/articles';
+
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
+
 const { width } = Dimensions.get('screen');
 
-class Home extends React.Component {
-  renderArticles = () => {
+const Home = () => {
+  console.log("ran")
+  //LOCATION SERVICES
+  // const getGeocodeAsync = async (location) => {
+  //   let geocode = await Location.reverseGeocodeAsync(location)
+  //   console.log(geocode)
+  // }
+
+  // getLocationAsync = async () => {
+  //   let { status } = await Permissions.askAsync(Permissions.LOCATION);
+  //   if (status !== 'granted') {
+  //     // this.setState({
+  //     //   errorMessage: 'Permission to access location was denied',
+  //     // });
+  //     console.log("no permission")
+  //   }
+
+  //   let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Highest});
+  //   const { latitude , longitude } = location.coords
+
+  //   console.log(location)
+  //   getGeocodeAsync({latitude, longitude});
+  // };
+  // getLocationAsync();
+
+  useEffect(()=>{
+    
+    async function getGeocodeAsync(location){
+      let geocode = await Location.reverseGeocodeAsync(location);
+      console.log(geocode)
+    }
+
+    async function getLocationAsync(){
+      let { status } = await Permissions.askAsync(Permissions.LOCATION);
+      if (status !== 'granted') {
+        // this.setState({
+        //   errorMessage: 'Permission to access location was denied',
+        // });
+        console.log("no permission")
+      }
+  
+      let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Highest});
+      const { latitude , longitude } = location.coords
+  
+      console.log(location)
+      getGeocodeAsync({latitude, longitude});
+    }
+
+    getLocationAsync();
+  })
+  const renderArticles = () => {
     return (
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -25,13 +78,12 @@ class Home extends React.Component {
     )
   }
 
-  render() {
-    return (
-      <Block flex center style={styles.home}>
-        {this.renderArticles()}
-      </Block>
-    );
-  }
+  return (
+    <Block flex center style={styles.home}>
+      {renderArticles()}
+    </Block>
+  );
+  
 }
 
 const styles = StyleSheet.create({

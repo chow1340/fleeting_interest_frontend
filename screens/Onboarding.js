@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import axios from 'axios';
 import {
   ImageBackground,
@@ -8,15 +8,42 @@ import {
   Dimensions
 } from "react-native";
 import { Block, Button, Text, theme } from "galio-framework";
-
+import {useSelector, useDispatch} from 'react-redux';
+import {SET_CURRENT_PROFILE} from '../redux/actionTypes/profileTypes'
 const { height, width } = Dimensions.get("screen");
 
 import argonTheme from "../constants/Theme"; 
 import Images from "../constants/Images";
 
-class Onboarding extends React.Component {
-  render() {
-    const { navigation } = this.props;
+const Onboarding = ({navigation}) => {
+    const dispatch = useDispatch();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const currentProfile = useSelector(state=>state.profile.currentProfile);
+    
+    //Check if session exists, and if does go to home page
+    useEffect(() => {
+      async function getCurrentProfile() {
+        axios.get(global.server + '/api/user/getCurrentUser')
+        .then(res => {
+          // console.log(res.data);
+          dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
+          setIsLoggedIn(true)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      }
+      if(isLoggedIn == false){
+        getCurrentProfile();
+      }
+    }, [])
+
+    if(Object.entries(currentProfile).length > 0){
+      navigation.reset({
+        index: 0,
+        routes:[{name: 'AppStack'}]
+      })
+    }
     return (
       <Block flex style={styles.container}>
         <StatusBar hidden />
@@ -73,7 +100,6 @@ class Onboarding extends React.Component {
         </Block>
       </Block>
     );
-  }
 }
 
 const styles = StyleSheet.create({
