@@ -19,7 +19,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { v4 as uuidv4 } from 'uuid';
 
 import {DragDropGrid }from "react-native-drag-drop-grid-library"
-import SortableGrid from 'react-native-sortable-grid'
+// import SortableGrid from 'react-native-sortable-grid'
+import SortableGrid from '../components/SortableGrid'
 import { TouchableOpacity } from "react-native";
 import { DraggableGrid } from 'react-native-draggable-grid';
 import { Ionicons } from '@expo/vector-icons';
@@ -39,7 +40,8 @@ const EditProfile = ({navigation}) => {
     const [imageChanged, setImageChanged] = useState();
     const [isSaving, setIsSaving] = useState();
     
-    
+    const [originalPictureArray, setOriginalPictureArray] = useState();
+
     const onChangeFirstName = (value) => {
       currentProfile.first_name = value
     };
@@ -73,8 +75,21 @@ const EditProfile = ({navigation}) => {
         })
       }
       getCurrentProfile();
-    }, [currentProfile])
+    }, [])
 
+    useEffect(()=>{
+      if(currentProfile?.picture){
+        let picture = currentProfile.picture
+        let temp = []
+        for(let i = picture.length-1; i >= 0; i--) {
+          temp.push(picture[i]);
+        }
+        for(let i = temp.length; i<6; i++){
+          temp.push("No picture available")
+        }
+        setOriginalPictureArray(temp)
+      }
+    },[currentProfile])
     const saveEditProfile = async () => {
       let profileInfoSaved = false
       let profilePictureSaved = false
@@ -137,29 +152,6 @@ const EditProfile = ({navigation}) => {
       
     }
 
-
-
-    const [data, setData] = useState([
-      {name:'1',key:'ones'},
-      {name:'2',key:'two'},
-      {name:'3',key:'three'},
-      {name:'4',key:'four'},
-      {name:'5',key:'five'},
-      {name:'6',key:'six'},
-    ]
-
-    )
-    const render_item = (item) => {
-      return (
-        <View
-          style={styles.item}
-          key={item.key}
-        >
-          {/* <Ionicons name="md-add-circle-outline" size={32} color="g" /> */}
-          <Text>{item.key}</Text>
-        </View>
-      );
-    }
     return (
         <ScrollView contentContainerStyle={{flexGrow: 1}}
                     keyboardShouldPersistTaps='handled'
@@ -207,23 +199,37 @@ const EditProfile = ({navigation}) => {
                         </Input>
                     </Block>
                  </Block>
-
-                 <DraggableGrid
-                    style={{zIndex:99999}}
-                    onItemPress={()=>console.log("pressed")}
-                    numColumns={3}
-                    renderItem={render_item}
-                    data={data}
-                    onDragStart={()=>setIsDragging(true)}
-                    onDragRelease={(data) => {
-                      setData(data);// need reset the props data sort after drag release
+                 <SortableGrid
+                    style={styles.grid}
+                    blockTransitionDuration      = { 400 }
+                    activeBlockCenteringDuration = { 200 }
+                    itemsPerRow                  = { 3 }
+                    itemWidth = {100}
+                    itemHeight = {100}
+                    dragActivationTreshold       = { 200 }
+                    onDragRelease                = { (itemOrder) => {
+                      console.log("Drag was released, the blocks are in the following order: ", itemOrder);
                       setIsDragging(false)
                     }}
-                    onDragging={()=>setIsDragging(true)}
-                    
-                  />
+                    onDragStart                  = { () => {
+                      console.log("Some block is being dragged now!")
+                      setIsDragging(true)
+                     }} >
+                
+                    {
+                      ['1', '2', '3', '4', '5', '6'].map( (letter, index) =>
+                
+                        <View style = {styles.block} key={index} onTap={() => console.log("Item number:", index, "was tapped!") }>
+                          <Ionicons style={styles.plusIcon} name="md-add-circle-outline"></Ionicons>
+                        </View>
+                
+                      )
+                    }
+                  </SortableGrid>
 
-                  <Block>
+
+                
+                   <Block>
                     <Block middle>
                       {
                         isSaving &&
@@ -243,7 +249,7 @@ const EditProfile = ({navigation}) => {
 
               </ScrollView>
 
-        
+
     );
   
 }
@@ -257,18 +263,34 @@ const styles = StyleSheet.create({
     height:'100%',
     justifyContent:'center',
   },
-  item:{
-    width:100,
-    height:100,
-    borderRadius:8,
-    backgroundColor:'#D8D8D8',
-    justifyContent:'center',
-    alignItems:'center',
+  block: {
+    flex: 1,
+    marginTop: 8,
+    marginBottom: 8,
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    backgroundColor: "#C0C0C0",
+    justifyContent: 'center',
+    alignItems: 'center',
+    // flexDirection: 'row'
   },
-  item_text:{
+  plusIcon:{
     fontSize:40,
-    color:'#FFFFFF',
   },
+
+  // item:{
+  //   width:100,
+  //   height:100,
+  //   borderRadius:8,
+  //   backgroundColor:'black',
+  //   justifyContent:'center',
+  //   alignItems:'center',
+  // },
+  // item_text:{
+  //   fontSize:40,
+  //   color:'#FFFFFF',
+  // },
   inputStyle :{
     borderRadius: 4,
     backgroundColor: '#FFFFFF',
