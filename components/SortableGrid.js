@@ -18,29 +18,85 @@ const ACTIVE_BLOCK_CENTERING_DURATION = 200 // Milliseconds
 const DOUBLETAP_TRESHOLD              = 150 // Milliseconds
 const NULL_FN                         = () => {}
 
+
 class Block extends Component {
-
-  render = () =>
-    <Animated.View
-      style = { this.props.style }
-      onLayout = { this.props.onLayout }
-      {...this.props.panHandlers}
-    >
-      <TouchableWithoutFeedback
-        style          = {{ flex: 1 }}
-        delayLongPress = { this.props.delayLongPress }
-        onLongPress    = { this.props.onLongPress }
-        onPress        = { this.props.onPress }>
-
-          <View style={styles.itemImageContainer}>
-            <View style={ this.props.itemWrapperStyle }>
-              {this.props.children}
+  render(){
+    if(this.props.inactive.includes(parseInt(this.props.children.key))){
+      return(
+        <Animated.View
+        style = { this.props.style }
+        onLayout = { this.props.onLayout }
+        {...this.props.panHandlers}
+      >
+              <TouchableWithoutFeedback
+              onPress  = { ()=>console.log(this.props.children.key) }>
+      
+                <View style={styles.itemImageContainer}>
+                  <View style={ this.props.itemWrapperStyle }>
+                    {this.props.children}
+                  </View>
+                  { this.props.deletionView }
+                </View>
+      
+            </TouchableWithoutFeedback>
+            {/* <View style={styles.itemImageContainer}>
+              <View style={ this.props.itemWrapperStyle }>
+                {this.props.children}
+              </View>
+              { this.props.deletionView }
+            </View> */}
+  
+      </Animated.View>
+      )
+    } else {
+      return(
+        <Animated.View
+        style = { this.props.style }
+        onLayout = { this.props.onLayout }
+        {...this.props.panHandlers}
+      >
+        
+        <TouchableWithoutFeedback
+          style          = {{ flex: 1 }}
+          delayLongPress = { this.props.delayLongPress }
+          onLongPress    = { this.props.onLongPress }
+          onPress        = { this.props.onPress }>
+  
+            <View style={styles.itemImageContainer}>
+              <View style={ this.props.itemWrapperStyle }>
+                {this.props.children}
+              </View>
+              { this.props.deletionView }
             </View>
-            { this.props.deletionView }
-          </View>
+  
+        </TouchableWithoutFeedback>
+      </Animated.View>
+  
+      )
+    }
 
-      </TouchableWithoutFeedback>
-    </Animated.View>
+  }
+    // <Animated.View
+    //   style = { this.props.style }
+    //   onLayout = { this.props.onLayout }
+    //   {...this.props.panHandlers}
+    // >
+      
+    //   <TouchableWithoutFeedback
+    //     style          = {{ flex: 1 }}
+    //     delayLongPress = { this.props.delayLongPress }
+    //     onLongPress    = { this.props.onLongPress }
+    //     onPress        = { this.props.onPress }>
+
+    //       <View style={styles.itemImageContainer}>
+    //         <View style={ this.props.itemWrapperStyle }>
+    //           {this.props.children}
+    //         </View>
+    //         { this.props.deletionView }
+    //       </View>
+
+    //   </TouchableWithoutFeedback>
+    // </Animated.View>
 
 }
 
@@ -63,6 +119,7 @@ class SortableGrid extends Component {
               onPress = { this.handleTap(item.props) }
               itemWrapperStyle = { this._getItemWrapperStyle(key) }
               deletionView = { this._getDeletionView(key) }
+              inactive = {this.props.inactive}
             >
               {item}
             </Block>
@@ -91,6 +148,7 @@ class SortableGrid extends Component {
     this.itemOrder         = []
     this.panCapture        = false
     this.items             = []
+    this.inactive          = []
     this.initialLayoutDone = false
     this.initialDragDone   = false
 
@@ -125,16 +183,33 @@ class SortableGrid extends Component {
       this.createTouchHandlers();
 
     }
-
-  componentWillUnmount = () => { if (this.tapTimer) clearTimeout(this.tapTimer) }
-
-//   componentWillReceiveProps = (properties) => this.handleNewProps(properties)
-
-  handleNewProps = (properties) => {
-    this._assignReceivedPropertiesIntoThis(properties)
-    this._saveItemOrder(properties.children)
-    this._removeDisappearedChildren(properties.children)
+  
+  componentDidUpdate = (properties) => {
+    this.handleNewProps(properties)
   }
+//   componentWillUnmount = () => { if (this.tapTimer) clearTimeout(this.tapTimer) }
+
+// //   componentWillReceiveProps = (properties) => this.handleNewProps(properties)
+
+// componentWillMount = () => this.createTouchHandlers()
+
+// componentDidMount = () => this.handleNewProps(this.props)
+
+componentWillUnmount = () => { if (this.tapTimer) clearTimeout(this.tapTimer) }
+
+// componentWillReceiveProps = (properties) => this.handleNewProps(properties)
+
+handleNewProps = (properties) => {
+  this._assignReceivedPropertiesIntoThis(properties)
+  this._saveItemOrder(properties.children)
+  this._removeDisappearedChildren(properties.children)
+}
+
+//   handleNewProps = (properties) => {
+//     this._assignReceivedPropertiesIntoThis(properties)
+//     this._saveItemOrder(properties.children)
+//     this._removeDisappearedChildren(properties.children)
+//   }
 
   onStartDrag = (evt, gestureState) => {
     if (this.state.activeBlock != null) {
@@ -185,7 +260,8 @@ class SortableGrid extends Component {
           closestDistance = distance
         }
       })
-      if (closest !== this.state.activeBlock) {
+      //TODO change closest
+      if (closest !== this.state.activeBlock && !this.props.inactive.includes(closest)) {
         Animated.timing(
           this._getBlock(closest).currentPosition,
           {
@@ -554,7 +630,9 @@ class SortableGrid extends Component {
   _getBlockStyle = (key) => [
     { width: this.state.blockWidth,
       height: this.state.blockWidth,
-      justifyContent: 'center' },
+      justifyContent: 'center',
+
+    },
     this._blockPositionsSet() && (this.initialDragDone || this.state.deleteModeOn) &&
     { position: 'absolute',
       top: this._getBlock(key).currentPosition.getLayout().top,

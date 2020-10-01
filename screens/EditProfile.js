@@ -40,8 +40,9 @@ const EditProfile = ({navigation}) => {
     const [imageChanged, setImageChanged] = useState();
     const [isSaving, setIsSaving] = useState();
     
-    const [originalPictureArray, setOriginalPictureArray] = useState();
-
+    const [originalPictureArray, setOriginalPictureArray] = useState([]);
+    const [inactive, setInactive] = useState([]);
+    // console.log(originalPictureArray, "HERRERE")
     const onChangeFirstName = (value) => {
       currentProfile.first_name = value
     };
@@ -68,6 +69,7 @@ const EditProfile = ({navigation}) => {
       async function getCurrentProfile() {
         axios.get(global.server + '/api/user/getCurrentUser')
         .then(res => {
+          console.log(res.data)
           dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
         })
         .catch(err => {
@@ -81,15 +83,20 @@ const EditProfile = ({navigation}) => {
       if(currentProfile?.picture){
         let picture = currentProfile.picture
         let temp = []
+        let tempInactive = []
         for(let i = picture.length-1; i >= 0; i--) {
           temp.push(picture[i]);
         }
+
         for(let i = temp.length; i<6; i++){
-          temp.push("No picture available")
+          temp.push("No picture available");
+          tempInactive.push(i);
         }
-        setOriginalPictureArray(temp)
+        setOriginalPictureArray(temp);
+        setInactive(tempInactive);
+
       }
-    },[currentProfile])
+    },[currentProfile?.picture])
     const saveEditProfile = async () => {
       let profileInfoSaved = false
       let profilePictureSaved = false
@@ -199,36 +206,56 @@ const EditProfile = ({navigation}) => {
                         </Input>
                     </Block>
                  </Block>
-                 <SortableGrid
-                    style={styles.grid}
-                    blockTransitionDuration      = { 400 }
-                    activeBlockCenteringDuration = { 200 }
-                    itemsPerRow                  = { 3 }
-                    itemWidth = {100}
-                    itemHeight = {100}
-                    dragActivationTreshold       = { 200 }
-                    onDragRelease                = { (itemOrder) => {
-                      console.log("Drag was released, the blocks are in the following order: ", itemOrder);
-                      setIsDragging(false)
-                    }}
-                    onDragStart                  = { () => {
-                      console.log("Some block is being dragged now!")
-                      setIsDragging(true)
-                     }} >
-                
-                    {
-                      ['1', '2', '3', '4', '5', '6'].map( (letter, index) =>
-                
-                        <View style = {styles.block} key={index} onTap={() => console.log("Item number:", index, "was tapped!") }>
-                          <Ionicons style={styles.plusIcon} name="md-add-circle-outline"></Ionicons>
-                        </View>
-                
-                      )
-                    }
-                  </SortableGrid>
+                    {/* {console.log(originalPictureArray, inactive, "AYYYYY")} */}
+                    <SortableGrid
+                      style={styles.grid}
+                      blockTransitionDuration      = { 400 }
+                      activeBlockCenteringDuration = { 200 }
+                      itemsPerRow                  = { 3 }
+                      itemWidth = {100}
+                      itemHeight = {100}
+                      inactive ={inactive}
+                      dragActivationTreshold       = { 200 }
+                      onDragRelease                = { (itemOrder) => {
+                        console.log("Drag was released, the blocks are in the following order: ", itemOrder);
+                        setIsDragging(false)
+                      }}
+                      onDragStart                  = { () => {
+                        console.log("Some block is being dragged now!")
+                        setIsDragging(true)
+                        }} >
+
+                      {
+                        originalPictureArray.map( (picture, index) =>
+
+                            <View style = {styles.block} 
+                            key={index} 
+                            onTap={() => console.log("Item number:", index, "was tapped!") }>
+                              {
+                                picture == "No picture available" &&
+                                <Ionicons style={styles.plusIcon} name="md-add-circle-outline"></Ionicons>
+                                // <Image
+                                //   source={{ uri: "https://app-jeffrey-chow.s3.ca-central-1.amazonaws.com/5f7274dd74415c6435d6434b09095693-2f23-41e1-a558-f3716dfa3ef2" }}
+                                //   style={styles.gridProfile}
+                                // />
+                              }
+
+                              {
+                                picture != "No picture available" &&
+                                // <Text>{picture}</Text>
+                                <Image
+                                  source={{ uri: "https://app-jeffrey-chow.s3.ca-central-1.amazonaws.com/5f7274dd74415c6435d6434b09095693-2f23-41e1-a558-f3716dfa3ef2" }}
+                                  style={styles.gridProfile}
+                                />
+                              }
+                            </View>
+                        
+                        )
+                      }
+                      </SortableGrid>
+                      <Ionicons style={styles.plusIcon} name="md-add-circle-outline"></Ionicons>
 
 
-                
                    <Block>
                     <Block middle>
                       {
@@ -273,12 +300,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#C0C0C0",
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative'
     // flexDirection: 'row'
   },
   plusIcon:{
     fontSize:40,
   },
-
+  gridProfile:{
+    width: '100%',
+    height: '100%',
+    borderRadius: 8
+  },
   // item:{
   //   width:100,
   //   height:100,
