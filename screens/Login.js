@@ -46,9 +46,6 @@ const Login = ({navigation}) => {
       getCurrentProfile();
     }, [])
 
-    if(currentProfile) {
-
-    }
     // TODO take care of this garbage error handling
     const login = () =>{
       if(password, phoneNumberIsVerified, phoneInput){
@@ -67,6 +64,7 @@ const Login = ({navigation}) => {
         
         )
         .then(res=>{
+            console.log(res.data)
             if(res.data == "Login Successful") {
               navigation.reset({
                 index: 0,

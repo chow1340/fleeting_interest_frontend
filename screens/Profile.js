@@ -108,7 +108,7 @@ const Profile  = ({navigation}) => {
                       {currentProfile?.first_name} {currentProfile?.last_name}
                     </Text>
                     <Text size={16} color="#32325D" style={{ marginTop: 10 }}>
-                      {currentProfile.geocode[0].city}, {currentProfile.geocode[0].region}
+                      {currentProfile.geocode ? currentProfile.geocode[0].city : ""}, {currentProfile.geocode ? currentProfile.geocode[0].region : ""}
                     </Text>
                   </Block>
                   <Block middle style={{ marginTop: 30, marginBottom: 16 }}>

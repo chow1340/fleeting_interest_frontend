@@ -25,9 +25,15 @@ const Onboarding = ({navigation}) => {
       async function getCurrentProfile() {
         axios.get(global.server + '/api/user/getCurrentUser')
         .then(res => {
-          // console.log(res.data);
-          dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
-          setIsLoggedIn(true)
+          console.log(res.data);
+          if(res.data != "Session does not exist"){
+              dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
+              setIsLoggedIn(true)
+              navigation.reset({
+              index: 0,
+              routes:[{name: 'AppStack'}]
+            })
+          } 
         })
         .catch(err => {
           console.log(err)
@@ -39,12 +45,6 @@ const Onboarding = ({navigation}) => {
       }
     }, [])
 
-    if(Object.entries(currentProfile).length > 0){
-      navigation.reset({
-        index: 0,
-        routes:[{name: 'AppStack'}]
-      })
-    }
     return (
       <Block flex style={styles.container}>
         <StatusBar hidden />

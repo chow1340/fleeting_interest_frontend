@@ -1,7 +1,17 @@
-import {SET_CURRENT_PROFILE, EDIT_FIRST_NAME, USER_CURRENT_LOCATION} from "../actionTypes/profileTypes"
+import {SET_CURRENT_PROFILE, EDIT_FIRST_NAME, USER_CURRENT_LOCATION, SET_PICTURE} from "../actionTypes/profileTypes"
 
 const initialState = {
-    currentProfile:{}
+    currentProfile:{
+        _id: {},
+        phone_number: "",
+        password: {},
+        date_created: {},
+        first_name: "",
+        last_name: "",
+        location: {},
+        geocode: null,
+        picture:[],
+    }
 }
 
 
@@ -29,6 +39,12 @@ export default function(state = initialState, action){
             }
         }
 
+        case(SET_PICTURE) : {
+            return {
+                ...state,
+                currentProfile: action.payload
+            }
+        }
         default : {
             return state
         }

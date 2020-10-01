@@ -1,39 +1,45 @@
-import React, {useState, useRef} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import axios from 'axios';
-import PhoneInput from 'react-native-phone-input';
-import CountryPicker from 'react-native-country-picker-modal';
-import IntlPhoneInput from 'react-native-intl-phone-input';
 import {
   StyleSheet,
-  ImageBackground,
   Dimensions,
-  StatusBar,
-  KeyboardAvoidingView,
-  SafeAreaView,
+  ScrollView, 
+  Image,
+  Platform,
+  ActivityIndicator,
   View,
-  ScrollView,
-  TextInput,
-  TouchableWithoutFeedback,
-  Keyboard
+  
 } from "react-native";
 import { Block, Checkbox, Text, theme } from "galio-framework";
-
 import { Button, Icon, Input } from "../components";
 import { Images, argonTheme } from "../constants";
-import { NavigationContext } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import {SET_CURRENT_PROFILE} from '../redux/actionTypes/profileTypes'
+import * as ImagePicker from 'expo-image-picker';
+import { v4 as uuidv4 } from 'uuid';
+
+import {DragDropGrid }from "react-native-drag-drop-grid-library"
+import SortableGrid from 'react-native-sortable-grid'
+import { TouchableOpacity } from "react-native";
+import { DraggableGrid } from 'react-native-draggable-grid';
+import { Ionicons } from '@expo/vector-icons';
+
 
 const { width, height } = Dimensions.get("screen");
 
 
-
 const EditProfile = ({navigation}) => {
+    const sortGrid = useRef()
     const currentProfile = useSelector(state=>state.profile.currentProfile)
     const dispatch = useDispatch();
-    const [phoneNumberIsVerified, setPhoneNumberIsVerified] = useState()
-    const [password, setPassword] = useState();
 
+    const [dragging, setIsDragging] = useState()
+
+    const [image, setImage] = useState(currentProfile.picture ? global.s3Endpoint + currentProfile.picture[0] : null);
+    const [imageChanged, setImageChanged] = useState();
+    const [isSaving, setIsSaving] = useState();
+    
+    
     const onChangeFirstName = (value) => {
       currentProfile.first_name = value
     };
@@ -41,7 +47,39 @@ const EditProfile = ({navigation}) => {
       currentProfile.last_name = value
     };
 
-    const saveEditProfile = () => {
+    const pickImage = async () => {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [3, 3],
+        quality: 1,
+      });
+  
+      console.log(result);
+  
+      if (!result.cancelled) {
+        setImage(result.uri);
+        setImageChanged(true)
+      }
+    };
+    useEffect(() => {
+      async function getCurrentProfile() {
+        axios.get(global.server + '/api/user/getCurrentUser')
+        .then(res => {
+          dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      }
+      getCurrentProfile();
+    }, [currentProfile])
+
+    const saveEditProfile = async () => {
+      let profileInfoSaved = false
+      let profilePictureSaved = false
+      setIsSaving(true);
+
       axios.post(global.server + '/api/user/editProfile', 
       {
         params: {
@@ -55,27 +93,95 @@ const EditProfile = ({navigation}) => {
       })
       .then(res=>{
           dispatch({type: SET_CURRENT_PROFILE, payload: res.data});
-          navigation.goBack()
+          // navigation.goBack()
+          profileInfoSaved = true
       })
       .catch(function (error) {
         console.log(error);
       })
+
+      let formdata = new FormData();
+      formdata.append('file',{
+        uri: Platform.OS === 'android' ? image : 'file://' + image,
+        name: currentProfile?._id.$oid + uuidv4(),
+        type: 'image/jpeg'
+      });
+
+      if(imageChanged){
+        axios({
+          url: global.server + '/api/image/uploadProfilePicture',
+          method: "POST",
+          data: formdata,
+          headers: {
+              'content-type' : 'multipart/form-data'
+          }
+        })
+        .then(res => {
+          currentProfile.picture[0] = res.data
+          dispatch({type: SET_CURRENT_PROFILE, payload: currentProfile});
+          profilePictureSaved = true
+        })
+        .catch(err => {
+            console.log(err.response.data);
+        })
+      } else {
+        profilePictureSaved == true
+      }
+      while(true) {
+        if(!profileInfoSaved, !profilePictureSaved) {
+          setIsSaving(false);
+          navigation.goBack();
+          break;
+        }
+      }
+      
     }
 
-    return (
-      <Block flex middle>
-        <StatusBar hidden />
-        {/* <ImageBackground
-          source={Images.RegisterBackground}
-          style={{ width, height}}
-        > */}
-          <Block flex middle>
-            <Block style={styles.registerContainer}>
 
-              <ScrollView contentContainerStyle={{flexGrow: 1}}
+
+    const [data, setData] = useState([
+      {name:'1',key:'ones'},
+      {name:'2',key:'two'},
+      {name:'3',key:'three'},
+      {name:'4',key:'four'},
+      {name:'5',key:'five'},
+      {name:'6',key:'six'},
+    ]
+
+    )
+    const render_item = (item) => {
+      return (
+        <View
+          style={styles.item}
+          key={item.key}
+        >
+          {/* <Ionicons name="md-add-circle-outline" size={32} color="g" /> */}
+          <Text>{item.key}</Text>
+        </View>
+      );
+    }
+    return (
+        <ScrollView contentContainerStyle={{flexGrow: 1}}
                     keyboardShouldPersistTaps='handled'
+                    scrollEnabled={!dragging}
               >
-                 <Block width={width * 0.7}>
+                 <Image
+                    source={{ uri: image }}
+                    style={styles.avatar}
+                  />
+                 <Block flex middle center>
+                   
+                    <Button 
+                      color="primary"  
+                      style={styles.saveButton}
+                      onPress = {pickImage}
+                      >
+                        <Text bold size={14} color={argonTheme.COLORS.WHITE}>
+                          PICK IMAGE
+                        </Text>
+                    </Button>
+
+                    <Block width={width * 0.7}>
                       <Text>
                         First Name
                       </Text>
@@ -86,9 +192,9 @@ const EditProfile = ({navigation}) => {
                         {currentProfile?.first_name ? currentProfile.first_name : ""}
 
                         </Input>
-                  </Block>
+                    </Block>
 
-                  <Block width={width * 0.7}>
+                    <Block width={width * 0.7}>
                       <Text>
                         Last Name
                       </Text>
@@ -99,11 +205,30 @@ const EditProfile = ({navigation}) => {
                         {currentProfile?.last_name ? currentProfile.last_name : ""}
 
                         </Input>
-                  </Block>
+                    </Block>
+                 </Block>
 
-              </ScrollView>
-                <Block>
+                 <DraggableGrid
+                    style={{zIndex:99999}}
+                    onItemPress={()=>console.log("pressed")}
+                    numColumns={3}
+                    renderItem={render_item}
+                    data={data}
+                    onDragStart={()=>setIsDragging(true)}
+                    onDragRelease={(data) => {
+                      setData(data);// need reset the props data sort after drag release
+                      setIsDragging(false)
+                    }}
+                    onDragging={()=>setIsDragging(true)}
+                    
+                  />
+
+                  <Block>
                     <Block middle>
+                      {
+                        isSaving &&
+                        <ActivityIndicator size="small" color="#0000ff" />
+                      }
                       <Button 
                       color="primary"  
                       style={styles.saveButton}
@@ -115,16 +240,35 @@ const EditProfile = ({navigation}) => {
                       </Button>
                     </Block>
               </Block>
-            </Block>
-          </Block>
-        {/* </ImageBackground> */}
-      </Block>
+
+              </ScrollView>
+
+        
     );
   
 }
 
+
+
 const styles = StyleSheet.create({
-    
+  wrapper:{
+    paddingTop:100,
+    width:'100%',
+    height:'100%',
+    justifyContent:'center',
+  },
+  item:{
+    width:100,
+    height:100,
+    borderRadius:8,
+    backgroundColor:'#D8D8D8',
+    justifyContent:'center',
+    alignItems:'center',
+  },
+  item_text:{
+    fontSize:40,
+    color:'#FFFFFF',
+  },
   inputStyle :{
     borderRadius: 4,
     backgroundColor: '#FFFFFF',
@@ -134,7 +278,7 @@ const styles = StyleSheet.create({
   },
 
   registerContainer: {
-    width: width * 0.9,
+    width: width ,
     height: height * 0.78,
     backgroundColor: "#F4F5F7",
     borderRadius: 4,
@@ -146,15 +290,23 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOpacity: 0.1,
     elevation: 1,
-    overflow: "hidden",
-    padding: 30
+    // overflow: "hidden",
+    padding: 30,
+    paddingTop: 0,
+    marginTop:-20
   },
 
   saveButton: {
     width: width * 0.3,
     marginTop: 25
   },
-
+  avatar: {
+    width: width,
+    height: 350,
+    // borderRadius: 62,
+    borderWidth: 0
+  },
 });
 
 export default EditProfile;
+
