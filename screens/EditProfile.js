@@ -24,8 +24,7 @@ import SortableGrid from '../components/SortableGrid'
 import { TouchableOpacity } from "react-native";
 import { DraggableGrid } from 'react-native-draggable-grid';
 import { Ionicons } from '@expo/vector-icons';
-
-
+import 'react-native-get-random-values';
 const { width, height } = Dimensions.get("screen");
 
 
@@ -121,7 +120,7 @@ const EditProfile = ({navigation}) => {
       .catch(function (error) {
         console.log(error);
       })
-
+      console.log(uuidv4(), "AHHH")
       let formdata = new FormData();
       formdata.append('file',{
         uri: Platform.OS === 'android' ? image : 'file://' + image,

@@ -42,6 +42,7 @@
     "react-native-draggable-grid": "^2.1.2",
     "react-native-geolocation-service": "^5.0.0",
     "react-native-gesture-handler": "~1.6.0",
+    "react-native-get-random-values": "^1.5.0",
     "react-native-intl-phone-input": "^1.2.26",
     "react-native-modal-dropdown": "^0.7.0",
     "react-native-phone-input": "^0.2.2",
@@ -57,7 +58,8 @@
     "redux-saga": "^1.1.3",
     "redux-thunk": "^2.3.0",
     "remote-redux-devtools": "^0.5.16",
-    "uuid": "^8.3.0"
+    "uuid": "^8.3.0",
+    "react-native-webview": "8.1.1"
   },
   "devDependencies": {
     "babel-preset-expo": "^8.2.1",
