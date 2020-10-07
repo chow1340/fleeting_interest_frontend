@@ -48,8 +48,6 @@ const EditProfile = ({navigation}) => {
       currentProfile.last_name = value
     };
 
-    const [pictureArrayChanged, setPictureArrayChanged] = useState();
-
     const [pictureArray, setPictureArray] = useState([]);
 
     const pickImage = async () => {
@@ -105,8 +103,8 @@ const EditProfile = ({navigation}) => {
           temp.push({
             uri: "No picture available",
             key: i.toString(),
-            // disabledDrag: true,
-            // disabledReSorted: true
+            disabledDrag: true,
+            disabledReSorted: true
           })
         }
         setPictureArray(temp);
