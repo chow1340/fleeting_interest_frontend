@@ -2,10 +2,10 @@ import React, {useState} from "react";
 import './config.js'
 import { Image } from "react-native";
 import { AppLoading } from "expo";
-import { useFonts } from '@use-expo/font';
 import { Asset } from "expo-asset";
 import { Block, GalioProvider } from "galio-framework";
 import { NavigationContainer } from "@react-navigation/native";
+import * as SplashScreen from 'expo-splash-screen';
 
 // Before rendering any navigation stack
 import { enableScreens } from "react-native-screens";
@@ -88,6 +88,7 @@ const App = () => {
     _loadResourcesAsync = async () => {
       return Promise.all([...cacheImages(assetImages)]);
     };
+
 
     _handleLoadingError = error => {
       // In this case, you might want to report the error to your error

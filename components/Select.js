@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
-import ModalDropdown from 'react-native-modal-dropdown';
 import { Block, Text } from 'galio-framework';
 
 import Icon from './Icon';
@@ -34,17 +33,20 @@ class DropDown extends React.Component {
     ];
 
     return (
-      <ModalDropdown
-        style={modalStyles}
-        onSelect={this.handleOnSelect}
-        dropdownStyle={styles.dropdown}
-        dropdownTextStyle={{paddingLeft:16, fontSize:12}}
-        {...props}>
-        <Block flex row middle space="between">
-          <Text size={12} style={textStyles}>{this.state.value}</Text>
-          <Icon name={iconName || "nav-down"} family={iconFamily || "ArgonExtra"} size={iconSize || 10} color={iconColor || argonTheme.COLORS.WHITE} />
-        </Block>
-      </ModalDropdown>
+      // <ModalDropdown
+      //   style={modalStyles}
+      //   onSelect={this.handleOnSelect}
+      //   dropdownStyle={styles.dropdown}
+      //   dropdownTextStyle={{paddingLeft:16, fontSize:12}}
+      //   {...props}>
+      //   <Block flex row middle space="between">
+      //     <Text size={12} style={textStyles}>{this.state.value}</Text>
+      //     <Icon name={iconName || "nav-down"} family={iconFamily || "ArgonExtra"} size={iconSize || 10} color={iconColor || argonTheme.COLORS.WHITE} />
+      //   </Block>
+      // </ModalDropdown>
+      <Text>
+        Sure
+      </Text>
     )
   }
 }

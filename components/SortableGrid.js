@@ -5,9 +5,10 @@ import {
   TouchableWithoutFeedback,
   PanResponder,
   Image,
-  View
+  View,
+  Text
 } from 'react-native'
-
+import equal from 'fast-deep-equal'
 import _ from 'lodash'
 
 // Default values
@@ -20,8 +21,10 @@ const NULL_FN                         = () => {}
 
 
 class Block extends Component {
+
   render(){
     if(this.props.inactive.includes(parseInt(this.props.children.key))){
+
       return(
         <Animated.View
         style = { this.props.style }
@@ -29,7 +32,8 @@ class Block extends Component {
         {...this.props.panHandlers}
       >
               <TouchableWithoutFeedback
-              onPress  = { ()=>console.log(this.props.children.key) }>
+                onPress  = { this.props.onPress }
+              >
       
                 <View style={styles.itemImageContainer}>
                   <View style={ this.props.itemWrapperStyle }>
@@ -39,13 +43,6 @@ class Block extends Component {
                 </View>
       
             </TouchableWithoutFeedback>
-            {/* <View style={styles.itemImageContainer}>
-              <View style={ this.props.itemWrapperStyle }>
-                {this.props.children}
-              </View>
-              { this.props.deletionView }
-            </View> */}
-  
       </Animated.View>
       )
     } else {
@@ -60,7 +57,9 @@ class Block extends Component {
           style          = {{ flex: 1 }}
           delayLongPress = { this.props.delayLongPress }
           onLongPress    = { this.props.onLongPress }
-          onPress        = { this.props.onPress }>
+          // onPress        = { this.props.onPress }
+          
+          >
   
             <View style={styles.itemImageContainer}>
               <View style={ this.props.itemWrapperStyle }>
@@ -76,54 +75,64 @@ class Block extends Component {
     }
 
   }
-    // <Animated.View
-    //   style = { this.props.style }
-    //   onLayout = { this.props.onLayout }
-    //   {...this.props.panHandlers}
-    // >
-      
-    //   <TouchableWithoutFeedback
-    //     style          = {{ flex: 1 }}
-    //     delayLongPress = { this.props.delayLongPress }
-    //     onLongPress    = { this.props.onLongPress }
-    //     onPress        = { this.props.onPress }>
-
-    //       <View style={styles.itemImageContainer}>
-    //         <View style={ this.props.itemWrapperStyle }>
-    //           {this.props.children}
-    //         </View>
-    //         { this.props.deletionView }
-    //       </View>
-
-    //   </TouchableWithoutFeedback>
-    // </Animated.View>
-
 }
 
 class SortableGrid extends Component {
 
     render = () =>
+  
       <Animated.View
         style={ this._getGridStyle() }
         onLayout={ this.assessGridSize }
       >
-        { this.state.gridLayout &&
-          this.items.map( (item, key) =>
-            <Block
-              key = { key }
+        { 
+        this.state.gridLayout &&
+          this.items.map( (item, key) => 
+            <Animated.View
               style = { this._getBlockStyle(key) }
-              onLayout = { this.saveBlockPositions(key) }
-              panHandlers = { this._panResponder.panHandlers }
-              delayLongPress = { this.dragActivationTreshold }
-              onLongPress = { this.activateDrag(key) }
-              onPress = { this.handleTap(item.props) }
-              itemWrapperStyle = { this._getItemWrapperStyle(key) }
-              deletionView = { this._getDeletionView(key) }
-              inactive = {this.props.inactive}
+              onLayout = { this.saveBlockPositions(item.props.picIndex) }
+              {...this._panResponder.panHandlers}
             >
-              {item}
-            </Block>
-        )}
+              
+              <TouchableWithoutFeedback
+                style          = {{ flex: 1 }}
+                delayLongPress = { this.dragActivationTreshold}
+                onLongPress    = { this.activateDrag(key) }
+                
+                >
+        
+                  <View style={styles.itemImageContainer}>
+                    <View style={this._getItemWrapperStyle(key)}>
+                      <Text> {item} </Text>
+                    </View>
+                 
+                  </View>
+        
+              </TouchableWithoutFeedback>
+           </Animated.View>
+            // console.log(this.state.items)
+            // <Text>fuck</Text>
+          
+            // <Block
+            //   key = { item.props.picIndex }
+            //   pictureArray = {this.props.pictureArray}
+            //   style = { this._getBlockStyle(key) }
+            //   onLayout = { this.saveBlockPositions(item.props.picIndex) }
+            //   panHandlers = { this._panResponder.panHandlers }
+            //   delayLongPress = { this.dragActivationTreshold }
+            //   onLongPress = { this.activateDrag(key) }
+            //   onPress = { this.handleTap(item.props) }
+            //   itemWrapperStyle = { this._getItemWrapperStyle(key) }
+            //   deletionView = { this._getDeletionView(key) }
+            //   inactive = {this.props.inactive}
+            // >
+            //   {item}
+            // </Block>
+
+            // console.log(this.state.items)
+        )
+
+        }
       </Animated.View>
 
   constructor() {
@@ -168,7 +177,10 @@ class SortableGrid extends Component {
       deletionSwipePercent: 0,
       deleteBlock: null,
       deleteBlockOpacity: new Animated.Value(1),
-      deletedItems: []
+      deletedItems: [],
+      inactiveItems: [],
+      items: [],
+      test: Date.now()
     }
   }
 
@@ -178,38 +190,53 @@ class SortableGrid extends Component {
     return { deleteModeOn }
   }
 
+
+  componentWillMount = () => this.createTouchHandlers()
+
   componentDidMount = () => {
-      this.handleNewProps(this.props)
-      this.createTouchHandlers();
-
-    }
-  
-  componentDidUpdate = (properties) => {
-    this.handleNewProps(properties)
+    this.handleNewProps(this.props);
   }
-//   componentWillUnmount = () => { if (this.tapTimer) clearTimeout(this.tapTimer) }
 
-// //   componentWillReceiveProps = (properties) => this.handleNewProps(properties)
+  componentWillUnmount = () => { if (this.tapTimer) clearTimeout(this.tapTimer) }
 
-// componentWillMount = () => this.createTouchHandlers()
+  componentWillReceiveProps = (properties) => this.handleNewProps(properties)
 
-// componentDidMount = () => this.handleNewProps(this.props)
 
-componentWillUnmount = () => { if (this.tapTimer) clearTimeout(this.tapTimer) }
 
-// componentWillReceiveProps = (properties) => this.handleNewProps(properties)
+  handleNewProps = (properties) => {
+    this._assignReceivedPropertiesIntoThis(properties)
+    this._saveItemOrder(properties.children)
+    this._removeDisappearedChildren(properties.children)
+  }
 
-handleNewProps = (properties) => {
-  this._assignReceivedPropertiesIntoThis(properties)
-  this._saveItemOrder(properties.children)
-  this._removeDisappearedChildren(properties.children)
-}
 
-//   handleNewProps = (properties) => {
-//     this._assignReceivedPropertiesIntoThis(properties)
-//     this._saveItemOrder(properties.children)
-//     this._removeDisappearedChildren(properties.children)
-//   }
+  // BEFOREEEE
+//   componentDidMount = () => {
+//       this.handleNewProps(this.props)
+//       this.createTouchHandlers();
+//     }
+  
+  // componentDidUpdate = (properties) => {
+  //   // this.handleNewProps(properties)
+  // }
+// //   componentWillUnmount = () => { if (this.tapTimer) clearTimeout(this.tapTimer) }
+
+// // //   componentWillReceiveProps = (properties) => this.handleNewProps(properties)
+
+// // componentWillMount = () => this.createTouchHandlers()
+
+// // componentDidMount = () => this.handleNewProps(this.props)
+
+// componentWillUnmount = () => { if (this.tapTimer) clearTimeout(this.tapTimer) }
+
+// // componentWillReceiveProps = (properties) => this.handleNewProps(properties)
+
+// handleNewProps = (properties) => {
+//   this._assignReceivedPropertiesIntoThis(properties)
+//   this._saveItemOrder(properties.children)
+//   this._removeDisappearedChildren(properties.children)
+// }
+
 
   onStartDrag = (evt, gestureState) => {
     if (this.state.activeBlock != null) {
@@ -266,7 +293,9 @@ handleNewProps = (properties) => {
           this._getBlock(closest).currentPosition,
           {
             toValue: this._getActiveBlock().origin,
-            duration: this.blockTransitionDuration
+            duration: this.blockTransitionDuration,
+            useNativeDriver: false, 
+
           }
         ).start()
         let blockPositions = this.state.blockPositions
@@ -280,6 +309,7 @@ handleNewProps = (properties) => {
       }
     }
   }
+
 
   onReleaseBlock = (evt, gestureState) => {
     this.returnBlockToOriginalPosition()
@@ -307,7 +337,9 @@ handleNewProps = (properties) => {
     return new Promise( (resolve, reject) => {
       Animated.timing(
         this.state.deleteBlockOpacity,
-        { toValue: 0, duration: 2 * this.activeBlockCenteringDuration }
+        { toValue: 0, duration: 2 * this.activeBlockCenteringDuration ,  useNativeDriver: false, 
+        }
+        
       ).start(resolve)
     })
   }
@@ -317,7 +349,8 @@ handleNewProps = (properties) => {
       this._getBlock(blockIndex).currentPosition,
       {
         toValue: position,
-        duration: this.blockTransitionDuration
+        duration: this.blockTransitionDuration,
+        useNativeDriver: false, 
       }
     ).start()
   }
@@ -329,7 +362,9 @@ handleNewProps = (properties) => {
       activeBlockCurrentPosition,
       {
         toValue: this._getActiveBlock().origin,
-        duration: this.activeBlockCenteringDuration
+        duration: this.activeBlockCenteringDuration,
+        useNativeDriver: false, 
+
       }
     ).start()
   }
@@ -436,9 +471,10 @@ handleNewProps = (properties) => {
   _blockPositionsSet = () => this.state.blockPositionsSetCount === this.items.length
 
   _saveItemOrder = (items) => {
-    items.forEach( (item, index) => {
+    items.forEach( (item) => {
       if (!_.findKey(this.itemOrder, (oldItem) => oldItem.key === item.key)) {
-        this.itemOrder.push({ key: item.key, ref: item.ref, order: this.items.length })
+        // this.itemOrder.push({ key: item.key, ref: item.ref, order: this.items.length , uri: item.props.uri})
+        this.itemOrder.push({ key: item.key, ref: item.ref, order: this.items.length , uri: item.props.uri})
         if (!this.initialLayoutDone) {
           this.items.push(item)
         }
@@ -456,7 +492,12 @@ handleNewProps = (properties) => {
         }
       }
     })
+   this.setState({
+     items: this.items
+   }, (()=>console.log(this.state.items)))
+    
   }
+
 
   _removeDisappearedChildren = (items) => {
     let deleteBlockIndices = []
@@ -508,7 +549,9 @@ handleNewProps = (properties) => {
         this.state.gridHeight,
         {
           toValue: this.gridHeightTarget,
-          duration: this.blockTransitionDuration
+          duration: this.blockTransitionDuration,
+          useNativeDriver: false, 
+
         }
       ).start()
     }
@@ -527,7 +570,8 @@ handleNewProps = (properties) => {
         toValue: 0,
         velocity: 2000,
         tension: 2000,
-        friction: 5
+        friction: 5,
+        useNativeDriver: false, 
       }).start()
     }
   }
