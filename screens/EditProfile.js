@@ -8,7 +8,8 @@ import {
   Platform,
   ActivityIndicator,
   View,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  Animated
   
 } from "react-native";
 import { Block, Checkbox, Text, theme } from "galio-framework";
@@ -35,12 +36,13 @@ const EditProfile = ({navigation}) => {
     const currentProfile = useSelector(state=>state.profile.currentProfile)
     const dispatch = useDispatch();
 
-    const [dragging, setIsDragging] = useState()
-
+    const [dragging, setIsDragging] = useState();
+    const [gridIsEditable, setGridIsEditable] = useState(false);
+    const [animatedValue, setAnimatedValue] = useState(new Animated.Value(0));
     const [image, setImage] = useState(currentProfile.picture ? global.s3Endpoint + currentProfile.picture[0] : null);
     const [isSaving, setIsSaving] = useState();
-    
-    const [inactive, setInactive] = useState([]);
+    const [nextIndex, setNextIndex] = useState(-1);
+  
     const onChangeFirstName = (value) => {
       currentProfile.first_name = value
     };
@@ -59,19 +61,22 @@ const EditProfile = ({navigation}) => {
       })
       
       if (!result.cancelled) { 
+        let curIndex = 0; 
         //Update picture array
-        let nextIndex = currentProfile.picture.length;
+        if(nextIndex != -1){
+          curIndex = nextIndex + 1
+        } else {
+          curIndex = currentProfile.picture.length;
+        }
+  
         let tempArray = [...pictureArray];
-        tempArray[nextIndex] = {
+        tempArray[curIndex] = {
           uri: result.uri,
-          key: nextIndex.toString(),
+          key: curIndex.toString(),
           tempPic: true,
         }
         setPictureArray(tempArray);
-
-        //Update db
-        
-
+        setNextIndex(curIndex)
       }
     };
     useEffect(() => {
@@ -87,6 +92,7 @@ const EditProfile = ({navigation}) => {
       } 
       getCurrentProfile();
     }, [])
+    
 
     useEffect(()=>{
       if(currentProfile?.picture){
@@ -113,7 +119,6 @@ const EditProfile = ({navigation}) => {
 
     
     const saveEditProfile = async () => {
-      console.log(pictureArray, "HERES")
       let profileInfoSaved = false
       let profilePictureSaved = false
       setIsSaving(true);
@@ -189,7 +194,72 @@ const EditProfile = ({navigation}) => {
       
     }
 
-    const render_item = (item) => {
+    const editGridButton = () => {
+      if(gridIsEditable == false) {
+        return (
+          <Button 
+            color="primary"  
+            style={styles.saveButton}
+            onPress = {()=>setGridIsEditable(true)}
+            >
+              <Text bold size={14} color={argonTheme.COLORS.WHITE}>
+                EDIT ORDER
+              </Text>
+          </Button>
+        )
+      } else {
+        return (
+          <Button 
+            color="primary"  
+            style={styles.saveButton}
+            onPress = {()=>
+              savePictureArray()
+            }
+          >
+            <Text bold size={14} color={argonTheme.COLORS.WHITE}>
+              SAVE
+            </Text>
+        </Button>
+        )
+      }
+
+    }
+    const renderGrid = () => {
+      if(gridIsEditable == true) {
+        return(
+          <DraggableGrid
+          numColumns={3}
+          renderItem={renderItem}
+          data={pictureArray}
+          onDragStart = {onDragStart}
+          onDragRelease={(data) => {
+            setPictureArray(data);// need reset the props data sort after drag release
+            setIsDragging(false);
+          }}
+          dragStartAnimation={{
+            transform:[
+              {scale:1}
+            ],
+          }}
+        />
+        )
+      } else {
+        
+      }
+    }
+
+    const onDragStart = () => {
+      setIsDragging(true);
+      
+      animatedValue.setValue(1);
+      Animated.timing(animatedValue, {
+        toValue:3,
+        duration:400,
+        useNativeDriver: false, 
+      }).start();
+    }
+
+    const renderItem = (item) => {
       if(item.uri === "No picture available") {
         return(
           <TouchableWithoutFeedback onPress={()=>pickImage()} >
@@ -224,6 +294,60 @@ const EditProfile = ({navigation}) => {
         )
       }
     }
+
+    const savePictureArray = () => {
+   
+      for(let i = 0; i < pictureArray.length; i++){
+        
+        var picture = pictureArray[i];
+        
+        //Update original pictures without file upload
+        if(!picture.tempPic && picture.uri != "No picture available"){
+          
+          axios.post(global.server + '/api/image/updatePictureArrayOrder', 
+            {
+              params: {
+                index : i,
+                uri : picture.uri
+              }
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            }
+          )
+          .then(
+            res => console.log(res.data)
+          )
+          .catch(
+            err => console.log(err)
+          )
+        } else if (picture.tempPic === true) {
+			let formdata = new FormData();
+			console.log("ranhere");
+			formdata.append('file',{
+				uri: Platform.OS === 'android' ? picture.uri : 'file://' + picture.uri,
+				name: currentProfile?._id.$oid + uuidv4(),
+				type: 'image/jpeg',
+			});
+			
+			formdata.append('index', i)
+
+			axios({
+				url: global.server + '/api/image/uploadFileAndUpdatePictureArrayOrder',
+				method: "POST",
+				data: formdata,
+				headers: {
+					'content-type' : 'multipart/form-data'
+				}
+			})
+        }
+      }
+      setNextIndex(-1);
+      setGridIsEditable(false);
+    }
+
 
     return (
         <ScrollView contentContainerStyle={{flexGrow: 1}}
@@ -273,21 +397,9 @@ const EditProfile = ({navigation}) => {
                     </Block>
 
                  </Block>
+                  {editGridButton()}
                   <View style={styles.wrapper}>
-        
-                    <DraggableGrid
-                      numColumns={3}
-                      renderItem={render_item}
-                      data={pictureArray}
-                      onDragStart = { () => {
-                        setIsDragging(true);
-                        console.log(dragging);
-                      }}
-                      onDragRelease={(data) => {
-                        setPictureArray(data);// need reset the props data sort after drag release
-                        setIsDragging(false);
-                      }}
-                    />
+                    {renderGrid()}
                   </View>
                    <Block>
                     <Block middle>
@@ -318,7 +430,6 @@ const EditProfile = ({navigation}) => {
 
 const styles = StyleSheet.create({
   wrapper:{
-    paddingTop:100,
     width:'100%',
     height:'100%',
     justifyContent:'center',
