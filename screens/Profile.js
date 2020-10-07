@@ -15,7 +15,6 @@ import axios from 'axios';
 import {useSelector} from 'react-redux';
 
 
-
 const { width, height } = Dimensions.get("screen");
 
 const thumbMeasure = (width - 48 - 32) / 3;

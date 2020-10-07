@@ -36,7 +36,7 @@
     "prop-types": "^15.7.2",
     "react": "16.13.1",
     "react-devtools": "^3.6.3",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-39.0.0.tar.gz",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-39.0.3.tar.gz",
     "react-native-country-picker-modal": "^2.0.0",
     "react-native-debugger": "^1.1.0",
     "react-native-drag-drop-grid-library": "^1.0.7",
