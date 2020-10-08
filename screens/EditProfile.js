@@ -9,8 +9,10 @@ import {
   ActivityIndicator,
   View,
   TouchableWithoutFeedback,
-  Animated
-  
+  Animated,
+  Alert,
+  SafeAreaView,
+  FlatList
 } from "react-native";
 import { Block, Checkbox, Text, theme } from "galio-framework";
 import { Button, Icon, Input } from "../components";
@@ -21,15 +23,13 @@ import * as ImagePicker from 'expo-image-picker';
 import 'react-native-get-random-values';
 
 import { v4 as uuidv4 } from 'uuid';
-import SortableGrid from '../components/SortableGrid'
 import { Ionicons } from '@expo/vector-icons';
-
+import { FontAwesome } from '@expo/vector-icons'; 
 import { DraggableGrid } from 'react-native-draggable-grid';
-import { TouchableHighlight } from "react-native-gesture-handler";
-
 
 const { width, height } = Dimensions.get("screen");
 
+const thumbMeasure = (width - 48 - 32) / 3;
 
 const EditProfile = ({navigation}) => {
     const sortableGrid = useRef();
@@ -42,6 +42,16 @@ const EditProfile = ({navigation}) => {
     const [image, setImage] = useState(currentProfile.picture ? global.s3Endpoint + currentProfile.picture[0] : null);
     const [isSaving, setIsSaving] = useState();
     const [nextIndex, setNextIndex] = useState(-1);
+
+    const [showAlertState, setShowAlertState] = useState();
+
+    const showAlert = () => {
+      setShowAlertState(true)
+    }
+
+    const hideAlert = () => {
+      setShowAlertState(false)
+    }
   
     const onChangeFirstName = (value) => {
       currentProfile.first_name = value
@@ -64,7 +74,7 @@ const EditProfile = ({navigation}) => {
         let curIndex = 0; 
         //Update picture array
         if(nextIndex != -1){
-          curIndex = nextIndex + 1
+          curIndex = nextIndex
         } else {
           curIndex = currentProfile.picture.length;
         }
@@ -76,9 +86,12 @@ const EditProfile = ({navigation}) => {
           tempPic: true,
         }
         setPictureArray(tempArray);
-        setNextIndex(curIndex)
+        setNextIndex(curIndex + 1)
       }
     };
+
+
+
     useEffect(() => {
       async function getCurrentProfile() {
         axios.get(global.server + '/api/user/getCurrentUser')
@@ -114,84 +127,24 @@ const EditProfile = ({navigation}) => {
           })
         }
         setPictureArray(temp);
+        setNextIndex(currentProfile.picture.length)
       }
     },[currentProfile?.picture])
 
     
     const saveEditProfile = async () => {
-      let profileInfoSaved = false
-      let profilePictureSaved = false
-      setIsSaving(true);
-
-      let formdata = new FormData();
-      formdata.append('file',{
-        uri: Platform.OS === 'android' ? image : 'file://' + image,
-        name: currentProfile?._id.$oid + uuidv4(),
-        type: 'image/jpeg'
-      });
-      
-      // axios.all([
-      //   axios.post(global.server + '/api/user/editProfile', 
-      //   {
-      //     params: {
-      //       currentProfile : currentProfile
-      //     }
-      //   },
-      //   {
-      //     headers: {
-      //       'Content-Type': 'application/json'
-      //     }
-      //   })
-      //   ,
-      //   axios({
-      //     url: global.server + '/api/image/uploadProfilePicture',
-      //     method: "POST",
-      //     data: formdata,
-      //     headers: {
-      //         'content-type' : 'multipart/form-data'
-      //     }
-      //   })
-      // ])
-      // .then(axios.spread((newProfileInfo, res2) => {
-      //   dispatch({type: SET_CURRENT_PROFILE, payload: newProfileInfo.data});
-
-      //   console.log(res2.data, "RES2")
-      // }))
-      
-
-
-
-      // if(imageChanged){
-      //   axios({
-      //     url: global.server + '/api/image/uploadProfilePicture',
-      //     method: "POST",
-      //     data: formdata,
-      //     headers: {
-      //         'content-type' : 'multipart/form-data'
-      //     }
-      //   })
-      //   .then(res => {
-      //     currentProfile.picture[0] = res.data
-      //     dispatch({type: SET_CURRENT_PROFILE, payload: currentProfile});
-      //     profilePictureSaved = true
-      //   })
-      //   .catch(err => {
-      //       console.log(err.response.data);
-      //   })
-      // } else {
-      //   profilePictureSaved = true
-      // }
-
-      console.log(profileInfoSaved, profilePictureSaved)
-      // while(true) {
-      //   console.log("ran");
-      //   if(profileInfoSaved || profilePictureSaved) {
-      //     setIsSaving(false);
-      //     navigation.goBack();
-      //     break;
-      //   }
-      // }
-      
+		axios.post(global.server + '/api/user/editProfile', 
+        {
+          params: {
+            currentProfile : currentProfile
+          }
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+    
     }
 
     const editGridButton = () => {
@@ -213,7 +166,7 @@ const EditProfile = ({navigation}) => {
             color="primary"  
             style={styles.saveButton}
             onPress = {()=>
-              savePictureArray()
+              handleSavePictureArray()
             }
           >
             <Text bold size={14} color={argonTheme.COLORS.WHITE}>
@@ -223,29 +176,6 @@ const EditProfile = ({navigation}) => {
         )
       }
 
-    }
-    const renderGrid = () => {
-      if(gridIsEditable == true) {
-        return(
-          <DraggableGrid
-          numColumns={3}
-          renderItem={renderItem}
-          data={pictureArray}
-          onDragStart = {onDragStart}
-          onDragRelease={(data) => {
-            setPictureArray(data);// need reset the props data sort after drag release
-            setIsDragging(false);
-          }}
-          dragStartAnimation={{
-            transform:[
-              {scale:1}
-            ],
-          }}
-        />
-        )
-      } else {
-        
-      }
     }
 
     const onDragStart = () => {
@@ -263,7 +193,7 @@ const EditProfile = ({navigation}) => {
       if(item.uri === "No picture available") {
         return(
           <TouchableWithoutFeedback onPress={()=>pickImage()} >
-            <View
+            <View 
               style={styles.item}
               key={item.key}
             >
@@ -277,6 +207,13 @@ const EditProfile = ({navigation}) => {
             style={styles.item}
             key={item.key}
           >
+             <TouchableWithoutFeedback
+               onPress={()=>deleteAlert(item)}
+              >
+                <View style={styles.deleteContainer}>
+                  <FontAwesome style={styles.deleteButton} name="minus-circle" size={24} color="black" />
+                </View>
+             </TouchableWithoutFeedback>
             {item.tempPic &&
               <Image
                 source={{ uri: item.uri }}
@@ -295,8 +232,55 @@ const EditProfile = ({navigation}) => {
       }
     }
 
-    const savePictureArray = () => {
-   
+    const deleteAlert = (item) => {
+      Alert.alert(
+        "Delete this picture",
+        "Are you sure you want to delete this picture?",
+        [
+
+          {
+            text: "Cancel",
+            onPress: () => console.log("Cancel Pressed"),
+            style: "cancel"
+          },
+          { text: "Delete", onPress: () => handleDelete(item) }
+        ],
+        { cancelable: true }
+      );
+    }
+    
+    const handleDelete = (item) => {
+      let tempPictureArray = [...pictureArray];
+      tempPictureArray.splice(item.key, 1);
+
+      axios.post(global.server + '/api/image/deleteImage', 
+      {
+        params: {
+          fileKey: item.uri
+        }
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(res => {
+        console.log(res);
+        setPictureArray(tempPictureArray)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+    }
+
+  
+      
+      
+
+    
+
+    const handleSavePictureArray = () => {
+      console.log(pictureArray)
       for(let i = 0; i < pictureArray.length; i++){
         
         var picture = pictureArray[i];
@@ -318,14 +302,15 @@ const EditProfile = ({navigation}) => {
             }
           )
           .then(
-            res => console.log(res.data)
+			res => {
+			// console.log(res.data)
+			}
           )
           .catch(
             err => console.log(err)
           )
         } else if (picture.tempPic === true) {
 			let formdata = new FormData();
-			console.log("ranhere");
 			formdata.append('file',{
 				uri: Platform.OS === 'android' ? picture.uri : 'file://' + picture.uri,
 				name: currentProfile?._id.$oid + uuidv4(),
@@ -346,9 +331,35 @@ const EditProfile = ({navigation}) => {
       }
       setNextIndex(-1);
       setGridIsEditable(false);
+      setImage(global.s3Endpoint+pictureArray[0].uri);
     }
 
+    const _renderItem = (item) => {
+      if(!item.tempPic) {
+        return(
+          <Image
+          source={{ uri: global.s3Endpoint+item.uri }}
+          key={`viewed-${item.key}`}
+          resizeMode="cover"
+          style={styles.thumb}
+        />
+        )
+      } else {
+        return(
+          <Image
+          source={{ uri: item.uri }}
+          key={`viewed-${item.key}`}
+          resizeMode="cover"
+          style={styles.thumb}
+        />
+        )
+      }
 
+    }
+      
+
+    ;
+ 
     return (
         <ScrollView contentContainerStyle={{flexGrow: 1}}
                     keyboardShouldPersistTaps='handled'
@@ -398,9 +409,64 @@ const EditProfile = ({navigation}) => {
 
                  </Block>
                   {editGridButton()}
-                  <View style={styles.wrapper}>
-                    {renderGrid()}
-                  </View>
+                  {/* {!gridIsEditable &&
+                      pictureArray.map((item) => 
+                       
+                      <View
+                      style={styles.item}
+                      key={item.key}
+                    >
+
+                      {item.tempPic &&
+                        <Image
+                          source={{ uri: item.uri }}
+                          style={styles.gridProfile}
+                        />
+                      }
+                      {!item.tempPic &&
+                        <Image
+                          source={{ uri: global.s3Endpoint+item.uri }}
+                          style={styles.gridProfile}
+                        />
+                      }
+          
+                      </View>
+                      )
+                    } */}
+                    {!gridIsEditable &&
+
+                    <Block >
+                      <Block row  style={{ flexWrap: "wrap" , justifyContent:"space-around"}}>
+                        {pictureArray.map((item) => (
+                          _renderItem(item)
+                          
+                        ))}
+                      </Block>
+                    </Block>
+                    }
+                  {
+                    gridIsEditable && 
+               
+                    <View style={styles.wrapper}>
+
+                      <DraggableGrid
+                      numColumns={3}
+                      renderItem={renderItem}
+                      data={pictureArray}
+                      onDragStart = {onDragStart}
+                      onDragRelease={(data) => {
+                        setPictureArray(data);// need reset the props data sort after drag release
+                        setIsDragging(false);
+                      }}
+                      dragStartAnimation={{
+                        transform:[
+                          {scale:1}
+                        ],
+                      }}
+                      />
+                    </View>
+                  }
+
                    <Block>
                     <Block middle>
                       {
@@ -429,10 +495,30 @@ const EditProfile = ({navigation}) => {
 
 
 const styles = StyleSheet.create({
+  
   wrapper:{
     width:'100%',
     height:'100%',
     justifyContent:'center',
+  },
+
+  deleteContainer:{
+    position: 'absolute',
+    top: -10,
+    right: -10,
+    position: 'absolute',
+    zIndex: 99,
+    // backgroundColor: 'black',
+    height: 30,
+    width: 30,
+    justifyContent: 'center'
+  },
+  deleteButton:{
+
+    fontSize: 25,
+    zIndex: 99,
+    color: "red",
+    left: 4
   },
   item: {
     flex: 1,
@@ -444,8 +530,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#C0C0C0",
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative'
-    // flexDirection: 'row'
+    position: 'relative',
+    flexDirection: 'row'
   },
   plusIcon:{
     fontSize:40,
@@ -453,20 +539,16 @@ const styles = StyleSheet.create({
   gridProfile:{
     width: '100%',
     height: '100%',
-    borderRadius: 8
+    borderRadius: 8,
+    // position: "relative",
   },
-  // item:{
-  //   width:100,
-  //   height:100,
-  //   borderRadius:8,
-  //   backgroundColor:'black',
-  //   justifyContent:'center',
-  //   alignItems:'center',
-  // },
-  // item_text:{
-  //   fontSize:40,
-  //   color:'#FFFFFF',
-  // },
+  thumb: {
+    borderRadius: 8,
+    marginVertical: 4,
+    alignSelf: "center",
+    width: thumbMeasure,
+    height: thumbMeasure
+  },
   inputStyle :{
     borderRadius: 4,
     backgroundColor: '#FFFFFF',
@@ -488,7 +570,6 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOpacity: 0.1,
     elevation: 1,
-    // overflow: "hidden",
     padding: 30,
     paddingTop: 0,
     marginTop:-20
@@ -501,7 +582,6 @@ const styles = StyleSheet.create({
   avatar: {
     width: width,
     height: 350,
-    // borderRadius: 62,
     borderWidth: 0
   },
 });

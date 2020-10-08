@@ -22,7 +22,21 @@ const thumbMeasure = (width - 48 - 32) / 3;
 
 const Profile  = ({navigation}) => {
     const currentProfile = useSelector(state=>state.profile.currentProfile);
-    
+
+    useEffect(() => {
+      async function getCurrentProfile() {
+        axios.get(global.server + '/api/user/getCurrentUser')
+        .then(res => {
+          // console.log(res.data)
+          dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      } 
+      getCurrentProfile();
+    }, [])
+
     return (
       <Block flex style={styles.profile}>
         <Block flex>
@@ -34,7 +48,7 @@ const Profile  = ({navigation}) => {
               <Block flex style={styles.profileCard}>
                 <Block middle style={styles.avatarContainer}>
                   <Image
-                    source={{ uri: Images.ProfilePicture }}
+                    source={{ uri: currentProfile.picture ? global.s3Endpoint + currentProfile.picture[0] : null }}
                     style={styles.avatar}
                   />
                 </Block>
