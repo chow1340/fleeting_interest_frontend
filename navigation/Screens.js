@@ -17,6 +17,7 @@ import Login from "../screens/Login";
 import Elements from "../screens/Elements";
 import Articles from "../screens/Articles";
 import EditProfile from "../screens/EditProfile";
+import MessageList from "../screens/MessageList";
 // drawer
 import CustomDrawerContent from "./Menu";
 
@@ -84,74 +85,57 @@ function ArticlesStack(props) {
   );
 }
 
-function EditProfileStack(props) {
-  return (
-    <Stack.Navigator mode="card" headerMode="screen">
-      <Stack.Screen
-        name="Edit Profile"
-        component={EditProfile}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header title="Edit Profile" navigation={navigation} scene={scene} />
-          ),
-          cardStyle: { backgroundColor: "#F8F9FE" }
-        }}
-      />
-      
-    </Stack.Navigator>
-  );
-}
-
-// function EditProfileStack(props) {
-//   return(
-//     <Stack.Navigator mode="card" headerMode="screen">
-//       <Stack.Screen
-//         name="Edit Profile"
-//         component={EditProfile}
-//         options={{
-//           header: ({ navigation, scene }) => (
-//             <Header
-//               title="Edit Profile"
-//               search
-//               options
-//               navigation={navigation}
-//               scene={scene}
-//             />
-//           ),
-//           cardStyle: { backgroundColor: "#F8F9FE" }
-//         }}
-//       />
-//   </Stack.Navigator>
-//   )
-
-// }
 
 function ProfileStack(props) {
   return (
-    <Stack.Navigator initialRouteName="Profile" mode="card" headerMode="none">
+    <Stack.Navigator initialRouteName="Profile" mode="card" headerMode="screen">
       <Stack.Screen
         name="Profile"
         component={Profile}
         
         options={{
           header: ({ navigation, scene }) => (
+            <Header title="Profile" navigation={navigation} scene={scene} />
+          ),
+          cardStyle: { backgroundColor: "#F8F9FE" }
+        }}
+      />
+      <Stack.Screen 
+        name="EditProfile" 
+        component={EditProfile} 
+        options={{
+          header: ({ navigation, scene }) => (
             <Header
-              transparent
-              white
-              title="Profile"
+              title="Edit Profile"
+              back
               navigation={navigation}
               scene={scene}
             />
           ),
-          
-          cardStyle: { backgroundColor: "#FFFFFF" },
-          headerTransparent: true,
-          
+          headerTransparent: true
         }}
       />
-      <Stack.Screen name="EditProfile" component={EditProfileStack} />
+
     </Stack.Navigator>
   );
+}
+
+function MessageListStack(props) {
+  return(
+    <Stack.Navigator initialRouteName="Profile" mode="card" headerMode="screen">
+      <Stack.Screen
+        name="Message List"
+        component={MessageList}
+        
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header title="Messages" navigation={navigation} scene={scene} />
+          ),
+          cardStyle: { backgroundColor: "#F8F9FE" }
+        }}
+      />
+    </Stack.Navigator>
+  )
 }
 
 function LoginStack(props) {
@@ -273,7 +257,7 @@ function AppStack(props) {
       <Drawer.Screen name="Account" component={Register} />
       <Drawer.Screen name="Elements" component={ElementsStack} />
       <Drawer.Screen name="Articles" component={ArticlesStack} />
-      <Drawer.Screen name="EditProfile" component={EditProfileStack} />
+      <Drawer.Screen name="Message List" component={MessageListStack} />
     </Drawer.Navigator>
   );
 }

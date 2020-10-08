@@ -7,7 +7,8 @@ import Icon from './Icon';
 import Input from './Input';
 import Tabs from './Tabs';
 import argonTheme from '../constants/Theme';
-
+import { Feather } from '@expo/vector-icons'; 
+import { AntDesign } from '@expo/vector-icons'; 
 const { height, width } = Dimensions.get('window');
 const iPhoneX = () => Platform.OS === 'ios' && (height === 812 || width === 812 || height === 896 || width === 896);
 
@@ -22,6 +23,39 @@ const BellButton = ({isWhite, style, navigation}) => (
     <Block middle style={styles.notify} /> */}
   </TouchableOpacity>
 );
+
+const ProfileButton = ({isWhite, style, navigation,title }) => {
+  if(title === 'Profile'){
+    return(
+      <TouchableOpacity style={[styles.button, style, styles.highlight]} onPress={() => navigation.navigate('Profile')}>
+        <Feather name="user" size={24} color="black" />
+      </TouchableOpacity>
+    )
+  } else {
+    return(
+      <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Profile')}>
+        <Feather name="user" size={24} color="black" />
+      </TouchableOpacity>
+    )
+  }
+}
+
+
+const MessageListButton = ({isWhite, style, navigation,title }) => {
+  if(title === 'Messages'){
+    return(
+      <TouchableOpacity style={[styles.button, style, styles.highlight]} onPress={() => navigation.navigate('Profile')}>
+        <AntDesign name="message1" size={24} color="black" />
+      </TouchableOpacity>
+    )
+  } else {
+    return(
+      <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Message List')}>
+        <AntDesign name="message1" size={24} color="black" />
+      </TouchableOpacity>
+    )
+  }
+}
 
 const BasketButton = ({isWhite, style, navigation}) => (
   <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Pro')}>
@@ -52,6 +86,10 @@ class Header extends React.Component {
   }
   renderRight = () => {
     const { white, title, navigation } = this.props;
+    return ([
+      <MessageListButton title={title} key='message-list-button' navigation={navigation} isWhite={white}></MessageListButton>,
+      <ProfileButton title={title} key='profile-button' navigation={navigation} isWhite={white}></ProfileButton>,
+    ]);
     if (title === 'Title') {
       return [
         <BellButton key='chat-title' navigation={navigation} isWhite={white} />,
@@ -82,8 +120,7 @@ class Header extends React.Component {
         ]);
       case 'Profile':
         return ([
-          <BellButton key='chat-profile' navigation={navigation} isWhite={white} />,
-          <BasketButton key='basket-deals' navigation={navigation} isWhite={white} />
+          <ProfileButton key='profile-button' navigation={navigation} isWhite={white}></ProfileButton>
         ]);
       case 'Product':
         return ([
@@ -216,6 +253,10 @@ const styles = StyleSheet.create({
     padding: 12,
     position: 'relative',
   },
+  highlight: {
+    backgroundColor: '#C0C0C0',
+    borderRadius: 24
+  },
   title: {
     width: '100%',
     fontSize: 16,
@@ -224,7 +265,7 @@ const styles = StyleSheet.create({
   navbar: {
     paddingVertical: 0,
     paddingBottom: theme.SIZES.BASE * 1.5,
-    paddingTop: iPhoneX ? theme.SIZES.BASE * 4 : theme.SIZES.BASE,
+    paddingTop: 20,
     zIndex: 5,
   },
   shadow: {
@@ -252,7 +293,7 @@ const styles = StyleSheet.create({
     borderRightColor: theme.COLORS.ICON,
   },
   search: {
-    height: 48,
+    height: 2,
     width: width - 32,
     marginHorizontal: 16,
     borderWidth: 1,
@@ -261,7 +302,7 @@ const styles = StyleSheet.create({
   },
   options: {
     marginBottom: 24,
-    marginTop: 10,
+    marginTop: 2,
     elevation: 4,
   },
   tab: {

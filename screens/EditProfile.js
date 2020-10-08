@@ -43,15 +43,6 @@ const EditProfile = ({navigation}) => {
     const [isSaving, setIsSaving] = useState();
     const [nextIndex, setNextIndex] = useState(-1);
 
-    const [showAlertState, setShowAlertState] = useState();
-
-    const showAlert = () => {
-      setShowAlertState(true)
-    }
-
-    const hideAlert = () => {
-      setShowAlertState(false)
-    }
   
     const onChangeFirstName = (value) => {
       currentProfile.first_name = value
@@ -133,7 +124,7 @@ const EditProfile = ({navigation}) => {
 
     
     const saveEditProfile = async () => {
-		axios.post(global.server + '/api/user/editProfile', 
+		  axios.post(global.server + '/api/user/editProfile', 
         {
           params: {
             currentProfile : currentProfile
@@ -143,7 +134,8 @@ const EditProfile = ({navigation}) => {
           headers: {
             'Content-Type': 'application/json'
           }
-        })
+      })
+
     
     }
 
@@ -275,9 +267,6 @@ const EditProfile = ({navigation}) => {
 
   
       
-      
-
-    
 
     const handleSavePictureArray = () => {
       console.log(pictureArray)
@@ -302,9 +291,9 @@ const EditProfile = ({navigation}) => {
             }
           )
           .then(
-			res => {
-			// console.log(res.data)
-			}
+            res => {
+            // console.log(res.data)
+            }
           )
           .catch(
             err => console.log(err)
@@ -326,9 +315,16 @@ const EditProfile = ({navigation}) => {
 				headers: {
 					'content-type' : 'multipart/form-data'
 				}
-			})
-        }
+      })}}
+      
+      let tempArray = [];
+      //update current profile redux
+      for(let i = 0; i < pictureArray.length; i++) {
+        tempArray.push(pictureArray[i].uri);
       }
+      currentProfile.picture = tempArray
+      dispatch({type: SET_CURRENT_PROFILE, payload: currentProfile})
+
       setNextIndex(-1);
       setGridIsEditable(false);
       setImage(global.s3Endpoint+pictureArray[0].uri);

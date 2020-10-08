@@ -5,15 +5,17 @@ import {
   ScrollView,
   Image,
   ImageBackground,
-  Platform
+  Platform,
+  View
 } from "react-native";
 import { Block, Text, theme } from "galio-framework";
 import { Button } from "../components";
 import { Images, argonTheme } from "../constants";
 import { HeaderHeight } from "../constants/utils";
 import axios from 'axios';
-import {useSelector} from 'react-redux';
-
+import {useSelector, useDispatch} from 'react-redux';
+import Carousel, {Pagination} from 'react-native-snap-carousel';
+import {SET_CURRENT_PROFILE} from '../redux/actionTypes/profileTypes'
 
 const { width, height } = Dimensions.get("screen");
 
@@ -21,7 +23,12 @@ const thumbMeasure = (width - 48 - 32) / 3;
 
 
 const Profile  = ({navigation}) => {
+    const dispatch = useDispatch();
+
     const currentProfile = useSelector(state=>state.profile.currentProfile);
+
+    //Carousel
+    const [activeSlide, setActiveSlide] = useState(0);
 
     useEffect(() => {
       async function getCurrentProfile() {
@@ -37,6 +44,37 @@ const Profile  = ({navigation}) => {
       getCurrentProfile();
     }, [])
 
+    const _renderCarouselItem = ({item, index}) => {
+      if(item != "No picture aavailable"){
+        return (
+          <Image
+            source={{ uri:  global.s3Endpoint + item }}
+            style={styles.avatar}
+          /> 
+      );
+      }
+    }
+    const pagination = () => {
+      return (
+          <Pagination
+            dotsLength={currentProfile.picture ? currentProfile.picture.length : 0}
+            activeDotIndex={activeSlide}
+            containerStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.75)' }}
+            dotStyle={{
+                width: 10,
+                height: 10,
+                borderRadius: 5,
+                marginHorizontal: 8,
+                backgroundColor: 'rgba(255, 255, 255, 0.92)'
+            }}
+            inactiveDotStyle={{
+                // Define styles for inactive dots here
+            }}
+            inactiveDotOpacity={0.4}
+            inactiveDotScale={0.6}
+          />
+      );
+  }
     return (
       <Block flex style={styles.profile}>
         <Block flex>
@@ -47,10 +85,16 @@ const Profile  = ({navigation}) => {
             >
               <Block flex style={styles.profileCard}>
                 <Block middle style={styles.avatarContainer}>
-                  <Image
-                    source={{ uri: currentProfile.picture ? global.s3Endpoint + currentProfile.picture[0] : null }}
-                    style={styles.avatar}
-                  />
+
+                   <Carousel
+                      // ref={(c) => { this._carousel = c; }}
+                      data={currentProfile.picture}
+                      renderItem={_renderCarouselItem}
+                      sliderWidth={width}
+                      itemWidth={width}
+                      onSnapToItem={(index)=>setActiveSlide(index)}
+                    />
+                    {pagination()}
                 </Block>
                 <Block>
                   <Button
