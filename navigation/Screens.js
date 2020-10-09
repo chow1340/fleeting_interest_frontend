@@ -5,8 +5,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-import { Block } from "galio-framework";
-
 // screens
 import Home from "../screens/Home";
 import Onboarding from "../screens/Onboarding";
@@ -18,6 +16,7 @@ import Elements from "../screens/Elements";
 import Articles from "../screens/Articles";
 import EditProfile from "../screens/EditProfile";
 import MessageList from "../screens/MessageList";
+import ChatScreen from "../screens/ChatScreen";
 // drawer
 import CustomDrawerContent from "./Menu";
 
@@ -134,6 +133,16 @@ function MessageListStack(props) {
           cardStyle: { backgroundColor: "#F8F9FE" }
         }}
       />
+      <Stack.Screen
+        name="Chat"
+        component={ChatScreen}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header title="Chat" navigation={navigation} scene={scene} />
+          ),
+          cardStyle: { backgroundColor: "#F8F9FE" }
+        }}
+      />
     </Stack.Navigator>
   )
 }
@@ -223,42 +232,20 @@ export default function OnboardingStack(props) {
 
 function AppStack(props) {
   return (
-    <Drawer.Navigator
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false
+      }}
       style={{ flex: 1 }}
-      drawerContent={props => <CustomDrawerContent {...props} />}
-      drawerStyle={{
-        backgroundColor: "white",
-        width: width * 0.8
-      }}
-      drawerContentOptions={{
-        activeTintcolor: "white",
-        inactiveTintColor: "#000",
-        activeBackgroundColor: "transparent",
-        itemStyle: {
-          width: width * 0.75,
-          backgroundColor: "transparent",
-          paddingVertical: 16,
-          paddingHorizonal: 12,
-          justifyContent: "center",
-          alignContent: "center",
-          alignItems: "center",
-          overflow: "hidden"
-        },
-        labelStyle: {
-          fontSize: 18,
-          marginLeft: 12,
-          fontWeight: "normal"
-        }
-      }}
       initialRouteName="Home"
     >
-      <Drawer.Screen name="Home" component={HomeStack} />
-      <Drawer.Screen name="Profile" component={ProfileStack} />
-      <Drawer.Screen name="Account" component={Register} />
-      <Drawer.Screen name="Elements" component={ElementsStack} />
-      <Drawer.Screen name="Articles" component={ArticlesStack} />
-      <Drawer.Screen name="Message List" component={MessageListStack} />
-    </Drawer.Navigator>
+      <Stack.Screen name="Home" component={HomeStack} />
+      <Stack.Screen name="Profile" component={ProfileStack} />
+      <Stack.Screen name="Account" component={Register} />
+      <Stack.Screen name="Elements" component={ElementsStack} />
+      <Stack.Screen name="Articles" component={ArticlesStack} />
+      <Stack.Screen name="Message List" component={MessageListStack} />
+    </Stack.Navigator>
   );
 }
 

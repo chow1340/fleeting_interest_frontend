@@ -11,8 +11,6 @@ import {
   TouchableWithoutFeedback,
   Animated,
   Alert,
-  SafeAreaView,
-  FlatList
 } from "react-native";
 import { Block, Checkbox, Text, theme } from "galio-framework";
 import { Button, Icon, Input } from "../components";
@@ -334,11 +332,11 @@ const EditProfile = ({navigation}) => {
       if(!item.tempPic) {
         return(
           <Image
-          source={{ uri: global.s3Endpoint+item.uri }}
-          key={`viewed-${item.key}`}
-          resizeMode="cover"
-          style={styles.thumb}
-        />
+            source={{ uri: global.s3Endpoint+item.uri }}
+            key={`viewed-${item.key}`}
+            resizeMode="cover"
+            style={styles.thumb}
+          />
         )
       } else {
         return(
@@ -353,8 +351,6 @@ const EditProfile = ({navigation}) => {
 
     }
       
-
-    ;
  
     return (
         <ScrollView contentContainerStyle={{flexGrow: 1}}
@@ -435,7 +431,6 @@ const EditProfile = ({navigation}) => {
                       <Block row  style={{ flexWrap: "wrap" , justifyContent:"space-around"}}>
                         {pictureArray.map((item) => (
                           _renderItem(item)
-                          
                         ))}
                       </Block>
                     </Block>

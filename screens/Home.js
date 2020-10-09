@@ -20,6 +20,7 @@ const Home = () => {
   const [isLoaded, setIsLoaded] = useState();
   //LOCATION SERVICE
   useEffect(()=>{
+
     let mounted = true;
       async function getGeocodeAsync(location){
         let geocode = await Location.reverseGeocodeAsync(location);
@@ -62,8 +63,9 @@ const Home = () => {
           console.log(error);
         })
       }
+      getLocationAsync();
+      
       if(location){
-        getLocationAsync();
         updateLocation();
         setIsLoaded(true);
       }

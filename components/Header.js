@@ -1,8 +1,8 @@
 import React from 'react';
 import { withNavigation } from '@react-navigation/compat';
 import { TouchableOpacity, StyleSheet, Platform, Dimensions } from 'react-native';
-import { Button, Block, NavBar, Text, theme } from 'galio-framework';
-
+import { Button, Block, Text, theme } from 'galio-framework';
+import NavBar from '../components/NavBar';
 import Icon from './Icon';
 import Input from './Input';
 import Tabs from './Tabs';
@@ -218,6 +218,7 @@ class Header extends React.Component {
 
     return (
       <Block style={headerStyles}>
+        
         <NavBar
           back={false}
           title={title}
@@ -242,6 +243,8 @@ class Header extends React.Component {
           ]}
           {...props}
         />
+        {/* <NavBar
+        ></NavBar> */}
         {this.renderHeader()}
       </Block>
     );

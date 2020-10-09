@@ -31,6 +31,7 @@ const Profile  = ({navigation}) => {
     const [activeSlide, setActiveSlide] = useState(0);
 
     useEffect(() => {
+      console.log("ran")
       async function getCurrentProfile() {
         axios.get(global.server + '/api/user/getCurrentUser')
         .then(res => {
