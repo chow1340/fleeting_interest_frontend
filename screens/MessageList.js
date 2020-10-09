@@ -28,6 +28,7 @@ const MessageList = ({navigation}) => {
         async function getMatches() {
           axios.get(global.server + '/api/match/getMatches')
           .then(res => {
+            console.log(res.data);
             setMatches(res.data);
           })
           .catch(err => {
@@ -38,8 +39,6 @@ const MessageList = ({navigation}) => {
     }, [])
 
     const handleNavigation = (user, chatId) => {
-      // console.log(user);
-      console.log(chatId);
       dispatch({type: SET_CURRENT_CHAT_PROFILE, payload: user})
       dispatch({type: SET_CURRENT_CHAT_ID, payload: chatId})
       navigation.navigate('Chat');

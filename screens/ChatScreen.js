@@ -20,6 +20,7 @@ const { width } = Dimensions.get("screen");
 
 
 const ChatScreen = ({navigation}) => {
+    const currentProfile = useSelector(state=>state.profile.currentProfile)
     const currentChatProfile = useSelector(state=>state.message.currentChatProfile);
     const chatId = useSelector(state=>state.message.chatId);
 
@@ -32,17 +33,19 @@ const ChatScreen = ({navigation}) => {
       // console.log(messages, "message")
     }, [])
   
-    const onSend = useCallback((messages = []) => {
-      setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
-    }, [])
+
+
+    const handleSend = (message) => {
+      Fire.shared.send(message, chatId);
+    }
 
     return (
       <GiftedChat
         messages={messages}
         // onSend={messages => onSend(messages)}
-        onSend={message => Fire.shared.send(message, chatId)}
+        onSend={message => handleSend(message)}
         user={{
-          _id: 1,
+          _id: currentProfile._id.$oid,
         }}
         inverted={false}
       />

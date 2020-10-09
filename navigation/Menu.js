@@ -17,6 +17,10 @@ function CustomDrawerContent({ drawerPosition, navigation, profile, focused, sta
     axios.get(global.server + '/api/user/logout')
     .then(res => {
       console.log(res.data);
+      navigation.reset({
+        index: 0,
+        routes:[{name: 'Onboarding'}]
+      })
     })
     .catch(err => {
       console.log(err)

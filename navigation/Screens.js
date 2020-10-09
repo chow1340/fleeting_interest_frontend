@@ -232,20 +232,57 @@ export default function OnboardingStack(props) {
 
 function AppStack(props) {
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false
-      }}
-      style={{ flex: 1 }}
-      initialRouteName="Home"
-    >
-      <Stack.Screen name="Home" component={HomeStack} />
-      <Stack.Screen name="Profile" component={ProfileStack} />
-      <Stack.Screen name="Account" component={Register} />
-      <Stack.Screen name="Elements" component={ElementsStack} />
-      <Stack.Screen name="Articles" component={ArticlesStack} />
-      <Stack.Screen name="Message List" component={MessageListStack} />
-    </Stack.Navigator>
+    <Drawer.Navigator
+    style={{ flex: 1 }}
+    drawerContent={props => <CustomDrawerContent {...props} />}
+    drawerStyle={{
+      backgroundColor: "white",
+      width: width * 0.8
+    }}
+    drawerContentOptions={{
+      activeTintcolor: "white",
+      inactiveTintColor: "#000",
+      activeBackgroundColor: "transparent",
+      itemStyle: {
+        width: width * 0.75,
+        backgroundColor: "transparent",
+        paddingVertical: 16,
+        paddingHorizonal: 12,
+        justifyContent: "center",
+        alignContent: "center",
+        alignItems: "center",
+        overflow: "hidden"
+      },
+      labelStyle: {
+        fontSize: 18,
+        marginLeft: 12,
+        fontWeight: "normal"
+      }
+    }}
+    initialRouteName="Home"
+  >
+    <Drawer.Screen name="Home" component={HomeStack} />
+    <Drawer.Screen name="Profile" component={ProfileStack} />
+    <Drawer.Screen name="Account" component={Register} />
+    <Drawer.Screen name="Elements" component={ElementsStack} />
+    <Drawer.Screen name="Articles" component={ArticlesStack} />
+    <Stack.Screen name="Message List" component={MessageListStack} />
+    <Drawer.Screen name="Onboarding" component={OnboardingStack} />
+  </Drawer.Navigator>
+    // <Stack.Navigator
+    //   screenOptions={{
+    //     headerShown: false
+    //   }}
+    //   style={{ flex: 1 }}
+    //   initialRouteName="Home"
+    // >
+    //   <Stack.Screen name="Home" component={HomeStack} />
+    //   <Stack.Screen name="Profile" component={ProfileStack} />
+    //   <Stack.Screen name="Account" component={Register} />
+    //   <Stack.Screen name="Elements" component={ElementsStack} />
+    //   <Stack.Screen name="Articles" component={ArticlesStack} />
+    //   <Stack.Screen name="Message List" component={MessageListStack} />
+    // </Stack.Navigator>
   );
 }
 
