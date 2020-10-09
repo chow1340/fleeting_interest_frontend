@@ -35,6 +35,7 @@ const NavBar = ({
     titleStyle,
   }) => {
     const navStyles = [styles.navBar, transparent && styles.transparent, style];
+    const currentChatProfile = useSelector(state => state.message.currentChatProfile);
 
     const renderTitle = () => {
         // console.log(title)
@@ -42,7 +43,9 @@ const NavBar = ({
           if(title === "Chat") {
             return (        
               <View style={styles.title}>
-                <Text style={[styles.titleTextStyle, titleStyle]}>{title}</Text>
+                <Text style={[styles.titleTextStyle, titleStyle]}>
+                  {currentChatProfile?.first_name ? currentChatProfile.first_name : title}
+                  </Text>
               </View>
             )
           } else {
@@ -108,7 +111,7 @@ const NavBar = ({
 const styles = StyleSheet.create({
     navBar: {
         width: 'auto',
-        height: 70,
+        height: 'auto',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-evenly',

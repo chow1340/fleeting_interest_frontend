@@ -138,7 +138,7 @@ function MessageListStack(props) {
         component={ChatScreen}
         options={{
           header: ({ navigation, scene }) => (
-            <Header title="Chat" navigation={navigation} scene={scene} />
+            <Header title="Chat" navigation={navigation} back scene={scene} />
           ),
           cardStyle: { backgroundColor: "#F8F9FE" }
         }}

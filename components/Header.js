@@ -235,6 +235,7 @@ class Header extends React.Component {
             />
               
           }
+          // hideLeft
           leftStyle={{ paddingVertical: 12, flex: 0.2 }}
           titleStyle={[
             styles.title,
