@@ -13,7 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import {useSelector, useDispatch} from 'react-redux';
 import { TouchableOpacity } from "react-native-gesture-handler";
 const { width } = Dimensions.get("screen");
-import {SET_CURRENT_CHAT_PROFILE} from '../redux/actionTypes/messageTypes'
+import {SET_CURRENT_CHAT_PROFILE, SET_CURRENT_CHAT_ID} from '../redux/actionTypes/messageTypes'
 
 
 
@@ -25,7 +25,6 @@ const MessageList = ({navigation}) => {
 
 
     useEffect(() => {
-      console.log("ranhere")
         async function getMatches() {
           axios.get(global.server + '/api/match/getMatches')
           .then(res => {
@@ -38,17 +37,20 @@ const MessageList = ({navigation}) => {
         getMatches();
     }, [])
 
-    const handleNavigation = (user) => {
+    const handleNavigation = (user, chatId) => {
+      // console.log(user);
+      console.log(chatId);
       dispatch({type: SET_CURRENT_CHAT_PROFILE, payload: user})
+      dispatch({type: SET_CURRENT_CHAT_ID, payload: chatId})
       navigation.navigate('Chat');
     }
 
     const render_matches = (match) => {
-      // console.log(match)
       let user = match.item.user;
+      let chatId = match.item.chatId;
       return (
         <TouchableOpacity
-          onPress={()=> handleNavigation(user)}
+          onPress={()=> handleNavigation(user, chatId)}
         >
           <View
             key={user._id.$oid}

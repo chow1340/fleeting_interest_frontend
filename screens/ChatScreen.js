@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import axios from 'axios';
 import {
   Text,
@@ -8,20 +8,46 @@ import {
   Image,
   Dimensions
 } from "react-native";
-import { Ionicons } from '@expo/vector-icons'; 
-import {useSelector, useDispatch} from 'react-redux';
-import { TouchableOpacity } from "react-native-gesture-handler";
+import {useSelector} from 'react-redux';
+import { GiftedChat } from 'react-native-gifted-chat'
+
+import Fire from '../Fire'
+
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
+
 const { width } = Dimensions.get("screen");
 
 
 const ChatScreen = ({navigation}) => {
-    console.log(navigation)
     const currentChatProfile = useSelector(state=>state.message.currentChatProfile);
-    console.log(currentChatProfile);
-    let test = styles.test
+    const chatId = useSelector(state=>state.message.chatId);
+
+    const [messages, setMessages] = useState([]);
+    useEffect(() => {
+      Fire.shared.on(message =>
+        setMessages(prevMessages => [...prevMessages, message]),
+        chatId
+      );
+      // console.log(messages, "message")
+    }, [])
+  
+    const onSend = useCallback((messages = []) => {
+      setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
+    }, [])
+
     return (
-      <Text>XD</Text>
+      <GiftedChat
+        messages={messages}
+        // onSend={messages => onSend(messages)}
+        onSend={message => Fire.shared.send(message, chatId)}
+        user={{
+          _id: 1,
+        }}
+        inverted={false}
+      />
     );
+    
 }
 
 const styles = StyleSheet.create({

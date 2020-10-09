@@ -7,6 +7,7 @@ import articles from '../constants/articles';
 
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
+import * as firebase from 'firebase';
 
 import {useSelector, useDispatch} from 'react-redux';
 import {SET_CURRENT_PROFILE} from '../redux/actionTypes/profileTypes'
@@ -18,9 +19,9 @@ const Home = () => {
   const [location, setLocation] = useState();
   const [geocode, setGeocode] = useState();
   const [isLoaded, setIsLoaded] = useState();
+
   //LOCATION SERVICE
   useEffect(()=>{
-
     let mounted = true;
       async function getGeocodeAsync(location){
         let geocode = await Location.reverseGeocodeAsync(location);

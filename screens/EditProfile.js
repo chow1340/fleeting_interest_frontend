@@ -30,7 +30,6 @@ const { width, height } = Dimensions.get("screen");
 const thumbMeasure = (width - 48 - 32) / 3;
 
 const EditProfile = ({navigation}) => {
-    const sortableGrid = useRef();
     const currentProfile = useSelector(state=>state.profile.currentProfile)
     const dispatch = useDispatch();
 

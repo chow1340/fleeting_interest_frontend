@@ -1,7 +1,8 @@
-import {SET_CURRENT_CHAT_PROFILE} from "../actionTypes/messageTypes"
+import {SET_CURRENT_CHAT_PROFILE, SET_CURRENT_CHAT_ID} from "../actionTypes/messageTypes"
 
 const initialState = {
-    currentChatProfile:{}
+    currentChatProfile:{},
+    chatId: ""
 }
 
 
@@ -15,6 +16,12 @@ export default function(state = initialState, action){
             }
         }
 
+        case (SET_CURRENT_CHAT_ID) : {
+            return {
+                ...state,
+                chatId: action.payload
+            }
+        }
         default : {
             return state
         }
