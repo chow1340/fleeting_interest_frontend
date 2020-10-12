@@ -9,12 +9,14 @@ import {
   Dimensions
 } from "react-native";
 import {useSelector} from 'react-redux';
-import { GiftedChat } from 'react-native-gifted-chat'
+import { GiftedChat , Composer} from 'react-native-gifted-chat'
 
 import Fire from '../Fire'
 
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
+import 'react-native-image-keyboard'
+import {TextInput} from 'react-native';
 
 const { width } = Dimensions.get("screen");
 
@@ -27,28 +29,44 @@ const ChatScreen = ({navigation}) => {
     const [messages, setMessages] = useState([]);
     useEffect(() => {
       Fire.shared.on(message =>
-        setMessages(prevMessages => [...prevMessages, message]),
-        chatId
+        setMessages(prevMessages => [...prevMessages, message]), chatId
       );
-      // console.log(messages, "message")
     }, [])
   
-
+    const onImageChange = ({nativeEvent}) => {
+      const uri = nativeEvent;
+      console.log(uri);
+    }
+  
+    const onSend = useCallback((messages = []) => {
+      setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
+    }, [])
 
     const handleSend = (message) => {
-      Fire.shared.send(message, chatId);
+      Fire.shared.send(message, chatId, global.s3Endpoint + currentProfile.picture[0]);
     }
 
+    const renderComposer = props => <Composer {...props} textInputProps={{onImageChange}} />;
+    const _onImageChange = (event) => {
+      const {uri, linkUri, mime, data} = event.nativeEvent;
+      console.log(event);
+      console.log(uri)
+      // Do something with this data
+    }
     return (
-      <GiftedChat
-        messages={messages}
-        // onSend={messages => onSend(messages)}
-        onSend={message => handleSend(message)}
-        user={{
-          _id: currentProfile._id.$oid,
-        }}
-        inverted={false}
-      />
+    
+      // <GiftedChat
+      //   messages={messages}
+      //   onSend={message => handleSend(message)}
+      //   user={{
+      //     _id: currentProfile?._id.$oid,
+      //   }}
+      //   inverted={false}
+      //   renderComposer = {renderComposer}
+        
+      // />
+      <TextInput onImageChange={_onImageChange} />
+      
     );
     
 }

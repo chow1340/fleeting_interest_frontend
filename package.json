@@ -50,6 +50,7 @@
     "react-native-gesture-handler": "~1.7.0",
     "react-native-get-random-values": "^1.5.0",
     "react-native-gifted-chat": "^0.16.3",
+    "react-native-image-keyboard": "^1.1.2",
     "react-native-intl-phone-input": "^1.2.26",
     "react-native-phone-input": "^0.2.2",
     "react-native-reanimated": "~1.13.0",

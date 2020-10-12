@@ -4,9 +4,7 @@ class Fire {
   constructor() {
     this.init();
     this.observeAuth();
-    console.ignoredYellowBox = [
-      'Setting a timer'
-      ];
+    console.disableYellowBox = true
   }
   
 
@@ -46,7 +44,9 @@ class Fire {
   }
 
   parse = snapshot => {
+   
     const { timestamp: numberStamp, text, user } = snapshot.val();
+
     const { key: _id } = snapshot;
     const createdAt = new Date(numberStamp);
     const message = {
@@ -69,11 +69,11 @@ class Fire {
     return firebase.database.ServerValue.TIMESTAMP;
   }
   // send the message to the Backend
-  send = (messages, chatId) => {
-    console.log(messages, chatId)
+  send = (messages, chatId, avatar) => {
     for (let i = 0; i < messages.length; i++) {
       const { text, user } = messages[i];
-       const message = {
+      user.avatar = avatar;
+      const message = {
         text,
         user,
         timestamp: this.timestamp,
