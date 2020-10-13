@@ -1,6 +1,6 @@
 import { combineReducers } from "redux";
 import profile from "./profile.js";
-import message from "./message.js";
+import chat from "./chat.js";
 export default combineReducers({
-    profile, message
+    profile, chat
 });

@@ -132,8 +132,6 @@ const EditProfile = ({navigation}) => {
             'Content-Type': 'application/json'
           }
       })
-
-    
     }
 
     const editGridButton = () => {
@@ -400,30 +398,6 @@ const EditProfile = ({navigation}) => {
 
                  </Block>
                   {editGridButton()}
-                  {/* {!gridIsEditable &&
-                      pictureArray.map((item) => 
-                       
-                      <View
-                      style={styles.item}
-                      key={item.key}
-                    >
-
-                      {item.tempPic &&
-                        <Image
-                          source={{ uri: item.uri }}
-                          style={styles.gridProfile}
-                        />
-                      }
-                      {!item.tempPic &&
-                        <Image
-                          source={{ uri: global.s3Endpoint+item.uri }}
-                          style={styles.gridProfile}
-                        />
-                      }
-          
-                      </View>
-                      )
-                    } */}
                     {!gridIsEditable &&
 
                     <Block >

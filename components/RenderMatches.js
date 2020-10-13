@@ -1,0 +1,106 @@
+import React, {useState, useEffect} from "react";
+import axios from 'axios';
+import {
+  Text,
+  View,
+  ScrollView,
+  StyleSheet,
+  FlatList,
+  Image,
+  Dimensions
+} from "react-native";
+
+import { Ionicons } from '@expo/vector-icons'; 
+import {useSelector, useDispatch} from 'react-redux';
+import { TouchableOpacity } from "react-native-gesture-handler";
+
+const { width } = Dimensions.get("screen");
+import {SET_CURRENT_CHAT_PROFILE, SET_CURRENT_CHAT_ID} from '../redux/actionTypes/chatTypes'
+
+
+const RenderMatches = ({match, navigation, chatList}) => {
+
+    let user = match.item.user;
+    let chatId = match.item.chatId;
+
+    const dispatch = useDispatch();
+
+    const handleNavigation = (user, chatId) => {
+        dispatch({type: SET_CURRENT_CHAT_PROFILE, payload: user})
+        dispatch({type: SET_CURRENT_CHAT_ID, payload: chatId})
+        navigation.navigate('Chat');
+    }
+
+    // const chatList = useSelector(state=> state.chat.chatList)
+    const [lastMessage, setLastMessage] = useState("")
+    const chat = useSelector(state => state.chat.chatList?.get(chatId))
+    const [currentChat, setCurrentChat] = useState();
+
+    useEffect(()=>{
+      console.log(chat[0].lastMessageSent, "lastmessage")
+      setCurrentChat(chat);
+      if(chat) {
+        setLastMessage(chat[0].lastMessageSent);
+      }
+    }, [chatList])
+
+
+
+    return (
+      <TouchableOpacity
+        onPress={()=> handleNavigation(user, chatId)}
+      >
+        <View
+          key={user._id.$oid}
+          style={styles.messageContainer}
+        >
+          <Image
+            source={{ uri: global.s3Endpoint+user.picture[0] }}
+            style={styles.displayPicture}
+          />
+          <View>
+            <Text style={styles.name}>{user.first_name}</Text>
+            <Text numberOfLines={1} style={styles.messagePreview}>
+              {lastMessage}
+            </Text>
+          </View>
+          <Ionicons style={styles.forward} name="ios-arrow-forward" size={50} color="black" />
+        </View>
+      </TouchableOpacity>
+    )
+  }
+
+export default RenderMatches
+
+const styles = StyleSheet.create({
+    messageContainer:{
+      height: 100,
+      borderBottomWidth: 2,
+      borderBottomColor: '#F5F5F5',
+      flexDirection: 'row',
+      justifyContent: 'space-between'
+    },
+    displayPicture:{
+      height: 70,
+      width: 70,
+      borderRadius: 35,
+      marginTop:15,
+      marginLeft:15,
+    },
+    forward:{
+      marginTop:38,
+      marginRight:20,
+      fontSize: 25
+    },
+    name:{
+      fontWeight: 'bold',
+      fontSize:20,
+      marginBottom: -20,
+      marginTop:10
+    },
+    messagePreview:{
+      overflow: 'hidden',
+      width: width/1.8,
+      marginTop: 40
+    } 
+  });

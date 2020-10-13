@@ -15,7 +15,7 @@ import Login from "../screens/Login";
 import Elements from "../screens/Elements";
 import Articles from "../screens/Articles";
 import EditProfile from "../screens/EditProfile";
-import MessageList from "../screens/MessageList";
+import ChatList from "../screens/ChatList";
 import ChatScreen from "../screens/ChatScreen";
 // drawer
 import CustomDrawerContent from "./Menu";
@@ -119,12 +119,12 @@ function ProfileStack(props) {
   );
 }
 
-function MessageListStack(props) {
+function ChatListStack(props) {
   return(
     <Stack.Navigator initialRouteName="Profile" mode="card" headerMode="screen">
       <Stack.Screen
-        name="Message List"
-        component={MessageList}
+        name="Chat List"
+        component={ChatList}
         
         options={{
           header: ({ navigation, scene }) => (
@@ -266,7 +266,7 @@ function AppStack(props) {
     <Drawer.Screen name="Account" component={Register} />
     <Drawer.Screen name="Elements" component={ElementsStack} />
     <Drawer.Screen name="Articles" component={ArticlesStack} />
-    <Stack.Screen name="Message List" component={MessageListStack} />
+    <Stack.Screen name="Chat List" component={ChatListStack} />
     <Drawer.Screen name="Onboarding" component={OnboardingStack} />
   </Drawer.Navigator>
     // <Stack.Navigator
@@ -281,7 +281,7 @@ function AppStack(props) {
     //   <Stack.Screen name="Account" component={Register} />
     //   <Stack.Screen name="Elements" component={ElementsStack} />
     //   <Stack.Screen name="Articles" component={ArticlesStack} />
-    //   <Stack.Screen name="Message List" component={MessageListStack} />
+    //   <Stack.Screen name="Message List" component={ChatListStack} />
     // </Stack.Navigator>
   );
 }

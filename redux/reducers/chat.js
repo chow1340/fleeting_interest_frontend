@@ -1,8 +1,13 @@
-import {SET_CURRENT_CHAT_PROFILE, SET_CURRENT_CHAT_ID} from "../actionTypes/messageTypes"
+import {SET_CURRENT_CHAT_PROFILE, SET_CURRENT_CHAT_ID, SET_CHAT_LIST} from "../actionTypes/chatTypes"
 
 const initialState = {
     currentChatProfile:{},
-    chatId: ""
+    chatList: new Map(),
+    chat:{
+        chatId:"",
+        lastMessageSent:"",
+        lastMessageDate:"",
+    },
 }
 
 
@@ -22,6 +27,14 @@ export default function(state = initialState, action){
                 chatId: action.payload
             }
         }
+
+        case(SET_CHAT_LIST) : {
+            return {
+                ...state, 
+                chatList: action.payload
+            }
+        }
+
         default : {
             return state
         }

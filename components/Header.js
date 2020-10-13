@@ -9,6 +9,7 @@ import Tabs from './Tabs';
 import argonTheme from '../constants/Theme';
 import { Feather } from '@expo/vector-icons'; 
 import { AntDesign } from '@expo/vector-icons'; 
+import axios from 'axios';
 const { height, width } = Dimensions.get('window');
 const iPhoneX = () => Platform.OS === 'ios' && (height === 812 || width === 812 || height === 896 || width === 896);
 
@@ -41,7 +42,7 @@ const ProfileButton = ({isWhite, style, navigation,title }) => {
 }
 
 
-const MessageListButton = ({isWhite, style, navigation,title }) => {
+const ChatListButton = ({isWhite, style, navigation,title }) => {
   if(title === 'Messages'){
     return(
       <TouchableOpacity style={[styles.button, style, styles.highlight]} onPress={() => navigation.navigate('Profile')}>
@@ -50,7 +51,7 @@ const MessageListButton = ({isWhite, style, navigation,title }) => {
     )
   } else {
     return(
-      <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Message List')}>
+      <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Chat List')}>
         <AntDesign name="message1" size={24} color="black" />
       </TouchableOpacity>
     )
@@ -82,13 +83,13 @@ const SearchButton = ({isWhite, style, navigation}) => (
 class Header extends React.Component {
   handleLeftPress = () => {
     const { back, navigation } = this.props;
-    console.log("pressed")
+    
     return (back ? navigation.goBack() : navigation.openDrawer());
   }
   renderRight = () => {
     const { white, title, navigation } = this.props;
     return ([
-      <MessageListButton title={title} key='message-list-button' navigation={navigation} isWhite={white}></MessageListButton>,
+      <ChatListButton title={title} key='message-list-button' navigation={navigation} isWhite={white}></ChatListButton>,
       <ProfileButton title={title} key='profile-button' navigation={navigation} isWhite={white}></ProfileButton>,
     ]);
     if (title === 'Title') {

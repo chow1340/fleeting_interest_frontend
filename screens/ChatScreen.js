@@ -8,64 +8,83 @@ import {
   Image,
   Dimensions
 } from "react-native";
-import {useSelector} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import { GiftedChat , Composer} from 'react-native-gifted-chat'
+import {SET_CHAT_LIST} from '../redux/actionTypes/chatTypes'
 
 import Fire from '../Fire'
 
-import 'react-native-get-random-values';
-import { v4 as uuidv4 } from 'uuid';
-import 'react-native-image-keyboard'
-import {TextInput} from 'react-native';
 
-const { width } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("screen");
 
 
 const ChatScreen = ({navigation}) => {
-    const currentProfile = useSelector(state=>state.profile.currentProfile)
-    const currentChatProfile = useSelector(state=>state.message.currentChatProfile);
-    const chatId = useSelector(state=>state.message.chatId);
+    const dispatch = useDispatch();
 
+    const currentProfile = useSelector(state=>state.profile.currentProfile)
+    const chatId = useSelector(state=>state.chat.chatId);
+    const chatList = useSelector(state => state.chat.chatList)
+    let currentChat = chatList?.get(chatId)
     const [messages, setMessages] = useState([]);
+
     useEffect(() => {
       Fire.shared.on(message =>
-        setMessages(prevMessages => [...prevMessages, message]), chatId
+        setMessages(prevMessages => [message, ...prevMessages]), chatId
       );
-    }, [])
-  
-    const onImageChange = ({nativeEvent}) => {
-      const uri = nativeEvent;
-      console.log(uri);
-    }
-  
-    const onSend = useCallback((messages = []) => {
-      setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
     }, [])
 
     const handleSend = (message) => {
+      axios.post(global.server + '/api/chat/updateChatStatus', 
+        {
+          params: {
+            message : message[0].text,
+            chatId: chatId
+          }
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+      }).then(res=>{
+        //Update chat status
+        let tempMap = new Map([...chatList])
+        currentChat[0].lastMessageSent = message[0].text
+        tempMap.set(chatId, currentChat)
+        dispatch({type: SET_CHAT_LIST, payload: tempMap})        
+      })
       Fire.shared.send(message, chatId, global.s3Endpoint + currentProfile.picture[0]);
     }
 
-    const renderComposer = props => <Composer {...props} textInputProps={{onImageChange}} />;
-    const _onImageChange = (event) => {
-      const {uri, linkUri, mime, data} = event.nativeEvent;
-      console.log(event);
-      console.log(uri)
-      // Do something with this data
+    //Scrolling to load more
+    const isCloseToTop = ({ layoutMeasurement, contentOffset, contentSize }) => {
+      return contentOffset.y === 0
     }
+
+    const fetchMoreMessages = () => {
+      // Fire.shared.fetchMoreMessages(message => 
+      //   setMessages(prevMessages => [...prevMessages, message]), 
+      //   chatId
+      // );
+    }
+
     return (
     
-      // <GiftedChat
-      //   messages={messages}
-      //   onSend={message => handleSend(message)}
-      //   user={{
-      //     _id: currentProfile?._id.$oid,
-      //   }}
-      //   inverted={false}
-      //   renderComposer = {renderComposer}
-        
-      // />
-      <TextInput onImageChange={_onImageChange} />
+      <GiftedChat
+        messages={messages}
+        onSend={message => handleSend(message)}
+        user={{
+          _id: currentProfile?._id.$oid,
+        }}
+        inverted={false}
+        listViewProps={{
+          scrollEventThrottle: 400,
+          onScroll: ({ nativeEvent }) => {
+            if (isCloseToTop(nativeEvent)) {
+              fetchMoreMessages();
+            }
+          }
+        }}
+      />
       
     );
     

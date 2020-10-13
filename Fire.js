@@ -61,9 +61,16 @@ class Fire {
   on = (callback, chatId) => {
     firebase.database().ref('messages' + chatId)
       .limitToLast(20)
+      .orderByChild("timestamp")
       .on('child_added', snapshot => callback(this.parse(snapshot)));
   }
 
+  fetchMoreMessages = (callback, chatId) => {
+    firebase.database().ref('messages' + chatId)
+      .orderByChild("timestamp")
+      .startAt(20)
+      .on('child_added', snapshot => callback(this.parse(snapshot)));
+  }
 
   get timestamp() {
     return firebase.database.ServerValue.TIMESTAMP;

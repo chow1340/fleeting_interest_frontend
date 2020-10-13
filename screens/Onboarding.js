@@ -30,9 +30,9 @@ const Onboarding = ({navigation}) => {
               dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
               setIsLoggedIn(true)
               navigation.reset({
-              index: 0,
-              routes:[{name: 'AppStack'}]
-            })
+                index: 0,
+                routes:[{name: 'AppStack'}]
+              })
           } 
         })
         .catch(err => {

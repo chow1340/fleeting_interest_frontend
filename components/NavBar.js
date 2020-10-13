@@ -35,7 +35,7 @@ const NavBar = ({
     titleStyle,
   }) => {
     const navStyles = [styles.navBar, transparent && styles.transparent, style];
-    const currentChatProfile = useSelector(state => state.message.currentChatProfile);
+    const currentChatProfile = useSelector(state => state.chat.currentChatProfile);
 
     const renderTitle = () => {
         // console.log(title)
