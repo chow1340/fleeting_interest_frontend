@@ -28,10 +28,19 @@ const ChatList = ({navigation}) => {
 
     useEffect(() => {
         let tempMatchMap = new Map();
-
         async function getMatches() {
           axios.get(global.server + '/api/match/getMatches')
           .then(res => {
+            // res.data.sort((a, b) => {
+
+            //   if(a.chat[0].lastMessageDate.$date > b.chat[0].lastMessageDate.$date) {
+            //     return -1;
+            //   }
+            //   if(a.chat[0].lastMessageDate.$date < b.chat[0].lastMessageDate.$date) {
+            //     return 1;
+            //   }
+            //   return 0;
+            // });
             for(let i = 0; i < res.data.length; i++){
               tempMatchMap.set(res.data[i].chatId,res.data[i].chat)
             }
@@ -45,11 +54,23 @@ const ChatList = ({navigation}) => {
         getMatches();
     }, [])
 
+    useEffect(()=>{
+      matches.sort((a, b) => {
+
+        if(a.chat[0].lastMessageDate.$date > b.chat[0].lastMessageDate.$date) {
+          return -1;
+        }
+        if(a.chat[0].lastMessageDate.$date < b.chat[0].lastMessageDate.$date) {
+          return 1;
+        }
+        return 0;
+      });
+    }, [chatList])
+
     useEffect(() => {
       async function getCurrentProfile() {
         axios.get(global.server + '/api/user/getCurrentUser')
         .then(res => {
-          // console.log(res.data)
           dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
         })
         .catch(err => {
@@ -68,7 +89,6 @@ const ChatList = ({navigation}) => {
         ></RenderMatches>
       )
     }
-    
     return (
       <FlatList
         data={matches}

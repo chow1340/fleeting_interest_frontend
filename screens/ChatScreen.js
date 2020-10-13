@@ -41,12 +41,13 @@ const ChatScreen = ({navigation}) => {
 
 
     const handleSend = (message) => {
+      console.log("ran");
       // TODO messaging error handling
       try {
         Fire.shared.send(message, chatId, global.s3Endpoint + currentProfile.picture[0],  currentChat[0].totalMessages.toString());
       }
       catch(err){
-        // console.log(err);
+        console.log(err);
         return
       }
 
@@ -66,6 +67,7 @@ const ChatScreen = ({navigation}) => {
         let tempMap = new Map([...chatList])
         currentChat[0].lastMessageSent = message[0].text;
         currentChat[0].totalMessages++;
+        currentChat[0].lastMessageDate = new Date();
         tempMap.set(chatId, currentChat)
         dispatch({type: SET_CHAT_LIST, payload: tempMap})        
       })
