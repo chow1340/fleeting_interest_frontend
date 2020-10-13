@@ -16,9 +16,8 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 const { width } = Dimensions.get("screen");
 import {SET_CHAT_LIST} from '../redux/actionTypes/chatTypes'
+import {SET_CURRENT_PROFILE} from '../redux/actionTypes/profileTypes'
 import RenderMatches from '../components/RenderMatches';
-
-
 
 
 const ChatList = ({navigation}) => {
@@ -26,6 +25,7 @@ const ChatList = ({navigation}) => {
     
     const [matches, setMatches] = useState([]);
     const chatList = useSelector(state => state.chat.chatList)
+
     useEffect(() => {
         let tempMatchMap = new Map();
 
@@ -45,10 +45,21 @@ const ChatList = ({navigation}) => {
         getMatches();
     }, [])
 
-
+    useEffect(() => {
+      async function getCurrentProfile() {
+        axios.get(global.server + '/api/user/getCurrentUser')
+        .then(res => {
+          // console.log(res.data)
+          dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      } 
+      getCurrentProfile();
+    })
 
     const render_matches = (match, navigation, chatList) => {
-      console.log("render ran");
       return(
         <RenderMatches 
           match={match} 

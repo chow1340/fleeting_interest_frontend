@@ -264,7 +264,6 @@ const EditProfile = ({navigation}) => {
       
 
     const handleSavePictureArray = () => {
-      console.log(pictureArray)
       for(let i = 0; i < pictureArray.length; i++){
         
         var picture = pictureArray[i];

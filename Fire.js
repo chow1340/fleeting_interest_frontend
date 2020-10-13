@@ -4,7 +4,6 @@ class Fire {
   constructor() {
     this.init();
     this.observeAuth();
-    console.disableYellowBox = true
   }
   
 
@@ -58,29 +57,38 @@ class Fire {
     return message;
   };
 
+
+
   on = (callback, chatId) => {
     firebase.database().ref('messages' + chatId)
-      .limitToLast(20)
-      .orderByChild("timestamp")
-      .on('child_added', snapshot => callback(this.parse(snapshot)));
+      .limitToLast(15)
+      .orderByKey()
+      // .orderByChild("timestamp")
+      .on('child_added', snapshot => {
+        callback(this.parse(snapshot));
+      });
   }
 
-  fetchMoreMessages = (callback, chatId) => {
+  fetchMoreMessages = (callback, chatId, key) => {
     firebase.database().ref('messages' + chatId)
-      .orderByChild("timestamp")
-      .startAt(20)
-      .on('child_added', snapshot => callback(this.parse(snapshot)));
+      .limitToLast(15)
+      .endAt(key)
+      .orderByKey()
+      .on('child_added', snapshot => 
+        callback(this.parse(snapshot))
+      );
   }
 
   get timestamp() {
     return firebase.database.ServerValue.TIMESTAMP;
   }
   // send the message to the Backend
-  send = (messages, chatId, avatar) => {
+  send = (messages, chatId, avatar, key) => {
     for (let i = 0; i < messages.length; i++) {
       const { text, user } = messages[i];
       user.avatar = avatar;
       const message = {
+        key,
         text,
         user,
         timestamp: this.timestamp,

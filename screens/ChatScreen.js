@@ -24,16 +24,33 @@ const ChatScreen = ({navigation}) => {
     const currentProfile = useSelector(state=>state.profile.currentProfile)
     const chatId = useSelector(state=>state.chat.chatId);
     const chatList = useSelector(state => state.chat.chatList)
-    let currentChat = chatList?.get(chatId)
+    let currentChat = chatList?.get(chatId);
+    
     const [messages, setMessages] = useState([]);
-
+    const [lastKey, setLastKey] = useState("");
+    //Get messages 
     useEffect(() => {
-      Fire.shared.on(message =>
-        setMessages(prevMessages => [message, ...prevMessages]), chatId
-      );
+      if(messages.length == 0){
+        Fire.shared.on(message =>
+          setMessages(prevMessages => [message, ...prevMessages]), 
+          chatId
+        );
+      }
     }, [])
 
+
+
     const handleSend = (message) => {
+      // TODO messaging error handling
+      try {
+        Fire.shared.send(message, chatId, global.s3Endpoint + currentProfile.picture[0],  currentChat[0].totalMessages.toString());
+      }
+      catch(err){
+        // console.log(err);
+        return
+      }
+
+      //Update chat status
       axios.post(global.server + '/api/chat/updateChatStatus', 
         {
           params: {
@@ -46,36 +63,42 @@ const ChatScreen = ({navigation}) => {
             'Content-Type': 'application/json'
           }
       }).then(res=>{
-        //Update chat status
         let tempMap = new Map([...chatList])
-        currentChat[0].lastMessageSent = message[0].text
+        currentChat[0].lastMessageSent = message[0].text;
+        currentChat[0].totalMessages++;
         tempMap.set(chatId, currentChat)
         dispatch({type: SET_CHAT_LIST, payload: tempMap})        
       })
-      Fire.shared.send(message, chatId, global.s3Endpoint + currentProfile.picture[0]);
     }
 
     //Scrolling to load more
     const isCloseToTop = ({ layoutMeasurement, contentOffset, contentSize }) => {
-      return contentOffset.y === 0
+      return (contentSize.height - (contentOffset.y + layoutMeasurement.height)) < 10
     }
 
     const fetchMoreMessages = () => {
-      // Fire.shared.fetchMoreMessages(message => 
-      //   setMessages(prevMessages => [...prevMessages, message]), 
-      //   chatId
-      // );
+      let tempMessage = [];
+      let offset = messages[messages.length-1]._id
+
+      Fire.shared.fetchMoreMessages(message =>
+        tempMessage.push(message),
+        chatId,
+        offset
+      );
+      tempMessage.pop()
+
+      let newMessages = messages.concat(tempMessage.reverse())
+      setMessages(newMessages);
     }
 
     return (
-    
       <GiftedChat
         messages={messages}
         onSend={message => handleSend(message)}
         user={{
           _id: currentProfile?._id.$oid,
         }}
-        inverted={false}
+        alwaysShowSend={true}
         listViewProps={{
           scrollEventThrottle: 400,
           onScroll: ({ nativeEvent }) => {

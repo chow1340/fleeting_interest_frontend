@@ -25,20 +25,19 @@ const RenderMatches = ({match, navigation, chatList}) => {
 
     const dispatch = useDispatch();
 
+    const [lastMessage, setLastMessage] = useState("")
+    const chat = useSelector(state => state.chat.chatList?.get(chatId));
+
+
     const handleNavigation = (user, chatId) => {
-        dispatch({type: SET_CURRENT_CHAT_PROFILE, payload: user})
-        dispatch({type: SET_CURRENT_CHAT_ID, payload: chatId})
-        navigation.navigate('Chat');
+
+      dispatch({type: SET_CURRENT_CHAT_PROFILE, payload: user})
+      dispatch({type: SET_CURRENT_CHAT_ID, payload: chatId})
+
+      navigation.navigate('Chat');
     }
 
-    // const chatList = useSelector(state=> state.chat.chatList)
-    const [lastMessage, setLastMessage] = useState("")
-    const chat = useSelector(state => state.chat.chatList?.get(chatId))
-    const [currentChat, setCurrentChat] = useState();
-
     useEffect(()=>{
-      console.log(chat[0].lastMessageSent, "lastmessage")
-      setCurrentChat(chat);
       if(chat) {
         setLastMessage(chat[0].lastMessageSent);
       }

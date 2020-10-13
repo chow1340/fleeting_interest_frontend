@@ -3,11 +3,6 @@ import {SET_CURRENT_CHAT_PROFILE, SET_CURRENT_CHAT_ID, SET_CHAT_LIST} from "../a
 const initialState = {
     currentChatProfile:{},
     chatList: new Map(),
-    chat:{
-        chatId:"",
-        lastMessageSent:"",
-        lastMessageDate:"",
-    },
 }
 
 
