@@ -67,7 +67,7 @@ const ChatScreen = ({navigation}) => {
         let tempMap = new Map([...chatList])
         currentChat[0].lastMessageSent = message[0].text;
         currentChat[0].totalMessages++;
-        currentChat[0].lastMessageDate = new Date();
+        currentChat[0].lastMessageDate = new Date().valueOf();
         tempMap.set(chatId, currentChat)
         dispatch({type: SET_CHAT_LIST, payload: tempMap})        
       })

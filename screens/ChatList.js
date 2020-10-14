@@ -55,16 +55,21 @@ const ChatList = ({navigation}) => {
     }, [])
 
     useEffect(()=>{
-      matches.sort((a, b) => {
+      let tempMatch = [...matches]
+      tempMatch.sort((a, b) => {
 
-        if(a.chat[0].lastMessageDate.$date > b.chat[0].lastMessageDate.$date) {
+        let firstDate = a.chat[0].lastMessageDate.$date || a.chat[0].lastMessageDate;
+        let secondDate = b.chat[0].lastMessageDate.$date || b.chat[0].lastMessageDate;
+
+        if(firstDate > secondDate) {
           return -1;
         }
-        if(a.chat[0].lastMessageDate.$date < b.chat[0].lastMessageDate.$date) {
+        if(firstDate < secondDate) {
           return 1;
         }
         return 0;
-      });
+      }); 
+      setMatches(tempMatch);
     }, [chatList])
 
     useEffect(() => {
