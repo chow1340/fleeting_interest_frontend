@@ -105,13 +105,12 @@ class Fire {
     return firebase.database.ServerValue.TIMESTAMP;
   }
   // send the message to the Backend
-  send = (messages, chatId, avatar, key) => {
+  send = (messages, chatId, avatar) => {
 
     for (let i = 0; i < messages.length; i++) {
       const { text, user } = messages[i];
       user.avatar = avatar;
       const message = {
-        key,
         text,
         user,
         timestamp: this.timestamp,

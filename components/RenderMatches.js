@@ -21,7 +21,7 @@ import {SET_VIEW_PROFILE} from '../redux/actionTypes/profileTypes'
 import Fire from '../Fire'
 import { set } from "react-native-reanimated";
 
-const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
+const RenderMatches = ({match, navigation, matchList, sortListFunction}) => {
 
     let user = match.item.user;
     let chatId = match.item.chatId;
@@ -29,7 +29,6 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
     const dispatch = useDispatch();
 
     const [lastMessage, setLastMessage] = useState("");
-    const matchList = useSelector(state => state.chat.matchList);
 
     const handleProfileNavigation = (user) => {
       dispatch({type: SET_VIEW_PROFILE , payload: user})
@@ -50,7 +49,6 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
       if(!isSet){
         Fire.shared.fetchInitialLastMessage((message) =>{
           setLastMessage(message);
-          console.log("ranhereinitial");
         }, chatId);
       }
 
@@ -65,7 +63,6 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
 
         let tempMatchList = [...matchList];
 
-        // console.log(tempMatchList)
         // //Update matchList
         let currentChatIndex = tempMatchList.findIndex(x=>
           x.chat[0]._id.$oid === chatId

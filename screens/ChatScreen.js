@@ -24,9 +24,6 @@ const ChatScreen = ({navigation}) => {
 
     const currentProfile = useSelector(state=>state.profile.currentProfile)
     const chatId = useSelector(state=>state.chat.chatId);
-    const chatList = useSelector(state => state.chat.chatList)
-    let currentChat = chatList?.get(chatId);
-    
     const [messages, setMessages] = useState([]);
 
 
@@ -43,7 +40,7 @@ const ChatScreen = ({navigation}) => {
     const handleSend = (message) => {
       // TODO messaging error handling
       try {
-        Fire.shared.send(message, chatId, global.s3Endpoint + currentProfile.picture[0],  currentChat[0].totalMessages.toString());
+        Fire.shared.send(message, chatId, global.s3Endpoint + currentProfile.picture[0]);
       }
       catch(err){
         console.log(err);
