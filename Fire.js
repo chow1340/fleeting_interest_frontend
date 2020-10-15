@@ -62,8 +62,7 @@ class Fire {
   on = (callback, chatId) => {
     firebase.database().ref('messages' + chatId)
       .limitToLast(15)
-      .orderByKey()
-      // .orderByChild("timestamp")
+      .orderByChild("timestamp")
       .on('child_added', snapshot => {
         callback(this.parse(snapshot));
       });
@@ -79,11 +78,35 @@ class Fire {
       );
   }
 
+  fetchInitialLastMessage = (callback, chatId) => {
+    firebase.database().ref('messages' + chatId)
+      .limitToLast(1)
+      .once('child_added', snapshot => callback(this.parse(snapshot)))
+  }
+
+  fetchLastMessage = (callback, chatId) => {
+    firebase.database().ref('messages' + chatId)
+      .limitToLast(1)
+      .on('child_added', snapshot => callback(this.parse(snapshot)))
+  }
+
+  listen = (callback, chatId) => {
+    firebase.database().ref('messages' + chatId)
+      .limitToLast(1)
+      .orderByChild("timestamp")
+      .startAt(Date.now().valueOf())
+      .on('child_added', snapshot => {
+        callback(this.parse(snapshot));
+      });
+  }
+
+
   get timestamp() {
     return firebase.database.ServerValue.TIMESTAMP;
   }
   // send the message to the Backend
   send = (messages, chatId, avatar, key) => {
+
     for (let i = 0; i < messages.length; i++) {
       const { text, user } = messages[i];
       user.avatar = avatar;
@@ -93,6 +116,7 @@ class Fire {
         user,
         timestamp: this.timestamp,
       };
+
       this.append(message, chatId);
     }
   };

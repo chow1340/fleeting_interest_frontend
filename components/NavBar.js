@@ -36,7 +36,7 @@ const NavBar = ({
   }) => {
     const navStyles = [styles.navBar, transparent && styles.transparent, style];
     const currentChatProfile = useSelector(state => state.chat.currentChatProfile);
-
+    const viewProfile = useSelector(state => state.profile.viewProfile)
     const renderTitle = () => {
         // console.log(title)
         if (typeof title === 'string') {
@@ -46,6 +46,14 @@ const NavBar = ({
                 <Text style={[styles.titleTextStyle, titleStyle]}>
                   {currentChatProfile?.first_name ? currentChatProfile.first_name : title}
                   </Text>
+              </View>
+            )
+          } else if(title === "View Profile"){
+            return (        
+              <View style={styles.title}>
+                <Text style={[styles.titleTextStyle, titleStyle]}>
+                  {viewProfile?.first_name ? viewProfile.first_name + " " + viewProfile.last_name: title}
+                </Text>
               </View>
             )
           } else {

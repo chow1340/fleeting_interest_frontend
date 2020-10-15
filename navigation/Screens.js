@@ -17,6 +17,7 @@ import Articles from "../screens/Articles";
 import EditProfile from "../screens/EditProfile";
 import ChatList from "../screens/ChatList";
 import ChatScreen from "../screens/ChatScreen";
+import ViewProfile from "../screens/ViewProfile";
 // drawer
 import CustomDrawerContent from "./Menu";
 
@@ -119,6 +120,24 @@ function ProfileStack(props) {
   );
 }
 
+
+function ViewProfileStack(props) {
+  return (
+    <Stack.Navigator initialRouteName="View Profile" mode="card" headerMode="none">
+      <Stack.Screen
+        name="View Profile"
+        component={ViewProfile}
+        
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header title="View Profile" navigation={navigation} scene={scene} />
+          ),
+          cardStyle: { backgroundColor: "#F8F9FE" }
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
 function ChatListStack(props) {
   return(
     <Stack.Navigator initialRouteName="Profile" mode="card" headerMode="screen">
@@ -268,6 +287,7 @@ function AppStack(props) {
     <Drawer.Screen name="Articles" component={ArticlesStack} />
     <Stack.Screen name="Chat List" component={ChatListStack} />
     <Drawer.Screen name="Onboarding" component={OnboardingStack} />
+    <Drawer.Screen name="View Profile" component={ViewProfileStack} />
   </Drawer.Navigator>
     // <Stack.Navigator
     //   screenOptions={{

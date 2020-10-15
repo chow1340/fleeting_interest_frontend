@@ -13,6 +13,7 @@ import { GiftedChat , Composer} from 'react-native-gifted-chat'
 import {SET_CHAT_LIST} from '../redux/actionTypes/chatTypes'
 
 import Fire from '../Fire'
+import { initialWindowMetrics } from "react-native-safe-area-context";
 
 
 const { width, height } = Dimensions.get("screen");
@@ -27,21 +28,40 @@ const ChatScreen = ({navigation}) => {
     let currentChat = chatList?.get(chatId);
     
     const [messages, setMessages] = useState([]);
-    const [lastKey, setLastKey] = useState("");
-    //Get messages 
+    const [initalMessagesReceived, setInitialMessagesReceived] = useState(false);
+    const [messageLength, setMessageLength] = useState(0);
+    const [skipInitial, setSkipInitial] = useState(false);
+
+    //Get initial messages 
     useEffect(() => {
       if(messages.length == 0){
-        Fire.shared.on(message =>
-          setMessages(prevMessages => [message, ...prevMessages]), 
-          chatId
-        );
+        Fire.shared.on((message) => {
+          setMessages(prevMessages => [message, ...prevMessages]);
+        } ,chatId);
       }
+      setInitialMessagesReceived(true);
     }, [])
 
+    // //Continue listening for any added messages
+    // useEffect(() => {
+    //   if(initalMessagesReceived === true) {
+    //     //Skip the initial rerender
+    //     if(skipInitial === false) {
+    //       setSkipInitial(true);
+    //       return
+    //     }
 
+    //     setMessageLength(messages.length);
+    //     Fire.shared.on((message) => {
+    //       console.log(message, "after");
+    //     } ,chatId);
+
+    //     // console.log(messageLength, "messagelength");
+    //   }
+    // }, [messages])
+  
 
     const handleSend = (message) => {
-      console.log("ran");
       // TODO messaging error handling
       try {
         Fire.shared.send(message, chatId, global.s3Endpoint + currentProfile.picture[0],  currentChat[0].totalMessages.toString());
@@ -94,11 +114,12 @@ const ChatScreen = ({navigation}) => {
     }
 
     return (
+
       <GiftedChat
         messages={messages}
         onSend={message => handleSend(message)}
         user={{
-          _id: currentProfile?._id.$oid,
+          _id: currentProfile?._id?.$oid,
         }}
         alwaysShowSend={true}
         listViewProps={{
@@ -109,6 +130,7 @@ const ChatScreen = ({navigation}) => {
             }
           }
         }}
+        
       />
       
     );

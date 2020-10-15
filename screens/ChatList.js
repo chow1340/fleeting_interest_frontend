@@ -7,7 +7,8 @@ import {
   StyleSheet,
   FlatList,
   Image,
-  Dimensions
+  Dimensions,
+  Button
 } from "react-native";
 
 import { Ionicons } from '@expo/vector-icons'; 
@@ -15,47 +16,44 @@ import {useSelector, useDispatch} from 'react-redux';
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 const { width } = Dimensions.get("screen");
-import {SET_CHAT_LIST} from '../redux/actionTypes/chatTypes'
+import {SET_CHAT_LIST, SET_MATCH_LIST} from '../redux/actionTypes/chatTypes'
 import {SET_CURRENT_PROFILE} from '../redux/actionTypes/profileTypes'
 import RenderMatches from '../components/RenderMatches';
 
 
+import Fire from '../Fire'
+
 const ChatList = ({navigation}) => {
     const dispatch = useDispatch();
     
-    const [matches, setMatches] = useState([]);
+    const matchList = useSelector(state => state.chat.matchList);
     const chatList = useSelector(state => state.chat.chatList)
+    const currentProfile = useSelector(state=>state.profile.currentProfile)
 
-    useEffect(() => {
-        let tempMatchMap = new Map();
-        async function getMatches() {
-          axios.get(global.server + '/api/match/getMatches')
-          .then(res => {
-            // res.data.sort((a, b) => {
 
-            //   if(a.chat[0].lastMessageDate.$date > b.chat[0].lastMessageDate.$date) {
-            //     return -1;
-            //   }
-            //   if(a.chat[0].lastMessageDate.$date < b.chat[0].lastMessageDate.$date) {
-            //     return 1;
-            //   }
-            //   return 0;
-            // });
-            for(let i = 0; i < res.data.length; i++){
-              tempMatchMap.set(res.data[i].chatId,res.data[i].chat)
-            }
-            setMatches(res.data)
-            dispatch({type: SET_CHAT_LIST, payload: tempMatchMap});
-          })
-          .catch(err => {
-            console.log(err)
-          })
-        } 
-        getMatches();
-    }, [])
+    const testSend = () => {
+      var DateTime = new Date()
+      let chatId = "5f849953afb93e5b940e784c"
+      let message = {
+        _id: "-asdasdasd",
+        text: "test",
+        createdAt: DateTime.valueOf(),
+        user: {
+          _id: "5f7274dd74415c6435d6434b",
+          avatar: "https://app-jeffrey-chow.s3.ca-central-1.amazonaws.com/5f7274dd74415c6435d6434b0b5a34db-804a-4483-8ee1-c7aa9434d8fb"
+        }
+      }
+      let profilePicture = "5f7274dd74415c6435d6434b0b5a34db-804a-4483-8ee1-c7aa9434d8fb"
+      try {
+        Fire.shared.send([message], chatId, global.s3Endpoint + profilePicture,  23);
+      } catch(err){
+        console.log(err);
+      }
+    }
 
-    useEffect(()=>{
-      let tempMatch = [...matches]
+    const sortList = () => {
+      console.log(matchList, "matches");
+      let tempMatch = [...matchList]
       tempMatch.sort((a, b) => {
 
         let firstDate = a.chat[0].lastMessageDate.$date || a.chat[0].lastMessageDate;
@@ -69,9 +67,33 @@ const ChatList = ({navigation}) => {
         }
         return 0;
       }); 
-      setMatches(tempMatch);
+      dispatch({type: SET_MATCH_LIST, payload: tempMatch})
+    }
+
+    useEffect(() => {
+        let tempMatchMap = new Map();
+        async function getMatches() {
+          axios.get(global.server + '/api/match/getMatches')
+          .then(res => {
+            for(let i = 0; i < res.data.length; i++){
+              tempMatchMap.set(res.data[i].chatId,res.data[i].chat)
+            }
+            dispatch({type: SET_MATCH_LIST, payload: res.data})
+            dispatch({type: SET_CHAT_LIST, payload: tempMatchMap});
+          })
+          .catch(err => {
+            console.log(err)
+          })
+        } 
+        getMatches();
+    }, [])
+
+    //Sort matches by last message date
+    useEffect(()=>{
+      sortList();
     }, [chatList])
 
+  
     useEffect(() => {
       async function getCurrentProfile() {
         axios.get(global.server + '/api/user/getCurrentUser')
@@ -82,7 +104,9 @@ const ChatList = ({navigation}) => {
           console.log(err)
         })
       } 
-      getCurrentProfile();
+      if(Object.keys(currentProfile._id) === 0 ) {
+        getCurrentProfile();
+      }
     })
 
     const render_matches = (match, navigation, chatList) => {
@@ -91,16 +115,24 @@ const ChatList = ({navigation}) => {
           match={match} 
           navigation={navigation}
           chatList = {chatList}
+          sortListFunction = {sortList}
         ></RenderMatches>
       )
     }
     return (
+      <View>
       <FlatList
-        data={matches}
+        data={matchList}
         renderItem={(match) => render_matches(match, navigation, chatList)}
         keyExtractor={(match)=>match.user._id.$oid}
         extraData={chatList}
       ></FlatList>
+      <Button
+        title = "Test button"
+        onPress = {() => testSend()}
+      >
+      </Button>
+      </View>
     );
 }
 
