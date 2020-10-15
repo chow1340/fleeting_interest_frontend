@@ -28,9 +28,7 @@ const ChatScreen = ({navigation}) => {
     let currentChat = chatList?.get(chatId);
     
     const [messages, setMessages] = useState([]);
-    const [initalMessagesReceived, setInitialMessagesReceived] = useState(false);
-    const [messageLength, setMessageLength] = useState(0);
-    const [skipInitial, setSkipInitial] = useState(false);
+
 
     //Get initial messages 
     useEffect(() => {
@@ -39,26 +37,7 @@ const ChatScreen = ({navigation}) => {
           setMessages(prevMessages => [message, ...prevMessages]);
         } ,chatId);
       }
-      setInitialMessagesReceived(true);
     }, [])
-
-    // //Continue listening for any added messages
-    // useEffect(() => {
-    //   if(initalMessagesReceived === true) {
-    //     //Skip the initial rerender
-    //     if(skipInitial === false) {
-    //       setSkipInitial(true);
-    //       return
-    //     }
-
-    //     setMessageLength(messages.length);
-    //     Fire.shared.on((message) => {
-    //       console.log(message, "after");
-    //     } ,chatId);
-
-    //     // console.log(messageLength, "messagelength");
-    //   }
-    // }, [messages])
   
 
     const handleSend = (message) => {
@@ -84,12 +63,10 @@ const ChatScreen = ({navigation}) => {
             'Content-Type': 'application/json'
           }
       }).then(res=>{
-        let tempMap = new Map([...chatList])
-        currentChat[0].lastMessageSent = message[0].text;
-        currentChat[0].totalMessages++;
-        currentChat[0].lastMessageDate = new Date().valueOf();
-        tempMap.set(chatId, currentChat)
-        dispatch({type: SET_CHAT_LIST, payload: tempMap})        
+      
+      })
+      .catch(err => {
+        console.log(err);
       })
     }
 

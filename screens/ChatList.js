@@ -33,7 +33,8 @@ const ChatList = ({navigation}) => {
 
     const testSend = () => {
       var DateTime = new Date()
-      let chatId = "5f849953afb93e5b940e784c"
+      // let chatId = "5f849953afb93e5b940e784c" //jeffrey2
+      let chatId = "5f8499dda823f459fae619e5" //jeffrey3
       let message = {
         _id: "-asdasdasd",
         text: "test",
@@ -52,7 +53,6 @@ const ChatList = ({navigation}) => {
     }
 
     const sortList = () => {
-      console.log(matchList, "matches");
       let tempMatch = [...matchList]
       tempMatch.sort((a, b) => {
 
@@ -67,10 +67,11 @@ const ChatList = ({navigation}) => {
         }
         return 0;
       }); 
-      dispatch({type: SET_MATCH_LIST, payload: tempMatch})
+      dispatch({type: SET_MATCH_LIST, payload: tempMatch});
     }
 
     useEffect(() => {
+      console.log("ranhere");
         let tempMatchMap = new Map();
         async function getMatches() {
           axios.get(global.server + '/api/match/getMatches')
@@ -78,7 +79,7 @@ const ChatList = ({navigation}) => {
             for(let i = 0; i < res.data.length; i++){
               tempMatchMap.set(res.data[i].chatId,res.data[i].chat)
             }
-            dispatch({type: SET_MATCH_LIST, payload: res.data})
+            dispatch({type: SET_MATCH_LIST, payload: res.data});
             dispatch({type: SET_CHAT_LIST, payload: tempMatchMap});
           })
           .catch(err => {
@@ -90,8 +91,8 @@ const ChatList = ({navigation}) => {
 
     //Sort matches by last message date
     useEffect(()=>{
-      sortList();
-    }, [chatList])
+      // sortList();
+    }, [matchList])
 
   
     useEffect(() => {

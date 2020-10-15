@@ -15,7 +15,7 @@ import {useSelector, useDispatch} from 'react-redux';
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 const { width } = Dimensions.get("screen");
-import {SET_CURRENT_CHAT_PROFILE, SET_CURRENT_CHAT_ID, SET_CHAT_LIST} from '../redux/actionTypes/chatTypes'
+import {SET_CURRENT_CHAT_PROFILE, SET_CURRENT_CHAT_ID, SET_CHAT_LIST, SET_MATCH_LIST} from '../redux/actionTypes/chatTypes'
 import {SET_VIEW_PROFILE} from '../redux/actionTypes/profileTypes'
 
 import Fire from '../Fire'
@@ -29,8 +29,7 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
     const dispatch = useDispatch();
 
     const [lastMessage, setLastMessage] = useState("");
-
-
+    const matchList = useSelector(state => state.chat.matchList);
 
     const handleProfileNavigation = (user) => {
       dispatch({type: SET_VIEW_PROFILE , payload: user})
@@ -61,15 +60,25 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
     //After the initial render, listen for changes on messages
     useEffect(()=>{
       Fire.shared.listen((message) =>{
+        let DateTime = new Date()
         setLastMessage(message);
-        console.log(message, "message")
+
+        let tempMatchList = [...matchList];
+
+        // console.log(tempMatchList)
+        // //Update matchList
+        let currentChatIndex = tempMatchList.findIndex(x=>
+          x.chat[0]._id.$oid === chatId
+        )
+      
+        let currentChat = tempMatchList[currentChatIndex];
+        currentChat.chat[0].lastMessageDate.$date = DateTime.valueOf();
+        currentChat.chat[0].lastMessageSent = message.text;
+        dispatch({type: SET_MATCH_LIST, payload: tempMatchList});
+        
         sortListFunction();
       }, chatId)
-      
-      // console.log(tempChat, "tempchat");
-      // tempChatList.set(chatId, tempChat);
-
-      // dispatch({type: SET_CHAT_LIST, payload: tempChatList})    
+       
     }, [])
 
 
@@ -94,31 +103,6 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
           <Ionicons style={styles.forward} name="ios-arrow-forward" size={50} color="black" />
         </View>
       </TouchableOpacity>
-      // <View
-      //     key={user._id.$oid}
-      //     style={styles.matchContainer}
-      //   >
-      //   <TouchableOpacity
-      //     onPress={()=> handleChatNavigation(user, chatId)}
-      //   >
-      //     <Image
-      //       source={{ uri: global.s3Endpoint+user.picture[0] }}
-      //       style={styles.displayPicture}
-      //     />
-      //   </TouchableOpacity>
-      //   <TouchableOpacity
-      //     onPress={()=> handleChatNavigation(user, chatId)}
-      //     style={styles.messageContainer}
-      //   >
-      //     <View>
-      //       <Text style={styles.name}>{user.first_name}</Text>
-      //       <Text numberOfLines={1} style={styles.messagePreview}>
-      //         {lastMessage}
-      //       </Text>
-      //       <Ionicons style={styles.forward} name="ios-arrow-forward" size={50} color="black" />
-      //     </View>
-      //   </TouchableOpacity>
-      // </View>
     )
   }
 
