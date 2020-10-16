@@ -16,7 +16,7 @@ import {useSelector, useDispatch} from 'react-redux';
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 const { width } = Dimensions.get("screen");
-import {SET_MATCH_LIST} from '../redux/actionTypes/chatTypes'
+import {SET_CHAT_LIST} from '../redux/actionTypes/chatTypes'
 import {SET_CURRENT_PROFILE} from '../redux/actionTypes/profileTypes'
 import RenderMatches from '../components/RenderMatches';
 
@@ -26,7 +26,7 @@ import Fire from '../Fire'
 const ChatList = ({navigation}) => {
     const dispatch = useDispatch();
     
-    const matchList = useSelector(state => state.chat.matchList);
+    const chatList = useSelector(state => state.chat.chatList);
     const currentProfile = useSelector(state=>state.profile.currentProfile)
 
 
@@ -53,8 +53,8 @@ const ChatList = ({navigation}) => {
     }
 
     const sortList = () => {
-      if(matchList.length > 0) {
-        let tempMatch = [...matchList]
+      if(chatList.length > 0) {
+        let tempMatch = [...chatList]
         tempMatch.sort((a, b) => {
   
           let firstDate = a.chat[0].lastMessageDate.$date || a.chat[0].lastMessageDate;
@@ -68,27 +68,15 @@ const ChatList = ({navigation}) => {
           }
           return 0;
         }); 
-        dispatch({type: SET_MATCH_LIST, payload: tempMatch});
+        dispatch({type: SET_CHAT_LIST, payload: tempMatch});
       }
     }
 
-    useEffect(() => {
-        async function getMatches() {
-          axios.get(global.server + '/api/match/getMatches')
-          .then(res => {
-            dispatch({type: SET_MATCH_LIST, payload: res.data});
-            sortList();
-            console.log(matchList, "matchlIst");
-          })
-          .catch(err => {
-            console.log(err)
-          })
-        } 
-        getMatches();
+    //Initial sort
+    useEffect(()=>{
+      sortList();
     }, [])
 
-
-  
     useEffect(() => {
       async function getCurrentProfile() {
         axios.get(global.server + '/api/user/getCurrentUser')
@@ -99,17 +87,32 @@ const ChatList = ({navigation}) => {
           console.log(err)
         })
       } 
-      if(Object.keys(currentProfile._id) === 0 ) {
+      if(Object.keys(currentProfile) === 0 ) {
         getCurrentProfile();
       }
-    })
+    }, [])  
 
-    const render_matches = (match, navigation, matchList) => {
+    useEffect(() => {
+        async function getMatches() {
+          axios.get(global.server + '/api/match/getMatches')
+          .then(res => {
+            dispatch({type: SET_CHAT_LIST, payload: res.data});
+            sortList();
+          })
+          .catch(err => {
+            console.log(err)
+          })
+        } 
+        getMatches();
+    }, [])
+
+
+    const render_matches = (match, navigation, chatList) => {
       return(
         <RenderMatches 
           match={match} 
           navigation={navigation}
-          matchList = {matchList}
+          chatList = {chatList}
           sortListFunction = {sortList}
         ></RenderMatches>
       )
@@ -117,10 +120,10 @@ const ChatList = ({navigation}) => {
     return (
       <View>
       <FlatList
-        data={matchList}
-        renderItem={(match) => render_matches(match, navigation, matchList)}
+        data={chatList}
+        renderItem={(match) => render_matches(match, navigation, chatList)}
         keyExtractor={(match)=>match.user._id.$oid}
-        extraData={matchList}
+        extraData={chatList}
       ></FlatList>
       <Button
         title = "Test button"

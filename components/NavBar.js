@@ -9,6 +9,7 @@ import {
 import { Ionicons } from '@expo/vector-icons'; 
 import {useSelector, useDispatch} from 'react-redux';
 import { TouchableOpacity } from "react-native-gesture-handler";
+import {SET_CURRENT_TITLE} from '../redux/actionTypes/navigationTypes'
 
 const { width } = Dimensions.get("screen");
 
@@ -34,36 +35,49 @@ const NavBar = ({
     title,
     titleStyle,
   }) => {
+
+
     const navStyles = [styles.navBar, transparent && styles.transparent, style];
     const currentChatProfile = useSelector(state => state.chat.currentChatProfile);
-    const viewProfile = useSelector(state => state.profile.viewProfile)
+    const viewProfile = useSelector(state => state.profile.viewProfile);
+    const dispatch = useDispatch();
+
     const renderTitle = () => {
-        // console.log(title)
-        if (typeof title === 'string') {
-          if(title === "Chat") {
+      if (typeof title === 'string') {
+        switch(title) {
+          case "Chat" :
+            dispatch({type: SET_CURRENT_TITLE,  payload: currentChatProfile?._id?.$oid})
             return (        
               <View style={styles.title}>
                 <Text style={[styles.titleTextStyle, titleStyle]}>
                   {currentChatProfile?.first_name ? currentChatProfile.first_name : title}
-                  </Text>
-              </View>
-            )
-          } else if(title === "View Profile"){
-            return (        
-              <View style={styles.title}>
-                <Text style={[styles.titleTextStyle, titleStyle]}>
-                  {viewProfile?.first_name ? viewProfile.first_name + " " + viewProfile.last_name: title}
                 </Text>
               </View>
-            )
-          } else {
-            return (
-              <View style={styles.title}>
-                <Text style={[styles.titleTextStyle, titleStyle]}>{title} </Text>
-              </View>
             );
-          }
+          
+            case "View Profile": 
+              return (        
+                <View style={styles.title}>
+                  <Text style={[styles.titleTextStyle, titleStyle]}>
+                    {viewProfile?.first_name ? viewProfile.first_name + " " + viewProfile.last_name: title}
+                  </Text>
+                </View>
+              )
+            case "Messages" :
+              dispatch({type: SET_CURRENT_TITLE, payload: title});
+              return (
+                <View style={styles.title}>
+                  <Text style={[styles.titleTextStyle, titleStyle]}>{title} </Text>
+                </View>
+              );
+            default :
+              return (
+                <View style={styles.title}>
+                  <Text style={[styles.titleTextStyle, titleStyle]}>{title} </Text>
+                </View>
+              );
         }
+      }
     
         if (!title) return null;
     

@@ -142,7 +142,7 @@ function ChatListStack(props) {
   return(
     <Stack.Navigator initialRouteName="Profile" mode="card" headerMode="screen">
       <Stack.Screen
-        name="Chat List"
+        name="Messages"
         component={ChatList}
         
         options={{
@@ -285,24 +285,10 @@ function AppStack(props) {
     <Drawer.Screen name="Account" component={Register} />
     <Drawer.Screen name="Elements" component={ElementsStack} />
     <Drawer.Screen name="Articles" component={ArticlesStack} />
-    <Stack.Screen name="Chat List" component={ChatListStack} />
+    <Stack.Screen name="Messages" component={ChatListStack} />
     <Drawer.Screen name="Onboarding" component={OnboardingStack} />
     <Drawer.Screen name="View Profile" component={ViewProfileStack} />
   </Drawer.Navigator>
-    // <Stack.Navigator
-    //   screenOptions={{
-    //     headerShown: false
-    //   }}
-    //   style={{ flex: 1 }}
-    //   initialRouteName="Home"
-    // >
-    //   <Stack.Screen name="Home" component={HomeStack} />
-    //   <Stack.Screen name="Profile" component={ProfileStack} />
-    //   <Stack.Screen name="Account" component={Register} />
-    //   <Stack.Screen name="Elements" component={ElementsStack} />
-    //   <Stack.Screen name="Articles" component={ArticlesStack} />
-    //   <Stack.Screen name="Message List" component={ChatListStack} />
-    // </Stack.Navigator>
   );
 }
 

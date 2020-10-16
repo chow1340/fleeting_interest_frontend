@@ -1,8 +1,8 @@
-import {SET_CURRENT_CHAT_PROFILE, SET_CURRENT_CHAT_ID,  SET_MATCH_LIST} from "../actionTypes/chatTypes"
+import {SET_CURRENT_CHAT_PROFILE, SET_CURRENT_CHAT_ID,  SET_CHAT_LIST} from "../actionTypes/chatTypes"
 
 const initialState = {
     currentChatProfile:{},
-    matchList: [],
+    chatList: [],
 }
 
 
@@ -22,11 +22,10 @@ export default function(state = initialState, action){
                 chatId: action.payload
             }
         }
-        case(SET_MATCH_LIST) : {
-            console.log(action.payload, "pauyload");
+        case(SET_CHAT_LIST) : {
             return {
                 ...state,
-                matchList: action.payload
+                chatList: action.payload
             }
         }
 

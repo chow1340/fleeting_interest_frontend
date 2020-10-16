@@ -50,7 +50,7 @@ const EditProfile = ({navigation}) => {
 
     const [pictureArray, setPictureArray] = useState([]);
 
-    const pickImage = async () => {
+    const addImage = async () => {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
@@ -84,7 +84,6 @@ const EditProfile = ({navigation}) => {
       async function getCurrentProfile() {
         axios.get(global.server + '/api/user/getCurrentUser')
         .then(res => {
-          // console.log(res.data)
           dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
         })
         .catch(err => {
@@ -179,7 +178,7 @@ const EditProfile = ({navigation}) => {
     const renderItem = (item) => {
       if(item.uri === "No picture available") {
         return(
-          <TouchableWithoutFeedback onPress={()=>pickImage()} >
+          <TouchableWithoutFeedback onPress={()=>addImage()} >
             <View 
               style={styles.item}
               key={item.key}
@@ -362,10 +361,10 @@ const EditProfile = ({navigation}) => {
                     <Button 
                       color="primary"  
                       style={styles.saveButton}
-                      onPress = {pickImage}
+                      onPress = {addImage}
                       >
                         <Text bold size={14} color={argonTheme.COLORS.WHITE}>
-                          PICK IMAGE
+                          Add image
                         </Text>
                     </Button>
 

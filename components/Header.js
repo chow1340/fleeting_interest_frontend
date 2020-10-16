@@ -10,7 +10,11 @@ import argonTheme from '../constants/Theme';
 import { Feather } from '@expo/vector-icons'; 
 import { AntDesign } from '@expo/vector-icons'; 
 import axios from 'axios';
+import {useSelector, useDispatch} from 'react-redux';
+import {SET_CURRENT_TITLE} from '../redux/actionTypes/navigationTypes'
+
 const { height, width } = Dimensions.get('window');
+
 const iPhoneX = () => Platform.OS === 'ios' && (height === 812 || width === 812 || height === 896 || width === 896);
 
 const BellButton = ({isWhite, style, navigation}) => (
@@ -26,15 +30,26 @@ const BellButton = ({isWhite, style, navigation}) => (
 );
 
 const ProfileButton = ({isWhite, style, navigation,title }) => {
+  const dispatch = useDispatch();
+
   if(title === 'Profile'){
     return(
-      <TouchableOpacity style={[styles.button, style, styles.highlight]} onPress={() => navigation.navigate('Profile')}>
+      <TouchableOpacity style={[styles.button, style, styles.highlight]} 
+        onPress={() => {
+          navigation.navigate('Profile');
+          dispatch({type: SET_CURRENT_TITLE, payload: "Profile"});
+        }}>
         <Feather name="user" size={24} color="black" />
       </TouchableOpacity>
     )
   } else {
     return(
-      <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Profile')}>
+      <TouchableOpacity style={[styles.button, style]}
+        onPress={() => {
+          navigation.navigate('Profile');
+          dispatch({type: SET_CURRENT_TITLE, payload: "Profile"});
+        }
+      }>
         <Feather name="user" size={24} color="black" />
       </TouchableOpacity>
     )
@@ -43,15 +58,25 @@ const ProfileButton = ({isWhite, style, navigation,title }) => {
 
 
 const ChatListButton = ({isWhite, style, navigation,title }) => {
-  if(title === 'Messages'){
+  const dispatch = useDispatch();
+  if(title === 'Messages' || title ==="Chat"){
     return(
-      <TouchableOpacity style={[styles.button, style, styles.highlight]} onPress={() => navigation.navigate('Profile')}>
+      <TouchableOpacity style={[styles.button, style, styles.highlight]}        
+      onPress={() => {
+        navigation.navigate('Messages');
+        dispatch({type: SET_CURRENT_TITLE, payload: "Messages"});
+      }
+      }>
         <AntDesign name="message1" size={24} color="black" />
       </TouchableOpacity>
     )
   } else {
     return(
-      <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Chat List')}>
+      <TouchableOpacity style={[styles.button, style]}     
+       onPress={() => {
+        navigation.navigate('Messages');
+        dispatch({type: SET_CURRENT_TITLE, payload: "Messages"});
+      }}>
         <AntDesign name="message1" size={24} color="black" />
       </TouchableOpacity>
     )
@@ -81,9 +106,9 @@ const SearchButton = ({isWhite, style, navigation}) => (
 );
 
 class Header extends React.Component {
+
   handleLeftPress = () => {
     const { back, navigation } = this.props;
-    
     return (back ? navigation.goBack() : navigation.openDrawer());
   }
   renderRight = () => {
@@ -92,58 +117,6 @@ class Header extends React.Component {
       <ChatListButton title={title} key='message-list-button' navigation={navigation} isWhite={white}></ChatListButton>,
       <ProfileButton title={title} key='profile-button' navigation={navigation} isWhite={white}></ProfileButton>,
     ]);
-    if (title === 'Title') {
-      return [
-        <BellButton key='chat-title' navigation={navigation} isWhite={white} />,
-        <BasketButton key='basket-title' navigation={navigation} isWhite={white} />
-      ]
-    }
-
-    switch (title) {
-      case 'Home':
-        return ([
-          <BellButton key='chat-home' navigation={navigation} isWhite={white} />,
-          <BasketButton key='basket-home' navigation={navigation} isWhite={white} />
-        ]);
-      case 'Deals':
-        return ([
-          <BellButton key='chat-categories' navigation={navigation} />,
-          <BasketButton key='basket-categories' navigation={navigation} />
-        ]);
-      case 'Categories':
-        return ([
-          <BellButton key='chat-categories' navigation={navigation} isWhite={white} />,
-          <BasketButton key='basket-categories' navigation={navigation} isWhite={white} />
-        ]);
-      case 'Category':
-        return ([
-          <BellButton key='chat-deals' navigation={navigation} isWhite={white} />,
-          <BasketButton key='basket-deals' navigation={navigation} isWhite={white} />
-        ]);
-      case 'Profile':
-        return ([
-          <ProfileButton key='profile-button' navigation={navigation} isWhite={white}></ProfileButton>
-        ]);
-      case 'Product':
-        return ([
-          <SearchButton key='search-product' navigation={navigation} isWhite={white} />,
-          <BasketButton key='basket-product' navigation={navigation} isWhite={white} />
-        ]);
-      case 'Search':
-        return ([
-          <BellButton key='chat-search' navigation={navigation} isWhite={white} />,
-          <BasketButton key='basket-search' navigation={navigation} isWhite={white} />
-        ]);
-      case 'Settings':
-        return ([
-          <BellButton key='chat-search' navigation={navigation} isWhite={white} />,
-          <BasketButton key='basket-search' navigation={navigation} isWhite={white} />
-        ]);
-
-
-      default:
-        break;
-    }
   }
   renderSearch = () => {
     const { navigation } = this.props;
@@ -226,6 +199,7 @@ class Header extends React.Component {
           title={title}
           style={navbarStyles}
           transparent={transparent}
+          currentRoute={this.props.scene.route}
           right={this.renderRight()}
           rightStyle={{ alignItems: 'center' }}
           left={
@@ -246,8 +220,7 @@ class Header extends React.Component {
           ]}
           {...props}
         />
-        {/* <NavBar
-        ></NavBar> */}
+
         {this.renderHeader()}
       </Block>
     );

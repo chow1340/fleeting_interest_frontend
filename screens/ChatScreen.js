@@ -36,7 +36,6 @@ const ChatScreen = ({navigation}) => {
       }
     }, [])
   
-
     const handleSend = (message) => {
       // TODO messaging error handling
       try {

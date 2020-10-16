@@ -11,7 +11,7 @@ import {
   KeyboardAvoidingView,
   SafeAreaView,
 } from "react-native";
-import { Block, Checkbox, Text, theme } from "galio-framework";
+import { Block, Text } from "galio-framework";
 import { Button, Icon, Input } from "../components";
 import { Images, argonTheme } from "../constants";
 
@@ -29,9 +29,6 @@ const Login = ({navigation}) => {
         setPhoneInput(dialCode + unmaskedPhoneNumber)
       }
     };
-
-
-    const currentProfile = useSelector(state=>state.profile.currentProfile);
 
     useEffect(() => {
       async function getCurrentProfile() {
@@ -60,17 +57,13 @@ const Login = ({navigation}) => {
           headers: {
             'Content-Type': 'application/json'
           }
-        }
-        
-        )
+        })
         .then(res=>{
-            console.log(res.data)
             if(res.data == "Login Successful") {
               navigation.reset({
                 index: 0,
                 routes:[{name: 'AppStack'}]
               })
-              // navigation.push("AppStack")
             } 
         })
         .catch(function (error) {
@@ -100,7 +93,6 @@ const Login = ({navigation}) => {
                     <SafeAreaView>
                       <IntlPhoneInput 
                       defaultCountry="CA"
-                      // customModal = {renderCustomModal} 
                       filterInputStyle={{textTransform: 'capitalize'}}
                       onChangeText = {onChangeText}
                       lang="EN"

@@ -15,24 +15,35 @@ import {useSelector, useDispatch} from 'react-redux';
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 const { width } = Dimensions.get("screen");
-import {SET_CURRENT_CHAT_PROFILE, SET_CURRENT_CHAT_ID, SET_CHAT_LIST, SET_MATCH_LIST} from '../redux/actionTypes/chatTypes'
+import {SET_CURRENT_CHAT_PROFILE, SET_CURRENT_CHAT_ID, SET_CHAT_LIST} from '../redux/actionTypes/chatTypes'
 import {SET_VIEW_PROFILE} from '../redux/actionTypes/profileTypes'
 
 import Fire from '../Fire'
 import { set } from "react-native-reanimated";
+import {useRoute} from '@react-navigation/native';
 
-const RenderMatches = ({match, navigation, matchList, sortListFunction}) => {
+const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
 
     let user = match.item.user;
     let chatId = match.item.chatId;
-
+      
     const dispatch = useDispatch();
+    const route = useRoute();
 
     const [lastMessage, setLastMessage] = useState("");
+    const currentProfile = useSelector(state=> state.profile.currentProfile);
+    const [currentChatObjectUser, setCurrentChatObjectUser] = useState(); 
+    const [hasRead, setHasRead] = useState(true);
+    const currentChatIndex = chatList.findIndex(x=>
+      x.chat[0]._id.$oid === chatId
+    )
+
+    const chatObject = chatList[currentChatIndex].chat[0];
+
 
     const handleProfileNavigation = (user) => {
-      dispatch({type: SET_VIEW_PROFILE , payload: user})
-      navigation.navigate('View Profile')
+      dispatch({type: SET_VIEW_PROFILE , payload: user});
+      navigation.navigate('View Profile');
     }
 
     const handleChatNavigation = (user, chatId) => {
@@ -43,6 +54,18 @@ const RenderMatches = ({match, navigation, matchList, sortListFunction}) => {
       navigation.navigate('Chat');
     }
 
+    useEffect(()=>{
+      if(chatObject) {
+        if(chatObject.user1._id === currentProfile._id.$oid) {
+          setCurrentChatObjectUser(chatObject.user1);
+        } else {
+          setCurrentChatObjectUser(chatObject.user2);
+        }
+        setHasRead(currentChatObjectUser?.hasRead);
+        console.log(hasRead)
+      }
+    }, [chatObject])
+    
     //Fetch initial last messages
     useEffect(()=>{
       let isSet = false;
@@ -58,20 +81,19 @@ const RenderMatches = ({match, navigation, matchList, sortListFunction}) => {
     //After the initial render, listen for changes on messages
     useEffect(()=>{
       Fire.shared.listen((message) =>{
+        console.log(this.props)
         let DateTime = new Date()
         setLastMessage(message);
 
-        let tempMatchList = [...matchList];
+        let tempChatList = [...chatList];
 
-        // //Update matchList
-        let currentChatIndex = tempMatchList.findIndex(x=>
-          x.chat[0]._id.$oid === chatId
-        )
-      
-        let currentChat = tempMatchList[currentChatIndex];
+        //Update chatList
+        let currentChat = tempChatList[currentChatIndex];
         currentChat.chat[0].lastMessageDate.$date = DateTime.valueOf();
         currentChat.chat[0].lastMessageSent = message.text;
-        dispatch({type: SET_MATCH_LIST, payload: tempMatchList});
+
+
+        dispatch({type: SET_CHAT_LIST, payload: tempChatList});
         
         sortListFunction();
       }, chatId)
@@ -93,7 +115,7 @@ const RenderMatches = ({match, navigation, matchList, sortListFunction}) => {
           />
           <View>
             <Text style={styles.name}>{user.first_name}</Text>
-            <Text numberOfLines={1} style={styles.messagePreview}>
+            <Text numberOfLines={1} style={[styles.messagePreview, !hasRead ? styles.boldFont : ""]}>
               {lastMessage.text}
             </Text>
           </View>
@@ -112,6 +134,9 @@ const styles = StyleSheet.create({
     borderBottomColor: '#F5F5F5',
     flexDirection: 'row',
     justifyContent: 'space-between'
+  },
+  boldFont: {
+    fontWeight: "bold"
   },
   displayPicture:{
     height: 70,
@@ -134,43 +159,7 @@ const styles = StyleSheet.create({
   messagePreview:{
     overflow: 'hidden',
     width: width/1.8,
-    marginTop: 40
+    marginTop: 40,
   } 
-    // matchContainer:{
-    //   height: 100,
-    //   borderBottomWidth: 2,
-    //   borderBottomColor: '#F5F5F5',
-    //   flexDirection: 'row',
-    //   justifyContent: 'space-between',
-    //   // backgroundColor: "purple"
-    // },
-    // messageContainer:{
-    //   width: width - 100,
-    //   position: "relative",
-    //   paddingTop: 5,
-    // },    
-    // displayPicture:{
-    //   height: 70,
-    //   width: 70,
-    //   borderRadius: 35,
-    //   marginTop:15,
-    //   marginLeft:15,
-    //   marginRight: 20,
-    // },
-    // forward:{
-    //   position: 'absolute',
-    //   right: 30,
-    //   top: 30,
-    //   fontSize: 25
-    // },
-    // name:{
-    //   fontWeight: 'bold',
-    //   fontSize:20,
-    //   marginTop:5
-    // },
-    // messagePreview:{
-    //   overflow: 'hidden',
-    //   width: width/1.8,
-    //   marginTop: 15
-    // } 
-  });
+
+});
