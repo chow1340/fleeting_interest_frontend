@@ -19,8 +19,6 @@ import {SET_CURRENT_CHAT_PROFILE, SET_CURRENT_CHAT_ID, SET_CHAT_LIST} from '../r
 import {SET_VIEW_PROFILE} from '../redux/actionTypes/profileTypes'
 
 import Fire from '../Fire'
-import { set } from "react-native-reanimated";
-import {useRoute} from '@react-navigation/native';
 
 const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
 
@@ -28,10 +26,10 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
     let chatId = match.item.chatId;
       
     const dispatch = useDispatch();
-    const route = useRoute();
 
     const [lastMessage, setLastMessage] = useState("");
     const currentProfile = useSelector(state=> state.profile.currentProfile);
+    const navigationState = useSelector(state => state.navigation.currentTitle);
     const [currentChatObjectUser, setCurrentChatObjectUser] = useState(); 
     const [hasRead, setHasRead] = useState(true);
     const currentChatIndex = chatList.findIndex(x=>
@@ -45,13 +43,16 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
       dispatch({type: SET_VIEW_PROFILE , payload: user});
       navigation.navigate('View Profile');
     }
-
     const handleChatNavigation = (user, chatId) => {
 
       dispatch({type: SET_CURRENT_CHAT_PROFILE, payload: user})
       dispatch({type: SET_CURRENT_CHAT_ID, payload: chatId})
 
       navigation.navigate('Chat');
+    }
+
+    const isInChat = (userId) => {
+      return navigationState.currentTitle === userId;
     }
 
     useEffect(()=>{
@@ -81,7 +82,6 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
     //After the initial render, listen for changes on messages
     useEffect(()=>{
       Fire.shared.listen((message) =>{
-        console.log(this.props)
         let DateTime = new Date()
         setLastMessage(message);
 
@@ -96,6 +96,7 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
         dispatch({type: SET_CHAT_LIST, payload: tempChatList});
         
         sortListFunction();
+        console.log(user);
       }, chatId)
        
     }, [])

@@ -42,11 +42,12 @@ const NavBar = ({
     const viewProfile = useSelector(state => state.profile.viewProfile);
     const dispatch = useDispatch();
 
+
     const renderTitle = () => {
       if (typeof title === 'string') {
         switch(title) {
           case "Chat" :
-            dispatch({type: SET_CURRENT_TITLE,  payload: currentChatProfile?._id?.$oid})
+            // dispatch({type: SET_CURRENT_TITLE,  payload: currentChatProfile?._id?.$oid})
             return (        
               <View style={styles.title}>
                 <Text style={[styles.titleTextStyle, titleStyle]}>
@@ -64,7 +65,7 @@ const NavBar = ({
                 </View>
               )
             case "Messages" :
-              dispatch({type: SET_CURRENT_TITLE, payload: title});
+              // dispatch({type: SET_CURRENT_TITLE, payload: title});
               return (
                 <View style={styles.title}>
                   <Text style={[styles.titleTextStyle, titleStyle]}>{title} </Text>

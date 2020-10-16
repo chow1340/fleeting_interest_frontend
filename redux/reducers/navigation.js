@@ -1,7 +1,7 @@
 import {SET_CURRENT_TITLE} from "../actionTypes/navigationTypes"
 
 const initialState = {
-    currentTitle:""
+    currentTitle:"",
 }
 
 
@@ -14,6 +14,7 @@ export default function(state = initialState, action){
                 currentTitle: action.payload
             }
         }
+
 
         default : {
             return state

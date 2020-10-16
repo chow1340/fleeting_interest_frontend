@@ -6,11 +6,13 @@ import {
   StyleSheet,
   FlatList,
   Image,
-  Dimensions
+  Dimensions,
+  BackHandler
 } from "react-native";
 import {useSelector, useDispatch} from 'react-redux';
 import { GiftedChat , Composer} from 'react-native-gifted-chat'
 import {SET_CHAT_LIST} from '../redux/actionTypes/chatTypes'
+import {SET_CURRENT_TITLE} from '../redux/actionTypes/navigationTypes'
 
 import Fire from '../Fire'
 import { initialWindowMetrics } from "react-native-safe-area-context";
@@ -22,10 +24,15 @@ const { width, height } = Dimensions.get("screen");
 const ChatScreen = ({navigation}) => {
     const dispatch = useDispatch();
 
-    const currentProfile = useSelector(state=>state.profile.currentProfile)
+    const currentProfile = useSelector(state=>state.profile.currentProfile);
+    const currentChatProfile = useSelector(state => state.chat.currentChatProfile);
     const chatId = useSelector(state=>state.chat.chatId);
     const [messages, setMessages] = useState([]);
 
+    useEffect(()=>{
+      console.log(currentChatProfile._id.$oid);
+      dispatch({type: SET_CURRENT_TITLE, payload: currentChatProfile._id.$oid});
+    }, [])
 
     //Get initial messages 
     useEffect(() => {
@@ -34,7 +41,11 @@ const ChatScreen = ({navigation}) => {
           setMessages(prevMessages => [message, ...prevMessages]);
         } ,chatId);
       }
-    }, [])
+    }, []);
+
+    BackHandler.addEventListener('hardwareBackPress', ()=>{
+      dispatch({type: SET_CURRENT_TITLE, payload: "Messages"});
+    })
   
     const handleSend = (message) => {
       // TODO messaging error handling
