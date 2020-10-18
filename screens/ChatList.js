@@ -52,25 +52,6 @@ const ChatList = ({navigation}) => {
       }
     }
 
-    // const sortList = () => {
-    //   if(chatList.length > 0) {
-    //     let tempMatch = [...chatList]
-
-    //     tempMatch.sort((a, b) => {
-    //       let firstDate = a.chat.lastMessageDate.$date || a.chat.lastMessageDate;
-    //       let secondDate = b.chat.lastMessageDate.$date || b.chat.lastMessageDate;
-  
-    //       if(firstDate > secondDate) {
-    //         return -1;
-    //       }
-    //       if(firstDate < secondDate) {
-    //         return 1;
-    //       }
-    //       return 0;
-    //     }); 
-    //     dispatch({type: SET_CHAT_LIST, payload: tempMatch});
-    //   }
-    // }
 
     const sortList = (chatList) => {
       if(chatList.length > 0) {
@@ -91,10 +72,6 @@ const ChatList = ({navigation}) => {
       return chatList;
     }
 
-    // //Initial sort
-    // useEffect(()=>{
-    //   sortList();
-    // }, [])
 
     useEffect(() => {
       async function getCurrentProfile() {

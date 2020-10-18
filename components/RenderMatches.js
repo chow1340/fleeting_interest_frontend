@@ -16,7 +16,6 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 const { width } = Dimensions.get("screen");
 import {SET_CURRENT_CHAT_PROFILE, SET_CURRENT_CHAT_ID, SET_CHAT_LIST} from '../redux/actionTypes/chatTypes'
-import {SET_VIEW_PROFILE} from '../redux/actionTypes/profileTypes'
 
 import Fire from '../Fire'
 import { set } from "react-native-reanimated";
@@ -39,19 +38,6 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
     )
     const chatObject = chatList[currentChatIndex].chat;
 
-
-    // useEffect(()=>{
-  
-    //   if(currentTitle === user._id.$oid) {
-    //     setInChat
-    //   }
-    // }, [currentTitle, user]);
-
-
-    const handleProfileNavigation = (user) => {
-      dispatch({type: SET_VIEW_PROFILE , payload: user});
-      navigation.navigate('View Profile');
-    }
 
     const handleChatNavigation = (user, chatId) => {
 

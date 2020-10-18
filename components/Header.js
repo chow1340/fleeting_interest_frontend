@@ -32,7 +32,7 @@ const BellButton = ({isWhite, style, navigation}) => (
 const ProfileButton = ({isWhite, style, navigation,title }) => {
   const dispatch = useDispatch();
 
-  if(title === 'Profile'){
+  if(title === 'Profile' || title === 'Edit Profile'){
     return(
       <TouchableOpacity style={[styles.button, style, styles.highlight]} 
         onPress={() => {
@@ -82,28 +82,6 @@ const ChatListButton = ({isWhite, style, navigation,title }) => {
     )
   }
 }
-
-const BasketButton = ({isWhite, style, navigation}) => (
-  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Pro')}>
-    <Icon
-      family="ArgonExtra"
-      size={16}
-      name="basket"
-      color={argonTheme.COLORS[isWhite ? 'WHITE' : 'ICON']}
-    />
-  </TouchableOpacity>
-);
-
-const SearchButton = ({isWhite, style, navigation}) => (
-  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Pro')}>
-    <Icon
-      size={16}
-      family="Galio"
-      name="search-zoom-in"
-      color={theme.COLORS[isWhite ? 'WHITE' : 'ICON']}
-    />
-  </TouchableOpacity>
-);
 
 class Header extends React.Component {
 
@@ -177,6 +155,8 @@ class Header extends React.Component {
       );
     }
   }
+
+  
   render() {
     const { back, title, white, transparent, bgColor, iconColor, titleColor, navigation, ...props } = this.props;
 
@@ -201,6 +181,7 @@ class Header extends React.Component {
           transparent={transparent}
           currentRoute={this.props.scene.route}
           right={this.renderRight()}
+          navigation={navigation}
           rightStyle={{ alignItems: 'center' }}
           left={
             <Icon 

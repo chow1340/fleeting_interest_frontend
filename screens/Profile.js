@@ -46,6 +46,10 @@ const Profile  = ({navigation}) => {
       getCurrentProfile();
     }, [])
 
+    const capitalize = (string) => {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
     const _renderCarouselItem = ({item, index}) => {
       if(item != "No picture aavailable"){
         return (
@@ -69,6 +73,8 @@ const Profile  = ({navigation}) => {
                 marginHorizontal: 8,
                 backgroundColor: 'rgba(255, 255, 255, 0.92)'
             }}
+            animatedDuration = {0}
+            animatedTension = {0}
             inactiveDotStyle={{
                 // Define styles for inactive dots here
             }}
@@ -80,7 +86,6 @@ const Profile  = ({navigation}) => {
     return (
       <Block flex style={styles.profile}>
         <Block flex>
-          
             <ScrollView
               showsVerticalScrollIndicator={false}
               style={{ width, marginTop: '-1%' }}
@@ -89,7 +94,6 @@ const Profile  = ({navigation}) => {
                 <Block middle style={styles.avatarContainer}>
 
                    <Carousel
-                      // ref={(c) => { this._carousel = c; }}
                       data={currentProfile.picture}
                       renderItem={_renderCarouselItem}
                       sliderWidth={width}
@@ -113,7 +117,7 @@ const Profile  = ({navigation}) => {
                 <Block flex>
                   <Block middle style={styles.nameInfo}>
                     <Text bold size={28} color="#32325D">
-                      {currentProfile?.first_name} {currentProfile?.last_name}
+                      {capitalize(currentProfile?.first_name)} {capitalize(currentProfile?.last_name)}
                     </Text>
                     <Text size={16} color="#32325D" style={{ marginTop: 10 }}>
                       {currentProfile.geocode ? currentProfile.geocode[0].city : ""}, {currentProfile.geocode ? currentProfile.geocode[0].region : ""}

@@ -4,21 +4,23 @@ import {
   Text,
   View,
   StyleSheet,
-  Dimensions
+  Dimensions,
+  Image,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { Ionicons } from '@expo/vector-icons'; 
 import {useSelector, useDispatch} from 'react-redux';
 import { TouchableOpacity } from "react-native-gesture-handler";
 import {SET_CURRENT_TITLE} from '../redux/actionTypes/navigationTypes'
+import { HeaderHeight } from "../constants/utils";
+import {SET_VIEW_PROFILE} from '../redux/actionTypes/profileTypes'
 
 const { width } = Dimensions.get("screen");
-
-
-
 const NavBar = ({
     back,
     hideLeft,
     hideRight,
+    navigation,
     left,
     leftStyle,
     leftIconColor,
@@ -36,23 +38,34 @@ const NavBar = ({
     titleStyle,
   }) => {
 
+    const dispatch = useDispatch();
 
     const navStyles = [styles.navBar, transparent && styles.transparent, style];
     const currentChatProfile = useSelector(state => state.chat.currentChatProfile);
     const viewProfile = useSelector(state => state.profile.viewProfile);
-    const dispatch = useDispatch();
 
+    const handleProfileNavigation = (user) => {
+      dispatch({type: SET_VIEW_PROFILE , payload: user});
+      console.log("Pressed")
+      navigation.navigate('View Profile');
+    }
 
     const renderTitle = () => {
       if (typeof title === 'string') {
         switch(title) {
           case "Chat" :
-            return (        
-              <View style={styles.title}>
-                <Text style={[styles.titleTextStyle, titleStyle]}>
-                  {currentChatProfile?.first_name ? currentChatProfile.first_name : title}
-                </Text>
-              </View>
+            return (     
+              <TouchableWithoutFeedback onPress = {()=>handleProfileNavigation(currentChatProfile)}>
+                <View style={[styles.chatContainer]}>
+                    <Image
+                      source={{ uri: global.s3Endpoint + currentChatProfile?.picture[0] }}
+                      style={styles.headerAvatar}
+                    ></Image>
+                    <Text style={[styles.titleTextStyle, titleStyle]}>
+                      {currentChatProfile?.first_name ? currentChatProfile.first_name : title}
+                    </Text>
+                </View>
+              </TouchableWithoutFeedback>   
             );
           
             case "View Profile": 
@@ -64,7 +77,6 @@ const NavBar = ({
                 </View>
               )
             case "Messages" :
-              // dispatch({type: SET_CURRENT_TITLE, payload: title});
               return (
                 <View style={styles.title}>
                   <Text style={[styles.titleTextStyle, titleStyle]}>{title} </Text>
@@ -129,8 +141,20 @@ const NavBar = ({
     );
 }
 
-
 const styles = StyleSheet.create({
+    headerAvatar : {
+      height: HeaderHeight*0.55,
+      width: HeaderHeight*0.55,
+      borderRadius: HeaderHeight*0.55, 
+      marginLeft: 10,
+      marginRight: 10
+    }, 
+    chatContainer:{
+      flex: 2,
+      height: 100 * 0.07,
+      alignItems: 'center',
+      flexDirection: "row"
+    },
     navBar: {
         width: 'auto',
         height: 'auto',
@@ -138,7 +162,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-evenly',
         backgroundColor: 'white',
-        // paddingVertical: theme.SIZES.BASE,
     },
     title: {
         flex: 2,
@@ -148,14 +171,11 @@ const styles = StyleSheet.create({
     },
     titleTextStyle: {
         fontWeight: '400',
-        // fontSize: theme.SIZES.FONT * 0.875,
-        // color: theme.COLORS.BLACK,
     },
     left: {
         flex: 0.5,
         height: 100 * 0.07,
         justifyContent: 'center',
-        // marginLeft: theme.SIZES.BASE,
     },
     right: {
         flex: 0.5,
@@ -164,7 +184,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flexDirection:'row',
         marginRight: 20
-        // marginRight: theme.SIZES.BASE,
     },
     transparent: {
         backgroundColor: 'transparent',
