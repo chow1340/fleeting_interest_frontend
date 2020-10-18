@@ -30,7 +30,6 @@ const ChatScreen = ({navigation}) => {
     const [messages, setMessages] = useState([]);
 
     useEffect(()=>{
-      console.log(currentChatProfile._id.$oid);
       dispatch({type: SET_CURRENT_TITLE, payload: currentChatProfile._id.$oid});
     }, [])
 

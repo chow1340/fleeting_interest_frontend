@@ -63,6 +63,14 @@ const Login = ({navigation}) => {
               navigation.reset({
                 index: 0,
                 routes:[{name: 'AppStack'}]
+              });
+
+              axios.get(global.server + '/api/user/getCurrentUser')
+              .then(res => {
+                dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
+              })
+              .catch(err => {
+                console.log(err)
               })
             } 
         })

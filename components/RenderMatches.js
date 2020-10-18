@@ -19,6 +19,7 @@ import {SET_CURRENT_CHAT_PROFILE, SET_CURRENT_CHAT_ID, SET_CHAT_LIST} from '../r
 import {SET_VIEW_PROFILE} from '../redux/actionTypes/profileTypes'
 
 import Fire from '../Fire'
+import { set } from "react-native-reanimated";
 
 const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
 
@@ -29,41 +30,58 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
 
     const [lastMessage, setLastMessage] = useState("");
     const currentProfile = useSelector(state=> state.profile.currentProfile);
-    const navigationState = useSelector(state => state.navigation.currentTitle);
-    const [currentChatObjectUser, setCurrentChatObjectUser] = useState(); 
-    const [hasRead, setHasRead] = useState(true);
-    const currentChatIndex = chatList.findIndex(x=>
-      x.chat[0]._id.$oid === chatId
-    )
+    const currentTitle = useSelector(state => state.navigation.currentTitle);
+    const [hasRead, setHasRead] = useState();
+    const [isInChat, setIsInChat] = useState(false);
 
-    const chatObject = chatList[currentChatIndex].chat[0];
+    const currentChatIndex = chatList.findIndex(x=>
+      x.chat._id.$oid === chatId
+    )
+    const chatObject = chatList[currentChatIndex].chat;
+
+
+    // useEffect(()=>{
+  
+    //   if(currentTitle === user._id.$oid) {
+    //     setInChat
+    //   }
+    // }, [currentTitle, user]);
 
 
     const handleProfileNavigation = (user) => {
       dispatch({type: SET_VIEW_PROFILE , payload: user});
       navigation.navigate('View Profile');
     }
+
     const handleChatNavigation = (user, chatId) => {
 
-      dispatch({type: SET_CURRENT_CHAT_PROFILE, payload: user})
-      dispatch({type: SET_CURRENT_CHAT_ID, payload: chatId})
+      dispatch({type: SET_CURRENT_CHAT_PROFILE, payload: user});
+      dispatch({type: SET_CURRENT_CHAT_ID, payload: chatId});
+
+      axios.post(global.server + '/api/chat/setIsRead', 
+      {
+        params: {
+          chatId : chatId,
+          isRead : true
+        }
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(()=>{setHasRead(true)})
 
       navigation.navigate('Chat');
     }
-
-    const isInChat = (userId) => {
-      return navigationState.currentTitle === userId;
-    }
-
+    
     useEffect(()=>{
       if(chatObject) {
         if(chatObject.user1._id === currentProfile._id.$oid) {
-          setCurrentChatObjectUser(chatObject.user1);
+          setHasRead(chatObject.user1.hasRead);
         } else {
-          setCurrentChatObjectUser(chatObject.user2);
+          setHasRead(chatObject.user2.hasRead);
         }
-        setHasRead(currentChatObjectUser?.hasRead);
-        console.log(hasRead)
       }
     }, [chatObject])
     
@@ -89,15 +107,32 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
 
         //Update chatList
         let currentChat = tempChatList[currentChatIndex];
-        currentChat.chat[0].lastMessageDate.$date = DateTime.valueOf();
-        currentChat.chat[0].lastMessageSent = message.text;
+        currentChat.chat.lastMessageDate.$date = DateTime.valueOf();
+        currentChat.chat.lastMessageSent = message.text;
 
-
-        dispatch({type: SET_CHAT_LIST, payload: tempChatList});
+        let sortedChatList = sortListFunction(tempChatList);
+        if(currentTitle != user._id.$oid) {
+          axios.post(global.server + '/api/chat/setIsRead', 
+          {
+            params: {
+              chatId : chatId,
+              isRead : false
+            }
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+          setHasRead(false)
+        }
+        dispatch({type: SET_CHAT_LIST, payload: sortedChatList});
         
-        sortListFunction();
-        console.log(user);
+
       }, chatId)
+      return () => {
+        Fire.shared.off()
+      }
        
     }, [])
 

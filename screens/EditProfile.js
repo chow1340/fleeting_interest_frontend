@@ -24,6 +24,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Ionicons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons'; 
 import { DraggableGrid } from 'react-native-draggable-grid';
+import { HeaderHeight } from "../constants/utils";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -57,7 +58,8 @@ const EditProfile = ({navigation}) => {
         aspect: [3, 3],
         quality: 1,
       })
-      
+      let tempArray = [...pictureArray];
+
       if (!result.cancelled) { 
         let curIndex = 0; 
         //Update picture array
@@ -66,14 +68,33 @@ const EditProfile = ({navigation}) => {
         } else {
           curIndex = currentProfile.picture.length;
         }
-  
-        let tempArray = [...pictureArray];
-        tempArray[curIndex] = {
-          uri: result.uri,
-          key: curIndex.toString(),
-          tempPic: true,
-        }
-        setPictureArray(tempArray);
+
+        let formdata = new FormData();
+        formdata.append('file',{
+          uri: Platform.OS === 'android' ? result.uri : 'file://' + result.uri,
+          name: currentProfile?._id.$oid + uuidv4(),
+          type: 'image/jpeg',
+        });
+        formdata.append('index', curIndex)
+
+        axios({
+          url: global.server + '/api/image/uploadFileAndUpdatePictureArrayOrder',
+          method: "POST",
+          data: formdata,
+          headers: {
+            'content-type' : 'multipart/form-data'
+          }
+        })
+        .then((res)=>{
+          tempArray[curIndex] = {
+            uri: res.data,
+            key: curIndex.toString(),
+            tempPic: true,
+          }
+          setPictureArray(tempArray);
+ 
+        })
+        .catch(err => console.log(err));
         setNextIndex(curIndex + 1)
       }
     };
@@ -113,6 +134,7 @@ const EditProfile = ({navigation}) => {
             disabledReSorted: true
           })
         }
+        
         setPictureArray(temp);
         setNextIndex(currentProfile.picture.length)
       }
@@ -176,7 +198,12 @@ const EditProfile = ({navigation}) => {
     }
 
     const renderItem = (item) => {
-      if(item.uri === "No picture available") {
+      if(item.uri === "No picture available"  && !gridIsEditable) {
+        return (
+          <View></View>
+        )
+      }
+      else if(item.uri === "No picture available" ) {
         return(
           <TouchableWithoutFeedback onPress={()=>addImage()} >
             <View 
@@ -187,22 +214,32 @@ const EditProfile = ({navigation}) => {
             </View>
           </TouchableWithoutFeedback>
         )
-      } else {
+      } 
+      else {
+        let disabledDrag = false
+        if(gridIsEditable === false) {
+          disabledDrag = true
+        }
         return (
+          
           <View
             style={styles.item}
             key={item.key}
+            disabledDrag = {disabledDrag}
           >
-             <TouchableWithoutFeedback
-               onPress={()=>deleteAlert(item)}
+            { gridIsEditable &&
+              <TouchableWithoutFeedback
+              onPress={()=>deleteAlert(item)}
               >
                 <View style={styles.deleteContainer}>
                   <FontAwesome style={styles.deleteButton} name="minus-circle" size={24} color="black" />
                 </View>
-             </TouchableWithoutFeedback>
+              </TouchableWithoutFeedback>
+            }
+
             {item.tempPic &&
               <Image
-                source={{ uri: item.uri }}
+                source={{ uri: global.s3Endpoint + item.uri }}
                 style={styles.gridProfile}
               />
             }
@@ -251,7 +288,6 @@ const EditProfile = ({navigation}) => {
         }
       })
       .then(res => {
-        console.log(res);
         setPictureArray(tempPictureArray)
       })
       .catch(err => {
@@ -259,8 +295,6 @@ const EditProfile = ({navigation}) => {
       })
     }
 
-  
-      
 
     const handleSavePictureArray = () => {
       for(let i = 0; i < pictureArray.length; i++){
@@ -283,32 +317,11 @@ const EditProfile = ({navigation}) => {
               }
             }
           )
-          .then(
-            res => {
-            // console.log(res.data)
-            }
-          )
           .catch(
             err => console.log(err)
           )
-        } else if (picture.tempPic === true) {
-			let formdata = new FormData();
-			formdata.append('file',{
-				uri: Platform.OS === 'android' ? picture.uri : 'file://' + picture.uri,
-				name: currentProfile?._id.$oid + uuidv4(),
-				type: 'image/jpeg',
-			});
-			
-			formdata.append('index', i)
-
-			axios({
-				url: global.server + '/api/image/uploadFileAndUpdatePictureArrayOrder',
-				method: "POST",
-				data: formdata,
-				headers: {
-					'content-type' : 'multipart/form-data'
-				}
-      })}}
+        } 
+    }
       
       let tempArray = [];
       //update current profile redux
@@ -317,48 +330,25 @@ const EditProfile = ({navigation}) => {
       }
       currentProfile.picture = tempArray
       dispatch({type: SET_CURRENT_PROFILE, payload: currentProfile})
-
       setNextIndex(-1);
       setGridIsEditable(false);
       setImage(global.s3Endpoint+pictureArray[0].uri);
-    }
-
-    const _renderItem = (item) => {
-      if(!item.tempPic) {
-        return(
-          <Image
-            source={{ uri: global.s3Endpoint+item.uri }}
-            key={`viewed-${item.key}`}
-            resizeMode="cover"
-            style={styles.thumb}
-          />
-        )
-      } else {
-        return(
-          <Image
-          source={{ uri: item.uri }}
-          key={`viewed-${item.key}`}
-          resizeMode="cover"
-          style={styles.thumb}
-        />
-        )
-      }
-
-    }
-      
+    }  
  
     return (
-        <ScrollView contentContainerStyle={{flexGrow: 1}}
-                    keyboardShouldPersistTaps='handled'
-                    scrollEnabled={!dragging}
-              >
-                 <Image
-                    source={{ uri: image }}
-                    style={styles.avatar}
-                  />
+      <Block flex style={styles.profile}>
+        <Block flex>
+          <ScrollView contentContainerStyle={{flexGrow: 1}}
+            keyboardShouldPersistTaps='handled'
+            scrollEnabled={!dragging}
+          >
+            <Image
+              source={{ uri: image }}
+              style={styles.avatar}
+            />
 
-                 <Block flex middle center>
-                    <Button 
+              <Block flex middle center>
+                <Button 
                       color="primary"  
                       style={styles.saveButton}
                       onPress = {addImage}
@@ -366,98 +356,82 @@ const EditProfile = ({navigation}) => {
                         <Text bold size={14} color={argonTheme.COLORS.WHITE}>
                           Add image
                         </Text>
-                    </Button>
+                </Button>
+                <Block width={width * 0.7}>
+                  <Text>
+                    First Name
+                  </Text>
+                  <Input
+                    placeholder="First Name"
+                    onChangeText={value =>onChangeFirstName(value)}
+                  >
+                    {currentProfile?.first_name ? currentProfile.first_name : ""}
 
-                    <Block width={width * 0.7}>
-                      <Text>
-                        First Name
-                      </Text>
-                      <Input
-                        placeholder="First Name"
-                        onChangeText={value =>onChangeFirstName(value)}
-                      >
-                        {currentProfile?.first_name ? currentProfile.first_name : ""}
+                    </Input>
+                </Block>
 
-                        </Input>
-                    </Block>
+                <Block width={width * 0.7}>
+                  <Text>
+                    Last Name
+                  </Text>
+                  <Input
+                    placeholder="Last Name"
+                    onChangeText={value=>onChangeLastName(value)}
+                    >
+                    {currentProfile?.last_name ? currentProfile.last_name : ""}
 
-                    <Block width={width * 0.7}>
-                      <Text>
-                        Last Name
-                      </Text>
-                      <Input
-                        placeholder="Last Name"
-                        onChangeText={value=>onChangeLastName(value)}
-                        >
-                        {currentProfile?.last_name ? currentProfile.last_name : ""}
+                  </Input>
+                </Block>
 
-                        </Input>
-                    </Block>
-
-                 </Block>
-                  {editGridButton()}
-                    {!gridIsEditable &&
-
-                    <Block >
-                      <Block row  style={{ flexWrap: "wrap" , justifyContent:"space-around"}}>
-                        {pictureArray.map((item) => (
-                          _renderItem(item)
-                        ))}
-                      </Block>
-                    </Block>
-                    }
+              </Block>
+              {editGridButton()} 
+              <View style={styles.wrapper}>
+                <DraggableGrid
+                numColumns={3}
+                renderItem={renderItem}
+                data={pictureArray}
+                onDragStart = {onDragStart}
+                onDragRelease={(data) => {
+                  setPictureArray(data);// need reset the props data sort after drag release
+                  setIsDragging(false);
+                }}
+                dragStartAnimation={{
+                  transform:[
+                    {scale:1}
+                  ],
+                }}
+                />
+              </View>
+              <Block>
+                <Block middle>
                   {
-                    gridIsEditable && 
-               
-                    <View style={styles.wrapper}>
-
-                      <DraggableGrid
-                      numColumns={3}
-                      renderItem={renderItem}
-                      data={pictureArray}
-                      onDragStart = {onDragStart}
-                      onDragRelease={(data) => {
-                        setPictureArray(data);// need reset the props data sort after drag release
-                        setIsDragging(false);
-                      }}
-                      dragStartAnimation={{
-                        transform:[
-                          {scale:1}
-                        ],
-                      }}
-                      />
-                    </View>
+                    isSaving &&
+                    <ActivityIndicator size="small" color="#0000ff" />
                   }
-
-                   <Block>
-                    <Block middle>
-                      {
-                        isSaving &&
-                        <ActivityIndicator size="small" color="#0000ff" />
-                      }
-                      <Button 
-                      color="primary"  
-                      style={styles.saveButton}
-                      onPress = {saveEditProfile}
-                      >
-                        <Text bold size={14} color={argonTheme.COLORS.WHITE}>
-                          SAVE
-                        </Text>
-                      </Button>
-                    </Block>
-                  </Block>
-
-              </ScrollView>
-
-
+                  <Button 
+                  color="primary"  
+                  style={styles.saveButton}
+                  onPress = {saveEditProfile}
+                  >
+                    <Text bold size={14} color={argonTheme.COLORS.WHITE}>
+                      SAVE
+                    </Text>
+                  </Button>
+                </Block>
+              </Block>
+          </ScrollView>
+        </Block>
+      </Block>
     );
-  
 }
 
-
-
 const styles = StyleSheet.create({
-  
+  profile: {
+    marginTop: Platform.OS === "android" ? -HeaderHeight : 0,
+    marginTop: 50,
+    flex: 1,
+    flexGrow: 1
+  },
   wrapper:{
     width:'100%',
     height:'100%',
@@ -519,23 +493,6 @@ const styles = StyleSheet.create({
     marginTop: 50
   },
 
-  registerContainer: {
-    width: width ,
-    height: height * 0.78,
-    backgroundColor: "#F4F5F7",
-    borderRadius: 4,
-    shadowColor: argonTheme.COLORS.BLACK,
-    shadowOffset: {
-      width: 0,
-      height: 4
-    },
-    shadowRadius: 8,
-    shadowOpacity: 0.1,
-    elevation: 1,
-    padding: 30,
-    paddingTop: 0,
-    marginTop:-20
-  },
 
   saveButton: {
     width: width * 0.3,

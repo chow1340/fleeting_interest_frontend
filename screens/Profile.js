@@ -6,7 +6,8 @@ import {
   Image,
   ImageBackground,
   Platform,
-  View
+  View,
+  TouchableWithoutFeedback
 } from "react-native";
 import { Block, Text, theme } from "galio-framework";
 import { Button } from "../components";
@@ -16,6 +17,8 @@ import axios from 'axios';
 import {useSelector, useDispatch} from 'react-redux';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {SET_CURRENT_PROFILE} from '../redux/actionTypes/profileTypes'
+import { AntDesign } from '@expo/vector-icons';
+
 
 const { width, height } = Dimensions.get("screen");
 
@@ -34,7 +37,6 @@ const Profile  = ({navigation}) => {
       async function getCurrentProfile() {
         axios.get(global.server + '/api/user/getCurrentUser')
         .then(res => {
-          // console.log(res.data)
           dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
         })
         .catch(err => {
@@ -59,7 +61,7 @@ const Profile  = ({navigation}) => {
           <Pagination
             dotsLength={currentProfile.picture ? currentProfile.picture.length : 0}
             activeDotIndex={activeSlide}
-            containerStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.75)' }}
+            containerStyle={styles.paginationContainer}
             dotStyle={{
                 width: 10,
                 height: 10,
@@ -97,67 +99,16 @@ const Profile  = ({navigation}) => {
                     {pagination()}
                 </Block>
                 <Block>
-                  <Button
+                  <TouchableWithoutFeedback 
                     onPress = {() => navigation.push("EditProfile")}
                   >
-                    Edit
-                  </Button>
-                </Block>
-                <Block style={styles.info}>
-                  <Block
-                    middle
-                    row
-                    space="evenly"
-                    style={{ marginTop: 20, paddingBottom: 24 }}
-                  >
-                    <Button
-                      small
-                      style={{ backgroundColor: argonTheme.COLORS.INFO }}
-                    >
-                      CONNECT
-                    </Button>
-                    <Button
-                      small
-                      style={{ backgroundColor: argonTheme.COLORS.DEFAULT }}
-                    >
-                      MESSAGE
-                    </Button>
-                  </Block>
-                  <Block row space="between">
-                    <Block middle>
-                      <Text
-                        bold
-                        size={18}
-                        color="#525F7F"
-                        style={{ marginBottom: 4 }}
-                      >
-                        2K
-                      </Text>
-                      <Text size={12} color={argonTheme.COLORS.TEXT}>Orders</Text>
-                    </Block>
-                    <Block middle>
-                      <Text
-                        bold
-                        color="#525F7F"
-                        size={18}
-                        style={{ marginBottom: 4 }}
-                      >
-                        10
-                      </Text>
-                      <Text size={12} color={argonTheme.COLORS.TEXT}>Photos</Text>
-                    </Block>
-                    <Block middle>
-                      <Text
-                        bold
-                        color="#525F7F"
-                        size={18}
-                        style={{ marginBottom: 4 }}
-                      >
-                        89
-                      </Text>
-                      <Text size={12} color={argonTheme.COLORS.TEXT}>Comments</Text>
-                    </Block>
-                  </Block>
+                    <AntDesign 
+                    name="edit" 
+                    size={24} 
+                    color="black" 
+                    style={styles.editButton}
+                    />
+                  </TouchableWithoutFeedback>
                 </Block>
                 <Block flex>
                   <Block middle style={styles.nameInfo}>
@@ -235,7 +186,6 @@ const Profile  = ({navigation}) => {
 const styles = StyleSheet.create({
   profile: {
     marginTop: Platform.OS === "android" ? -HeaderHeight : 0,
-    // marginBottom: -HeaderHeight * 2,
     flex: 1
   },
   profileContainer: {
@@ -243,6 +193,21 @@ const styles = StyleSheet.create({
     height: height,
     padding: 0,
     zIndex: 1
+  },
+  editButton:{
+    backgroundColor: global.primaryColor,
+    height: 50,
+    width: 50,
+    paddingTop: 10,
+    paddingLeft:11,
+    position: "absolute",
+    right: -15,
+    top: -25,
+    borderRadius:25,
+  },
+  paginationContainer:{
+    position: 'absolute',
+    bottom: 0,
   },
   profileBackground: {
     width: width,
@@ -262,9 +227,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     zIndex: 2
   },
-  info: {
-    paddingHorizontal: 40
-  },
+
   avatarContainer: {
     position: "relative",
     marginTop: 0

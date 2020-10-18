@@ -52,13 +52,32 @@ const ChatList = ({navigation}) => {
       }
     }
 
-    const sortList = () => {
-      if(chatList.length > 0) {
-        let tempMatch = [...chatList]
-        tempMatch.sort((a, b) => {
+    // const sortList = () => {
+    //   if(chatList.length > 0) {
+    //     let tempMatch = [...chatList]
+
+    //     tempMatch.sort((a, b) => {
+    //       let firstDate = a.chat.lastMessageDate.$date || a.chat.lastMessageDate;
+    //       let secondDate = b.chat.lastMessageDate.$date || b.chat.lastMessageDate;
   
-          let firstDate = a.chat[0].lastMessageDate.$date || a.chat[0].lastMessageDate;
-          let secondDate = b.chat[0].lastMessageDate.$date || b.chat[0].lastMessageDate;
+    //       if(firstDate > secondDate) {
+    //         return -1;
+    //       }
+    //       if(firstDate < secondDate) {
+    //         return 1;
+    //       }
+    //       return 0;
+    //     }); 
+    //     dispatch({type: SET_CHAT_LIST, payload: tempMatch});
+    //   }
+    // }
+
+    const sortList = (chatList) => {
+      if(chatList.length > 0) {
+
+        chatList.sort((a, b) => {
+          let firstDate = a.chat.lastMessageDate.$date || a.chat.lastMessageDate;
+          let secondDate = b.chat.lastMessageDate.$date || b.chat.lastMessageDate;
   
           if(firstDate > secondDate) {
             return -1;
@@ -68,20 +87,20 @@ const ChatList = ({navigation}) => {
           }
           return 0;
         }); 
-        dispatch({type: SET_CHAT_LIST, payload: tempMatch});
       }
+      return chatList;
     }
 
-    //Initial sort
-    useEffect(()=>{
-      sortList();
-    }, [])
+    // //Initial sort
+    // useEffect(()=>{
+    //   sortList();
+    // }, [])
 
     useEffect(() => {
       async function getCurrentProfile() {
         axios.get(global.server + '/api/user/getCurrentUser')
         .then(res => {
-          dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
+          dispatch({type: SET_CURRENT_PROFILE, payload: res.data});
         })
         .catch(err => {
           console.log(err)
@@ -96,8 +115,8 @@ const ChatList = ({navigation}) => {
         async function getMatches() {
           axios.get(global.server + '/api/match/getMatches')
           .then(res => {
-            dispatch({type: SET_CHAT_LIST, payload: res.data});
-            sortList();
+            let sortedMatch = sortList(res.data);
+            dispatch({type: SET_CHAT_LIST, payload: sortedMatch});
           })
           .catch(err => {
             console.log(err)

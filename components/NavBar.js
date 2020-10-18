@@ -47,7 +47,6 @@ const NavBar = ({
       if (typeof title === 'string') {
         switch(title) {
           case "Chat" :
-            // dispatch({type: SET_CURRENT_TITLE,  payload: currentChatProfile?._id?.$oid})
             return (        
               <View style={styles.title}>
                 <Text style={[styles.titleTextStyle, titleStyle]}>
