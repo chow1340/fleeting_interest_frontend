@@ -14,7 +14,7 @@ const { height, width } = Dimensions.get("screen");
 
 import argonTheme from "../constants/Theme"; 
 import Images from "../constants/Images";
-
+import {getCurrentUser} from "../api/user";
 const Onboarding = ({navigation}) => {
     const dispatch = useDispatch();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -22,22 +22,9 @@ const Onboarding = ({navigation}) => {
     
     //Check if session exists, and if does go to home page
     useEffect(() => {
-      async function getCurrentProfile() {
-        axios.get(global.server + '/api/user/getCurrentUser')
-        .then(res => {
-          if(res.data != "Session does not exist"){
-              dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
-              setIsLoggedIn(true)
-              navigation.reset({
-                index: 0,
-                routes:[{name: 'AppStack'}]
-              })
-          } 
-        })
-        .catch(err => {
-          console.log(err)
-        })
-      }
+      useEffect(() => {
+        getCurrentUser(dispatch);
+      }, [])
       if(isLoggedIn == false){
         getCurrentProfile();
         setIsLoggedIn(true)

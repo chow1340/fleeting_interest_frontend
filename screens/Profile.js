@@ -18,7 +18,7 @@ import {useSelector, useDispatch} from 'react-redux';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {SET_CURRENT_PROFILE} from '../redux/actionTypes/profileTypes'
 import { AntDesign } from '@expo/vector-icons';
-
+import {getCurrentUser} from "../api/user";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -34,16 +34,7 @@ const Profile  = ({navigation}) => {
     const [activeSlide, setActiveSlide] = useState(0);
 
     useEffect(() => {
-      async function getCurrentProfile() {
-        axios.get(global.server + '/api/user/getCurrentUser')
-        .then(res => {
-          dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
-        })
-        .catch(err => {
-          console.log(err)
-        })
-      } 
-      getCurrentProfile();
+      getCurrentUser(dispatch);
     }, [])
 
     const capitalize = (string) => {

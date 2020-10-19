@@ -17,7 +17,7 @@ import {SET_CHAT_LIST} from '../../redux/actionTypes/chatTypes'
 import {SET_CURRENT_PROFILE} from '../../redux/actionTypes/profileTypes'
 import RenderMatches from './RenderMatches';
 
-
+import {getCurrentUser} from "../../api/user"
 import Fire from '../../Fire'
 
 const ChatList = ({navigation}) => {
@@ -71,19 +71,8 @@ const ChatList = ({navigation}) => {
 
 
     useEffect(() => {
-      async function getCurrentProfile() {
-        axios.get(global.server + '/api/user/getCurrentUser')
-        .then(res => {
-          dispatch({type: SET_CURRENT_PROFILE, payload: res.data});
-        })
-        .catch(err => {
-          console.log(err)
-        })
-      } 
-      if(Object.keys(currentProfile) === 0 ) {
-        getCurrentProfile();
-      }
-    }, [])  
+      getCurrentUser(dispatch);
+    }, [])
 
     useEffect(() => {
         async function getMatches() {

@@ -14,6 +14,7 @@ import {
 import { Block, Text } from "galio-framework";
 import { Button, Icon, Input } from "../components";
 import { Images, argonTheme } from "../constants";
+import {getCurrentUser} from "../api/user";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -31,16 +32,7 @@ const Login = ({navigation}) => {
     };
 
     useEffect(() => {
-      async function getCurrentProfile() {
-        axios.get(global.server + '/api/user/getCurrentUser')
-        .then(res => {
-          dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
-        })
-        .catch(err => {
-          console.log(err)
-        })
-      }
-      getCurrentProfile();
+      getCurrentUser(dispatch);
     }, [])
 
     // TODO take care of this garbage error handling
