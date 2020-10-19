@@ -99,25 +99,20 @@ const EditProfile = ({navigation}) => {
         .catch(err => console.log(err));
         setNextIndex(curIndex + 1)
       }
-    };
-
-
+    };    
 
     useEffect(() => {
-      // async function getCurrentProfile() {
-      //   axios.get(global.server + '/api/user/getCurrentUser')
-      //   .then(res => {
-      //     dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
-      //   })
-      //   .catch(err => {
-      //     console.log(err)
-      //   })
-      // } 
-      // getCurrentProfile();
-      getCurrentUser(dispatch);
+      async function getCurrentProfile() {
+        const user = await getCurrentUser();
+        if(user.data) {
+          dispatch({type: SET_CURRENT_PROFILE, payload: user.data})
+        }
+      } 
+      if(currentProfile._id.$oid === undefined) {
+        getCurrentProfile();
+      }
     }, [])
     
-
     useEffect(()=>{
       if(currentProfile?.picture){
         let picture = currentProfile.picture

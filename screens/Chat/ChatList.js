@@ -72,18 +72,15 @@ const ChatList = ({navigation}) => {
 
     useEffect(() => {
       async function getCurrentProfile() {
-        axios.get(global.server + '/api/user/getCurrentUser')
-        .then(res => {
-          dispatch({type: SET_CURRENT_PROFILE, payload: res.data});
-        })
-        .catch(err => {
-          console.log(err)
-        })
+        const user = await getCurrentUser();
+        if(user.data) {
+          dispatch({type: SET_CURRENT_PROFILE, payload: user.data})
+        }
       } 
-      if(Object.keys(currentProfile) === 0 ) {
+      if(currentProfile._id.$oid === undefined) {
         getCurrentProfile();
       }
-    }, [])  
+    }, [])
 
     useEffect(() => {
         async function getMatches() {

@@ -9,7 +9,8 @@ import {
 } from "react-native";
 import { Block, Button, Text, theme } from "galio-framework";
 import {useSelector, useDispatch} from 'react-redux';
-import {SET_CURRENT_PROFILE} from '../redux/actionTypes/profileTypes'
+import {SET_CURRENT_PROFILE} from '../redux/actionTypes/profileTypes';
+import {getCurrentUser} from "../api/user"
 const { height, width } = Dimensions.get("screen");
 
 import argonTheme from "../constants/Theme"; 
@@ -23,24 +24,18 @@ const Onboarding = ({navigation}) => {
     //Check if session exists, and if does go to home page
     useEffect(() => {
       async function getCurrentProfile() {
-        axios.get(global.server + '/api/user/getCurrentUser')
-        .then(res => {
-          if(res.data != "Session does not exist"){
-              dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
-              setIsLoggedIn(true)
-              navigation.reset({
-                index: 0,
-                routes:[{name: 'AppStack'}]
-              })
-          } 
-        })
-        .catch(err => {
-          console.log(err)
-        })
+        const user = await getCurrentUser();
+        if(user.data != "Session does not exist") {
+          dispatch({type: SET_CURRENT_PROFILE, payload: user.data})
+          setIsLoggedIn(true)
+          navigation.reset({
+            index: 0,
+            routes:[{name: 'AppStack'}]
+          })
+        }
       }
       if(isLoggedIn == false){
         getCurrentProfile();
-        setIsLoggedIn(true)
       }
     }, [])
 
