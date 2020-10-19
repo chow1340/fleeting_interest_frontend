@@ -70,13 +70,16 @@ const Profile  = ({navigation}) => {
                 width: 10,
                 height: 10,
                 borderRadius: 5,
-                marginHorizontal: 8,
-                backgroundColor: 'rgba(255, 255, 255, 0.92)'
+                marginHorizontal: 1,
+                backgroundColor: 'rgba(255, 255, 255, 0.92)',
+                borderColor: 'black',
+                borderWidth: 1,
             }}
             animatedDuration = {0}
             animatedTension = {0}
             inactiveDotStyle={{
                 // Define styles for inactive dots here
+                borderColor: 'black', 
             }}
             inactiveDotOpacity={0.4}
             inactiveDotScale={0.6}
@@ -114,8 +117,8 @@ const Profile  = ({navigation}) => {
                     />
                   </TouchableWithoutFeedback>
                 </Block>
-                <Block flex>
-                  <Block middle style={styles.nameInfo}>
+                <Block>
+                  <Block style={styles.nameInfo}>
                     <Text bold size={28} color="#32325D">
                       {capitalize(currentProfile?.first_name)} {capitalize(currentProfile?.last_name)}
                     </Text>
@@ -125,46 +128,6 @@ const Profile  = ({navigation}) => {
                   </Block>
                   <Block middle style={{ marginTop: 30, marginBottom: 16 }}>
                     <Block style={styles.divider} />
-                  </Block>
-                  <Block middle>
-                    <Text
-                      size={16}
-                      color="#525F7F"
-                      style={{ textAlign: "center" }}
-                    >
-                      An artist of considerable range, Jessica name taken by
-                      Melbourne …
-                    </Text>
-                    <Button
-                      color="transparent"
-                      textStyle={{
-                        color: "#233DD2",
-                        fontWeight: "500",
-                        fontSize: 16
-                      }}
-                    >
-                      Show more
-                    </Button>
-                  </Block>
-                  <Block
-                    row
-                    style={{ paddingVertical: 14, alignItems: "baseline" }}
-                  >
-                    <Text bold size={16} color="#525F7F">
-                      Album
-                    </Text>
-                  </Block>
-                  <Block
-                    row
-                    style={{ paddingBottom: 20, justifyContent: "flex-end" }}
-                  >
-                    <Button
-                      small
-                      color="transparent"
-                      textStyle={{ color: "#5E72E4", fontSize: 12 }}
-                    >
-                      View all
-                    </Button>
                   </Block>
                   <Block style={{ paddingBottom: -HeaderHeight * 2 }}>
                     <Block row space="between" style={{ flexWrap: "wrap" }}>
@@ -205,9 +168,11 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingLeft:11,
     position: "absolute",
-    right: -15,
+    right: 15,
     top: -25,
     borderRadius:25,
+    zIndex: 99,
+    elevation: 11,
   },
   paginationContainer:{
     position: 'absolute',
@@ -219,44 +184,34 @@ const styles = StyleSheet.create({
   },
   profileCard: {
     // position: "relative",
-    padding: theme.SIZES.BASE,
-    marginHorizontal: theme.SIZES.BASE,
     marginTop: 65,
     borderTopLeftRadius: 6,
     borderTopRightRadius: 6,
     backgroundColor: theme.COLORS.WHITE,
-    shadowColor: "black",
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 8,
-    shadowOpacity: 0.2,
-    zIndex: 2
+    zIndex: 2,
   },
 
   avatarContainer: {
     position: "relative",
-    marginTop: 0
+    marginTop: 0,
+    // backgroundColor: "black",
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity:  0.4,
+    shadowRadius: 3,
+    elevation: 5,
   },
   avatar: {
     width: width,
     height: 350,
-    // borderRadius: 62,
-    borderWidth: 0
+    borderColor: 'black',
   },
   nameInfo: {
-    marginTop: 35
+    marginTop: 15,
+    marginLeft: 15,
   },
-  divider: {
-    width: "90%",
-    borderWidth: 1,
-    borderColor: "#E9ECEF"
-  },
-  thumb: {
-    borderRadius: 4,
-    marginVertical: 4,
-    alignSelf: "center",
-    width: thumbMeasure,
-    height: thumbMeasure
-  }
+
 });
 
 export default Profile;

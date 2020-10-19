@@ -31,7 +31,6 @@ const NavBar = ({
     right,
     rightStyle,
     style,
-    // styles,
     transparent,
     theme,
     title,
@@ -46,7 +45,6 @@ const NavBar = ({
 
     const handleProfileNavigation = (user) => {
       dispatch({type: SET_VIEW_PROFILE , payload: user});
-      console.log("Pressed")
       navigation.navigate('View Profile');
     }
 
@@ -123,7 +121,7 @@ const NavBar = ({
         if (!hideRight) {
           return (
             <View 
-            // right row={hasIcons} 
+            // row={hasIcons} 
             style={rightStyles}>
               {right}
             </View>
@@ -151,9 +149,9 @@ const styles = StyleSheet.create({
     }, 
     chatContainer:{
       flex: 2,
-      height: 100 * 0.07,
+      // height: 100 * 0.07,
       alignItems: 'center',
-      flexDirection: "row"
+      flexDirection: "row",
     },
     navBar: {
         width: 'auto',
@@ -178,12 +176,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     right: {
-        flex: 0.5,
-        height: 100 * 0.07,
+        // flex: 0.5,
+        // height: 100 * 0.07,
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection:'row',
-        marginRight: 20
+        marginRight: 20,
+        // backgroundColor: "black",
     },
     transparent: {
         backgroundColor: 'transparent',

@@ -9,25 +9,12 @@ import Tabs from './Tabs';
 import argonTheme from '../constants/Theme';
 import { Feather } from '@expo/vector-icons'; 
 import { AntDesign } from '@expo/vector-icons'; 
-import axios from 'axios';
 import {useSelector, useDispatch} from 'react-redux';
 import {SET_CURRENT_TITLE} from '../redux/actionTypes/navigationTypes'
-
+import { EvilIcons } from '@expo/vector-icons'; 
 const { height, width } = Dimensions.get('window');
 
 const iPhoneX = () => Platform.OS === 'ios' && (height === 812 || width === 812 || height === 896 || width === 896);
-
-const BellButton = ({isWhite, style, navigation}) => (
-  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Pro')}>
-    {/* <Icon
-      family="ArgonExtra"
-      size={16}
-      name="bell"
-      color={argonTheme.COLORS[isWhite ? 'WHITE' : 'ICON']}
-    />
-    <Block middle style={styles.notify} /> */}
-  </TouchableOpacity>
-);
 
 const ProfileButton = ({isWhite, style, navigation,title }) => {
   const dispatch = useDispatch();
@@ -83,6 +70,27 @@ const ChatListButton = ({isWhite, style, navigation,title }) => {
   }
 }
 
+const MatchButton = ({isWhite, style, navigation,title }) => {
+  if(title === 'Matching'){
+    return(
+      <TouchableOpacity style={[styles.button, style, styles.highlight]}        
+      onPress={() => {
+      }
+      }>
+        <EvilIcons name="heart" size={30} color="black" style = {styles.matchButton}/>
+      </TouchableOpacity>
+    )
+  } else {
+    return(
+      <TouchableOpacity style={[styles.button]}     
+       onPress={() => {
+      }}>
+        <EvilIcons name="heart" size={30} color="black" style = {styles.matchButton} />
+      </TouchableOpacity>
+    )
+  }
+}
+
 class Header extends React.Component {
 
   handleLeftPress = () => {
@@ -92,8 +100,9 @@ class Header extends React.Component {
   renderRight = () => {
     const { white, title, navigation } = this.props;
     return ([
+      <MatchButton title={title} key='profile-button' navigation={navigation} isWhite={white}></MatchButton>,
       <ChatListButton title={title} key='message-list-button' navigation={navigation} isWhite={white}></ChatListButton>,
-      <ProfileButton title={title} key='profile-button' navigation={navigation} isWhite={white}></ProfileButton>,
+      <ProfileButton title={title} key='match-button' navigation={navigation} isWhite={white}></ProfileButton>,
     ]);
   }
   renderSearch = () => {
@@ -143,19 +152,6 @@ class Header extends React.Component {
         onChange={id => navigation.setParams({ tabId: id })} />
     )
   }
-  renderHeader = () => {
-    const { search, options, tabs } = this.props;
-    if (search || tabs || options) {
-      return (
-        <Block center>
-          {/* {search ? this.renderSearch() : null} */}
-          {/* {options ? this.renderOptions() : null} */}
-          {/* {tabs ? this.renderTabs() : null} */}
-        </Block>
-      );
-    }
-  }
-
   
   render() {
     const { back, title, white, transparent, bgColor, iconColor, titleColor, navigation, ...props } = this.props;
@@ -182,7 +178,7 @@ class Header extends React.Component {
           currentRoute={this.props.scene.route}
           right={this.renderRight()}
           navigation={navigation}
-          rightStyle={{ alignItems: 'center' }}
+          rightStyle={styles.rightStyle}
           left={
             <Icon 
               name={back ? 'chevron-left' : "menu"} family="entypo" 
@@ -201,8 +197,6 @@ class Header extends React.Component {
           ]}
           {...props}
         />
-
-        {this.renderHeader()}
       </Block>
     );
   }
@@ -210,12 +204,14 @@ class Header extends React.Component {
 
 const styles = StyleSheet.create({
   button: {
-    padding: 12,
+    padding: 10,
     position: 'relative',
+    height: 45,
+    width: 45,
   },
   highlight: {
     backgroundColor: '#C0C0C0',
-    borderRadius: 24
+    borderRadius: 24,
   },
   title: {
     width: '100%',
@@ -224,8 +220,8 @@ const styles = StyleSheet.create({
   },
   navbar: {
     paddingVertical: 0,
-    paddingBottom: theme.SIZES.BASE * 1.5,
-    paddingTop: 20,
+    paddingBottom: 10,
+    paddingTop: 10,
     zIndex: 5,
   },
   shadow: {
@@ -277,6 +273,18 @@ const styles = StyleSheet.create({
     lineHeight: 19,
     fontWeight: '400',
     color: argonTheme.COLORS.HEADER
+  },
+  rightStyle:{
+    alignItems: 'center',
+  },
+  matchButton:{
+    position: 'absolute',
+    // right: 0,
+    left: 7,
+    top: 10,
+    height: 45, 
+    width: 45,
+    // backgroundColor: "black",
   },
 });
 

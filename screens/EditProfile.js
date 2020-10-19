@@ -198,12 +198,8 @@ const EditProfile = ({navigation}) => {
     }
 
     const renderItem = (item) => {
-      if(item.uri === "No picture available"  && !gridIsEditable) {
-        return (
-          <View></View>
-        )
-      }
-      else if(item.uri === "No picture available" ) {
+      if(item.uri === "No picture available" ) {
+        item.disabledDrag = true;
         return(
           <TouchableWithoutFeedback onPress={()=>addImage()} >
             <View 
@@ -216,16 +212,11 @@ const EditProfile = ({navigation}) => {
         )
       } 
       else {
-        let disabledDrag = false
-        if(gridIsEditable === false) {
-          disabledDrag = true
-        }
+        item.disabledDrag = !gridIsEditable;
         return (
-          
           <View
             style={styles.item}
             key={item.key}
-            disabledDrag = {disabledDrag}
           >
             { gridIsEditable &&
               <TouchableWithoutFeedback
@@ -347,16 +338,7 @@ const EditProfile = ({navigation}) => {
               style={styles.avatar}
             />
 
-              <Block flex middle center>
-                <Button 
-                      color="primary"  
-                      style={styles.saveButton}
-                      onPress = {addImage}
-                      >
-                        <Text bold size={14} color={argonTheme.COLORS.WHITE}>
-                          Add image
-                        </Text>
-                </Button>
+              <Block flex middle center style={styles.infoContainer}>
                 <Block width={width * 0.7}>
                   <Text>
                     First Name
@@ -367,7 +349,7 @@ const EditProfile = ({navigation}) => {
                   >
                     {currentProfile?.first_name ? currentProfile.first_name : ""}
 
-                    </Input>
+                  </Input>
                 </Block>
 
                 <Block width={width * 0.7}>
@@ -382,6 +364,16 @@ const EditProfile = ({navigation}) => {
 
                   </Input>
                 </Block>
+
+                <Button 
+                  color="primary"  
+                  style={styles.saveButton}
+                  onPress = {saveEditProfile}
+                  >
+                    <Text bold size={14} color={argonTheme.COLORS.WHITE}>
+                      SAVE
+                    </Text>
+                </Button>
 
               </Block>
               {editGridButton()} 
@@ -402,23 +394,7 @@ const EditProfile = ({navigation}) => {
                 }}
                 />
               </View>
-              <Block>
-                <Block middle>
-                  {
-                    isSaving &&
-                    <ActivityIndicator size="small" color="#0000ff" />
-                  }
-                  <Button 
-                  color="primary"  
-                  style={styles.saveButton}
-                  onPress = {saveEditProfile}
-                  >
-                    <Text bold size={14} color={argonTheme.COLORS.WHITE}>
-                      SAVE
-                    </Text>
-                  </Button>
-                </Block>
-              </Block>
+
           </ScrollView>
         </Block>
       </Block>
@@ -431,6 +407,9 @@ const styles = StyleSheet.create({
     marginTop: 50,
     flex: 1,
     flexGrow: 1
+  },
+  infoContainer: {
+    marginTop: 15,
   },
   wrapper:{
     width:'100%',
