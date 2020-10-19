@@ -26,6 +26,8 @@ import { FontAwesome } from '@expo/vector-icons';
 import { DraggableGrid } from 'react-native-draggable-grid';
 import { HeaderHeight } from "../constants/utils";
 
+import {getCurrentUser} from "../api/user";
+
 const { width, height } = Dimensions.get("screen");
 
 const thumbMeasure = (width - 48 - 32) / 3;
@@ -102,16 +104,17 @@ const EditProfile = ({navigation}) => {
 
 
     useEffect(() => {
-      async function getCurrentProfile() {
-        axios.get(global.server + '/api/user/getCurrentUser')
-        .then(res => {
-          dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
-        })
-        .catch(err => {
-          console.log(err)
-        })
-      } 
-      getCurrentProfile();
+      // async function getCurrentProfile() {
+      //   axios.get(global.server + '/api/user/getCurrentUser')
+      //   .then(res => {
+      //     dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
+      //   })
+      //   .catch(err => {
+      //     console.log(err)
+      //   })
+      // } 
+      // getCurrentProfile();
+      getCurrentUser(dispatch);
     }, [])
     
 
