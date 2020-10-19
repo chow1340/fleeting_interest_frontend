@@ -13,11 +13,12 @@ import {
 import { Ionicons } from '@expo/vector-icons'; 
 import {useSelector, useDispatch} from 'react-redux';
 import { TouchableOpacity } from "react-native-gesture-handler";
+import {Capitalize} from "../../hooks/display/Capitalize";
 
 const { width } = Dimensions.get("screen");
-import {SET_CURRENT_CHAT_PROFILE, SET_CURRENT_CHAT_ID, SET_CHAT_LIST} from '../redux/actionTypes/chatTypes'
+import {SET_CURRENT_CHAT_PROFILE, SET_CURRENT_CHAT_ID, SET_CHAT_LIST} from '../../redux/actionTypes/chatTypes'
 
-import Fire from '../Fire'
+import Fire from '../../Fire'
 import { set } from "react-native-reanimated";
 
 const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
@@ -31,7 +32,6 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
     const currentProfile = useSelector(state=> state.profile.currentProfile);
     const currentTitle = useSelector(state => state.navigation.currentTitle);
     const [hasRead, setHasRead] = useState();
-    const [isInChat, setIsInChat] = useState(false);
 
     const currentChatIndex = chatList.findIndex(x=>
       x.chat._id.$oid === chatId
@@ -136,7 +136,7 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
             style={styles.displayPicture}
           />
           <View>
-            <Text style={styles.name}>{user.first_name}</Text>
+            <Text style={[styles.name, !hasRead ? styles.boldFont : ""]}>{Capitalize(user.first_name)}</Text>
             <Text numberOfLines={1} style={[styles.messagePreview, !hasRead ? styles.boldFont : ""]}>
               {lastMessage.text}
             </Text>
@@ -173,7 +173,6 @@ const styles = StyleSheet.create({
     fontSize: 25
   },
   name:{
-    fontWeight: 'bold',
     fontSize:20,
     marginBottom: -20,
     marginTop:10

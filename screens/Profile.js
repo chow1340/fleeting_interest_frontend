@@ -183,7 +183,6 @@ const styles = StyleSheet.create({
     height: height / 2
   },
   profileCard: {
-    // position: "relative",
     marginTop: 65,
     borderTopLeftRadius: 6,
     borderTopRightRadius: 6,

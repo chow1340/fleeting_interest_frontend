@@ -15,9 +15,10 @@ import Login from "../screens/Login";
 import Elements from "../screens/Elements";
 import Articles from "../screens/Articles";
 import EditProfile from "../screens/EditProfile";
-import ChatList from "../screens/ChatList";
-import ChatScreen from "../screens/ChatScreen";
+import ChatList from "../screens/Chat/ChatList";
+import ChatScreen from "../screens/Chat/ChatScreen";
 import ViewProfile from "../screens/ViewProfile";
+import Matching from "../screens/Matching";
 // drawer
 import CustomDrawerContent from "./Menu";
 
@@ -288,6 +289,7 @@ function AppStack(props) {
     <Stack.Screen name="Messages" component={ChatListStack} />
     <Drawer.Screen name="Onboarding" component={OnboardingStack} />
     <Drawer.Screen name="View Profile" component={ViewProfileStack} />
+    <Drawer.Screen name="Matching" component={Matching} />
   </Drawer.Navigator>
   );
 }

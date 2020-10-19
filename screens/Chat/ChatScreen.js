@@ -11,10 +11,10 @@ import {
 } from "react-native";
 import {useSelector, useDispatch} from 'react-redux';
 import { GiftedChat , Composer} from 'react-native-gifted-chat'
-import {SET_CHAT_LIST} from '../redux/actionTypes/chatTypes'
-import {SET_CURRENT_TITLE} from '../redux/actionTypes/navigationTypes'
+import {SET_CHAT_LIST} from '../../redux/actionTypes/chatTypes'
+import {SET_CURRENT_TITLE} from '../../redux/actionTypes/navigationTypes'
 
-import Fire from '../Fire'
+import Fire from '../../Fire'
 import { initialWindowMetrics } from "react-native-safe-area-context";
 
 

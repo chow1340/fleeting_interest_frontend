@@ -11,17 +11,14 @@ import {
   Button
 } from "react-native";
 
-import { Ionicons } from '@expo/vector-icons'; 
 import {useSelector, useDispatch} from 'react-redux';
-import { TouchableOpacity } from "react-native-gesture-handler";
-
 const { width } = Dimensions.get("screen");
-import {SET_CHAT_LIST} from '../redux/actionTypes/chatTypes'
-import {SET_CURRENT_PROFILE} from '../redux/actionTypes/profileTypes'
-import RenderMatches from '../components/RenderMatches';
+import {SET_CHAT_LIST} from '../../redux/actionTypes/chatTypes'
+import {SET_CURRENT_PROFILE} from '../../redux/actionTypes/profileTypes'
+import RenderMatches from './RenderMatches';
 
 
-import Fire from '../Fire'
+import Fire from '../../Fire'
 
 const ChatList = ({navigation}) => {
     const dispatch = useDispatch();
