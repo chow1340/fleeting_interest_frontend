@@ -71,10 +71,14 @@ const ChatListButton = ({isWhite, style, navigation,title }) => {
 }
 
 const MatchButton = ({isWhite, style, navigation,title }) => {
+  const dispatch = useDispatch();
+
   if(title === 'Matching'){
     return(
       <TouchableOpacity style={[styles.button, style, styles.highlight]}        
       onPress={() => {
+        navigation.navigate('Matching');
+        dispatch({type: SET_CURRENT_TITLE, payload: "Matching"});
       }
       }>
         <AntDesign name="hearto" size={24} color="black" />
@@ -85,6 +89,8 @@ const MatchButton = ({isWhite, style, navigation,title }) => {
     return(
       <TouchableOpacity style={[styles.button]}     
        onPress={() => {
+        navigation.navigate('Matching');
+        dispatch({type: SET_CURRENT_TITLE, payload: "Matching"});
       }}>
         <AntDesign name="hearto" size={24} color="black" />
         {/* <EvilIcons name="heart" size={30} color="black" style = {styles.matchButton} /> */}

@@ -18,7 +18,7 @@ import {Capitalize} from "../../hooks/display/Capitalize";
 const { width } = Dimensions.get("screen");
 import {SET_CURRENT_CHAT_PROFILE, SET_CURRENT_CHAT_ID, SET_CHAT_LIST} from '../../redux/actionTypes/chatTypes'
 import {SET_CURRENT_TITLE} from '../../redux/actionTypes/navigationTypes'
-
+import {updateChat} from "../../api/Chat"
 import Fire from '../../Fire'
 
 const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
@@ -78,7 +78,6 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
       if(!isSet){
         Fire.shared.fetchInitialLastMessage((message) =>{
           setLastMessage(message);
-          console.log(message);
         }, chatId);
       }
       isSet = true;
@@ -96,8 +95,10 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
         let currentChat = tempChatList[currentChatIndex];
         currentChat.chat.lastMessageDate.$date = DateTime.valueOf();
         currentChat.chat.lastMessageSent = message.text;
+        updateChat(message.text, chatId);
 
         let sortedChatList = sortListFunction(tempChatList);
+
         //CHange is read status if you did not send it
         if(currentProfile._id.$oid != message.user._id) {
           axios.post(global.server + '/api/chat/setIsRead', 
@@ -113,7 +114,6 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
             }
           });
           setHasRead(false);
-          console.log("raninhere");
         }
         dispatch({type: SET_CHAT_LIST, payload: sortedChatList});
         

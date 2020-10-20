@@ -18,14 +18,16 @@ const { width, height } = Dimensions.get("screen");
 const thumbMeasure = (width - 48 - 32) / 3;
 
 
-const Profile  = ({navigation}) => {
+const Matching  = ({navigation}) => {
+  return(
     <View>
         <Text>test</Text>
     </View>
+  )
 }
 
 const styles = StyleSheet.create({
 
 });
 
-export default Profile;
+export default Matching;

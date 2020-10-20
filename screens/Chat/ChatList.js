@@ -51,18 +51,16 @@ const ChatList = ({navigation}) => {
 
 
     const sortList = (chatList) => {
-
       if(chatList.length > 0) {
-
         chatList.sort((a, b) => {
           let firstDate = a.chat.lastMessageDate.$date;
           let secondDate = b.chat.lastMessageDate.$date;
   
           if(firstDate > secondDate) {
-            return 1;
+            return -1;
           }
           if(firstDate < secondDate) {
-            return -1;
+            return 1;
           }
           return 0;
         }); 

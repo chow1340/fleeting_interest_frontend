@@ -18,7 +18,7 @@ import EditProfile from "../screens/EditProfile";
 import ChatList from "../screens/Chat/ChatList";
 import ChatScreen from "../screens/Chat/ChatScreen";
 import ViewProfile from "../screens/ViewProfile";
-import Matching from "../screens/Matching";
+import Matching from "../screens/matching/Matching";
 // drawer
 import CustomDrawerContent from "./Menu";
 
@@ -167,6 +167,23 @@ function ChatListStack(props) {
   )
 }
 
+function MatchingStack(props){
+  return(
+    <Stack.Navigator initialRouteName="Matching" mode="card" headerMode="screen">
+      <Stack.Screen
+        name="Matching"
+        component={Matching}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header title="Matching" navigation={navigation} back scene={scene} />
+          ),
+          cardStyle: { backgroundColor: "#F8F9FE" }
+        }}
+      />
+    </Stack.Navigator>
+  )
+}
+
 function LoginStack(props) {
   return(
     <Stack.Navigator mode="card" headerMode="none">
@@ -289,7 +306,7 @@ function AppStack(props) {
     <Stack.Screen name="Messages" component={ChatListStack} />
     <Drawer.Screen name="Onboarding" component={OnboardingStack} />
     <Drawer.Screen name="View Profile" component={ViewProfileStack} />
-    <Drawer.Screen name="Matching" component={Matching} />
+    <Drawer.Screen name="Matching" component={MatchingStack} />
   </Drawer.Navigator>
   );
 }
