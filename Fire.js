@@ -38,9 +38,7 @@ class Fire {
     return (firebase.auth().currentUser || {}).uid;
   }
 
-  get ref() {
-    return firebase.database().ref('messages');
-  }
+
 
   parse = snapshot => {
    
@@ -60,7 +58,7 @@ class Fire {
 
 
   on = (callback, chatId) => {
-    firebase.database().ref('messages' + chatId)
+    firebase.database().ref('messages/' + chatId)
       .limitToLast(15)
       .orderByChild("timestamp")
       .on('child_added', snapshot => {
@@ -69,7 +67,7 @@ class Fire {
   }
 
   fetchMoreMessages = (callback, chatId, key) => {
-    firebase.database().ref('messages' + chatId)
+    firebase.database().ref('messages/' + chatId)
       .limitToLast(15)
       .endAt(key)
       .orderByKey()
@@ -79,19 +77,19 @@ class Fire {
   }
 
   fetchInitialLastMessage = (callback, chatId) => {
-    firebase.database().ref('messages' + chatId)
+    firebase.database().ref('messages/' + chatId)
       .limitToLast(1)
       .once('child_added', snapshot => callback(this.parse(snapshot)))
   }
 
   fetchLastMessage = (callback, chatId) => {
-    firebase.database().ref('messages' + chatId)
+    firebase.database().ref('messages/' + chatId)
       .limitToLast(1)
       .on('child_added', snapshot => callback(this.parse(snapshot)))
   }
 
   listen = (callback, chatId) => {
-    firebase.database().ref('messages' + chatId)
+    firebase.database().ref('messages/' + chatId)
       .limitToLast(1)
       .orderByChild("timestamp")
       .startAt(Date.now().valueOf())
@@ -120,7 +118,7 @@ class Fire {
     }
   };
 
-  append = (message, chatId) => firebase.database().ref('messages' + chatId).push(message);
+  append = (message, chatId) => firebase.database().ref('messages/' + chatId).push(message);
 
   // close the connection to the Backend
   off() {

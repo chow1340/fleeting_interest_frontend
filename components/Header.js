@@ -77,7 +77,8 @@ const MatchButton = ({isWhite, style, navigation,title }) => {
       onPress={() => {
       }
       }>
-        <EvilIcons name="heart" size={30} color="black" style = {styles.matchButton}/>
+        <AntDesign name="hearto" size={24} color="black" />
+        {/* <EvilIcons name="heart" size={30} color="black" style = {styles.matchButton}/> */}
       </TouchableOpacity>
     )
   } else {
@@ -85,7 +86,8 @@ const MatchButton = ({isWhite, style, navigation,title }) => {
       <TouchableOpacity style={[styles.button]}     
        onPress={() => {
       }}>
-        <EvilIcons name="heart" size={30} color="black" style = {styles.matchButton} />
+        <AntDesign name="hearto" size={24} color="black" />
+        {/* <EvilIcons name="heart" size={30} color="black" style = {styles.matchButton} /> */}
       </TouchableOpacity>
     )
   }

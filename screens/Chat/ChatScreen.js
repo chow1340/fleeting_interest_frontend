@@ -7,7 +7,8 @@ import {
   FlatList,
   Image,
   Dimensions,
-  BackHandler
+  BackHandler,
+  ActivityIndicator
 } from "react-native";
 import {useSelector, useDispatch} from 'react-redux';
 import { GiftedChat , Composer} from 'react-native-gifted-chat'
@@ -15,7 +16,6 @@ import {SET_CHAT_LIST} from '../../redux/actionTypes/chatTypes'
 import {SET_CURRENT_TITLE} from '../../redux/actionTypes/navigationTypes'
 
 import Fire from '../../Fire'
-import { initialWindowMetrics } from "react-native-safe-area-context";
 
 
 const { width, height } = Dimensions.get("screen");
@@ -96,6 +96,7 @@ const ChatScreen = ({navigation}) => {
     return (
 
       <GiftedChat
+        renderLoading={() =>  <ActivityIndicator size="large" color="#0000ff" />}
         messages={messages}
         onSend={message => handleSend(message)}
         user={{

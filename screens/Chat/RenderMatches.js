@@ -20,7 +20,6 @@ import {SET_CURRENT_CHAT_PROFILE, SET_CURRENT_CHAT_ID, SET_CHAT_LIST} from '../.
 import {SET_CURRENT_TITLE} from '../../redux/actionTypes/navigationTypes'
 
 import Fire from '../../Fire'
-import { set } from "react-native-reanimated";
 
 const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
 
@@ -33,8 +32,6 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
     const currentProfile = useSelector(state=> state.profile.currentProfile);
     const currentTitle = useSelector(state => state.navigation.currentTitle);
     const [hasRead, setHasRead] = useState();
-    const [chatObjectUser, setChatObjectUser] = useState();
-    const [isInChat, setIsInChat] = useState();
     const currentChatIndex = chatList.findIndex(x=>
       x.chat._id.$oid === chatId
     )
@@ -64,12 +61,6 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
       navigation.navigate('Chat');
     }
 
-    
-    useEffect(()=>{
-      if(currentTitle === user._id.$oid) {
-        setIsInChat(user._id.$oid)
-      }
-    }, [currentTitle])
 
     useEffect(()=>{
       if(chatObject) {
