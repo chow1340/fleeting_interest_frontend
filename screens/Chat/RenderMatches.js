@@ -17,6 +17,7 @@ import {Capitalize} from "../../hooks/display/Capitalize";
 
 const { width } = Dimensions.get("screen");
 import {SET_CURRENT_CHAT_PROFILE, SET_CURRENT_CHAT_ID, SET_CHAT_LIST} from '../../redux/actionTypes/chatTypes'
+import {SET_CURRENT_TITLE} from '../../redux/actionTypes/navigationTypes'
 
 import Fire from '../../Fire'
 import { set } from "react-native-reanimated";
@@ -32,17 +33,19 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
     const currentProfile = useSelector(state=> state.profile.currentProfile);
     const currentTitle = useSelector(state => state.navigation.currentTitle);
     const [hasRead, setHasRead] = useState();
-
+    const [chatObjectUser, setChatObjectUser] = useState();
+    const [isInChat, setIsInChat] = useState();
     const currentChatIndex = chatList.findIndex(x=>
       x.chat._id.$oid === chatId
     )
     const chatObject = chatList[currentChatIndex].chat;
 
-
+    
     const handleChatNavigation = (user, chatId) => {
 
       dispatch({type: SET_CURRENT_CHAT_PROFILE, payload: user});
       dispatch({type: SET_CURRENT_CHAT_ID, payload: chatId});
+      dispatch({type: SET_CURRENT_TITLE, payload: chatId});
 
       axios.post(global.server + '/api/chat/setIsRead', 
       {
@@ -60,7 +63,14 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
 
       navigation.navigate('Chat');
     }
+
     
+    useEffect(()=>{
+      if(currentTitle === user._id.$oid) {
+        setIsInChat(user._id.$oid)
+      }
+    }, [currentTitle])
+
     useEffect(()=>{
       if(chatObject) {
         if(chatObject.user1._id === currentProfile._id.$oid) {
@@ -77,9 +87,9 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
       if(!isSet){
         Fire.shared.fetchInitialLastMessage((message) =>{
           setLastMessage(message);
+          console.log(message);
         }, chatId);
       }
-
       isSet = true;
     }, [])
 
@@ -97,7 +107,8 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
         currentChat.chat.lastMessageSent = message.text;
 
         let sortedChatList = sortListFunction(tempChatList);
-        if(currentTitle != user._id.$oid) {
+        //CHange is read status if you did not send it
+        if(currentProfile._id.$oid != message.user._id) {
           axios.post(global.server + '/api/chat/setIsRead', 
           {
             params: {
@@ -109,17 +120,16 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
             headers: {
               'Content-Type': 'application/json'
             }
-          })
-          setHasRead(false)
+          });
+          setHasRead(false);
+          console.log("raninhere");
         }
         dispatch({type: SET_CHAT_LIST, payload: sortedChatList});
         
-
       }, chatId)
       return () => {
         Fire.shared.off()
       }
-       
     }, [])
 
 
@@ -136,7 +146,7 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
             style={styles.displayPicture}
           />
           <View>
-            <Text style={[styles.name, !hasRead ? styles.boldFont : ""]}>{Capitalize(user.first_name)}</Text>
+            <Text style={[styles.name, !hasRead? styles.boldFont : ""]}>{Capitalize(user.first_name)}</Text>
             <Text numberOfLines={1} style={[styles.messagePreview, !hasRead ? styles.boldFont : ""]}>
               {lastMessage.text}
             </Text>

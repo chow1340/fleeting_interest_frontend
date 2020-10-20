@@ -29,9 +29,6 @@ const ChatScreen = ({navigation}) => {
     const chatId = useSelector(state=>state.chat.chatId);
     const [messages, setMessages] = useState([]);
 
-    useEffect(()=>{
-      dispatch({type: SET_CURRENT_TITLE, payload: currentChatProfile._id.$oid});
-    }, [])
 
     //Get initial messages 
     useEffect(() => {

@@ -11,7 +11,6 @@ import {
 import { Ionicons } from '@expo/vector-icons'; 
 import {useSelector, useDispatch} from 'react-redux';
 import { TouchableOpacity } from "react-native-gesture-handler";
-import {SET_CURRENT_TITLE} from '../redux/actionTypes/navigationTypes'
 import { HeaderHeight } from "../constants/utils";
 import {SET_VIEW_PROFILE} from '../redux/actionTypes/profileTypes'
 
