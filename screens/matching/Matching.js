@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from "react";
+import {getNearbyUsersApi} from "../../api/Location"
 import {
   StyleSheet,
   Dimensions,
@@ -16,9 +17,16 @@ import {
 const { width, height } = Dimensions.get("screen");
 
 const thumbMeasure = (width - 48 - 32) / 3;
+const getNearbyUsersHelper = async () => {
+  const nearbyUsers = await getNearbyUsersApi();
+  console.log(nearbyUsers)
+}
 
 
 const Matching  = ({navigation}) => {
+  useEffect(()=> {
+    getNearbyUsersHelper();
+  },[])
   return(
     <View>
         <Text>test</Text>

@@ -34,8 +34,6 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
     )
     const chatObject = chatList[currentChatIndex].chat;
 
- 
-
     const handleChatNavigation = async (user, chatId) => {
 
       dispatch({type: SET_CURRENT_CHAT_PROFILE, payload: user});
