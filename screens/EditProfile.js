@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef} from "react";
 import axios from 'axios';
-import {getCurrentUserApi} from '../api/User';
-import {uploadUpdateOrderApi} from '../api/Image'
+import {getCurrentUserApi, editProfileApi} from '../api/User';
+import {uploadUpdateOrderApi, deleteImageApi, updatePictureArrayOrderApi} from '../api/Image'
 import {
   StyleSheet,
   Dimensions,
@@ -79,8 +79,6 @@ const EditProfile = ({navigation}) => {
         formdata.append('index', curIndex)
 
         const upload = await uploadUpdateOrderApi(formdata)
-        console.log(upload);
-
         if(upload.data) {
           tempArray[curIndex] = {
             uri: upload.data,
@@ -88,25 +86,6 @@ const EditProfile = ({navigation}) => {
           }
           setPictureArray(tempArray);
         }
-        // axios({
-        //   url: global.server + '/api/image/uploadFileAndUpdatePictureArrayOrder',
-        //   method: "POST",
-        //   data: formdata,
-        //   headers: {
-        //     'content-type' : 'multipart/form-data'
-        //   }
-        // })
-
-        // .then((res)=>{
-        //   tempArray[curIndex] = {
-        //     uri: res.data,
-        //     key: curIndex.toString(),
-        //   }
-        //   setPictureArray(tempArray);
-        // })
-        // .catch(err => console.log(err));
-
-
 
         setNextIndex(curIndex + 1)
       }
@@ -154,17 +133,7 @@ const EditProfile = ({navigation}) => {
 
     
     const saveEditProfile = () => {
-		  axios.post(global.server + '/api/user/editProfile', 
-        {
-          params: {
-            currentProfile : currentProfile
-          }
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-      })
+      editProfileApi(currentProfile)
     }
 
     const editGridButton = () => {
@@ -285,27 +254,13 @@ const EditProfile = ({navigation}) => {
       );
     }
     
-    const handleDelete = (item) => {
+    const handleDelete = async (item) => {
       let tempPictureArray = [...pictureArray];
       tempPictureArray.splice(item.key, 1);
-
-      axios.post(global.server + '/api/image/deleteImage', 
-      {
-        params: {
-          fileKey: item.uri
-        }
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      .then(res => {
-        setPictureArray(tempPictureArray)
-      })
-      .catch(err => {
-        console.log(err)
-      })
+      const deleteResult = await deleteImageApi(item.uri);
+      if(deleteResult.data) {
+        setPictureArray(tempPictureArray);
+      }
     }
 
 
@@ -316,23 +271,23 @@ const EditProfile = ({navigation}) => {
         
         //Update original pictures without file upload
         if(!picture.tempPic && picture.uri != "No picture available"){
-          
-          axios.post(global.server + '/api/image/updatePictureArrayOrder', 
-            {
-              params: {
-                index : i,
-                uri : picture.uri
-              }
-            },
-            {
-              headers: {
-                'Content-Type': 'application/json'
-              }
-            }
-          )
-          .catch(
-            err => console.log(err)
-          )
+          const updateOrderResult = updatePictureArrayOrderApi(i, picture.uri)
+          // axios.post(global.server + '/api/image/updatePictureArrayOrder', 
+          //   {
+          //     params: {
+          //       index : i,
+          //       uri : picture.uri
+          //     }
+          //   },
+          //   {
+          //     headers: {
+          //       'Content-Type': 'application/json'
+          //     }
+          //   }
+          // )
+          // .catch(
+          //   err => console.log(err)
+          // )
         } 
     }
       
