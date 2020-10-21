@@ -1,5 +1,4 @@
 import React, {useState, useEffect, useCallback} from "react";
-import axios from 'axios';
 import {
   Text,
   View,
@@ -52,25 +51,6 @@ const ChatScreen = ({navigation}) => {
         console.log(err);
         return
       }
-
-      // //Update chat status
-      // axios.post(global.server + '/api/chat/updateChatStatus', 
-      //   {
-      //     params: {
-      //       message : message[0].text,
-      //       chatId: chatId
-      //     }
-      //   },
-      //   {
-      //     headers: {
-      //       'Content-Type': 'application/json'
-      //     }
-      // }).then(res=>{
-      
-      // })
-      // .catch(err => {
-      //   console.log(err);
-      // })
     }
 
     //Scrolling to load more

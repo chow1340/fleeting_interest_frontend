@@ -1,11 +1,9 @@
 import React, {useState, useEffect, useRef} from "react";
-import axios from 'axios';
+import {updateChatApi, setIsReadApi} from "../../api/Chat"
 import {
   Text,
   View,
-  ScrollView,
   StyleSheet,
-  FlatList,
   Image,
   Dimensions
 } from "react-native";
@@ -18,7 +16,6 @@ import {Capitalize} from "../../hooks/display/Capitalize";
 const { width } = Dimensions.get("screen");
 import {SET_CURRENT_CHAT_PROFILE, SET_CURRENT_CHAT_ID, SET_CHAT_LIST} from '../../redux/actionTypes/chatTypes'
 import {SET_CURRENT_TITLE} from '../../redux/actionTypes/navigationTypes'
-import {updateChat} from "../../api/Chat"
 import Fire from '../../Fire'
 
 const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
@@ -37,27 +34,18 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
     )
     const chatObject = chatList[currentChatIndex].chat;
 
-    
-    const handleChatNavigation = (user, chatId) => {
+ 
+
+    const handleChatNavigation = async (user, chatId) => {
 
       dispatch({type: SET_CURRENT_CHAT_PROFILE, payload: user});
       dispatch({type: SET_CURRENT_CHAT_ID, payload: chatId});
       dispatch({type: SET_CURRENT_TITLE, payload: chatId});
 
-      axios.post(global.server + '/api/chat/setIsRead', 
-      {
-        params: {
-          chatId : chatId,
-          isRead : true
-        }
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      .then(()=>{setHasRead(true)})
-
+      const setIsReadResult = await setIsReadApi(chatId, true);
+      if(setIsReadResult.data) {
+        setHasRead(true);
+      }
       navigation.navigate('Chat');
     }
 
@@ -85,6 +73,7 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
 
     //After the initial render, listen for changes on messages
     useEffect(()=>{
+
       Fire.shared.listen((message) =>{
         let DateTime = new Date()
         setLastMessage(message);
@@ -95,24 +84,13 @@ const RenderMatches = ({match, navigation, chatList, sortListFunction}) => {
         let currentChat = tempChatList[currentChatIndex];
         currentChat.chat.lastMessageDate.$date = DateTime.valueOf();
         currentChat.chat.lastMessageSent = message.text;
-        updateChat(message.text, chatId);
+        updateChatApi(message.text, chatId);
 
         let sortedChatList = sortListFunction(tempChatList);
 
         //CHange is read status if you did not send it
         if(currentProfile._id.$oid != message.user._id) {
-          axios.post(global.server + '/api/chat/setIsRead', 
-          {
-            params: {
-              chatId : chatId,
-              isRead : false
-            }
-          },
-          {
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          });
+          setIsReadApi(chatId, false)
           setHasRead(false);
         }
         dispatch({type: SET_CHAT_LIST, payload: sortedChatList});

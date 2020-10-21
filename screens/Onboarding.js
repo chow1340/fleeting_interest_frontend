@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import axios from 'axios';
+import {getCurrentUserApi} from "../api/User"
 import {
   ImageBackground,
   Image,
@@ -23,20 +23,15 @@ const Onboarding = ({navigation}) => {
     //Check if session exists, and if does go to home page
     useEffect(() => {
       async function getCurrentProfile() {
-        axios.get(global.server + '/api/user/getCurrentUser')
-        .then(res => {
-          if(res.data != "Session does not exist"){
-              dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
-              setIsLoggedIn(true)
-              navigation.reset({
-                index: 0,
-                routes:[{name: 'AppStack'}]
-              })
-          } 
-        })
-        .catch(err => {
-          console.log(err)
-        })
+        const user = await getCurrentUserApi();
+        if(user.data != "Session does not exist") {
+          dispatch({type: SET_CURRENT_PROFILE, payload: user.data})
+          setIsLoggedIn(true)
+          navigation.reset({
+            index: 0,
+            routes:[{name: 'AppStack'}]
+          })
+        }
       }
       if(isLoggedIn == false){
         getCurrentProfile();

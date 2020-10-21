@@ -33,22 +33,6 @@ export const updatePictureArrayOrderApi = async (index, uri) => {
         .catch(err =>console.log(err.data))
     );
 }
-// axios.post(global.server + '/api/image/updatePictureArrayOrder', 
-          //   {
-          //     params: {
-          //       index : i,
-          //       uri : picture.uri
-          //     }
-          //   },
-          //   {
-          //     headers: {
-          //       'Content-Type': 'application/json'
-          //     }
-          //   }
-          // )
-          // .catch(
-          //   err => console.log(err)
-          // )
 
 export const deleteImageApi = async (fileKey) => {
     const URL = global.server + '/api/image/deleteImage';

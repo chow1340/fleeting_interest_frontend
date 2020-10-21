@@ -1,13 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import { StyleSheet, Dimensions, ScrollView } from 'react-native';
 import { Block, theme } from 'galio-framework';
-import axios from 'axios';
+import {updateLocationApi} from "../api/Location";
 import { Card } from '../components';
 import articles from '../constants/articles';
 
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
-import * as firebase from 'firebase';
 
 import {useSelector, useDispatch} from 'react-redux';
 import {SET_CURRENT_PROFILE} from '../redux/actionTypes/profileTypes'
@@ -45,24 +44,10 @@ const Home = () => {
       }
   
       async function updateLocation(){
-        axios.post(global.server + '/api/location/updateLocation', 
-        {
-          params: {
-            location : location,
-            geocode : geocode
-          }
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-        .then(res=>{
-          dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
-        })
-        .catch(function (error) {
-          console.log(error);
-        })
+        const updateLocationResult = await updateLocationApi(location, geocode)
+        if(updateLocationResult.data){
+          dispatch({type: SET_CURRENT_PROFILE, payload: updateLocationResult.data})
+        }
       }
       getLocationAsync();
       

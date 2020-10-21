@@ -1,11 +1,8 @@
 import React, {useState, useRef} from "react";
-import axios from 'axios';
-import PhoneInput from 'react-native-phone-input';
-import CountryPicker from 'react-native-country-picker-modal';
+
+import {registerApi} from "../api/User";
 import IntlPhoneInput from 'react-native-intl-phone-input';
 
-// import '../node_modules/react-phone-input-2/lib/style.css'
-// import '../node_modules/react-phone-input-2/lib/bootstrap.css
 import {
   StyleSheet,
   ImageBackground,
@@ -14,8 +11,7 @@ import {
   KeyboardAvoidingView,
   SafeAreaView,
 } from "react-native";
-import { Block, Checkbox, Text, theme } from "galio-framework";
-
+import { Block, Text } from "galio-framework";
 import { Button, Icon, Input } from "../components";
 import { Images, argonTheme } from "../constants";
 import { NavigationContext } from "@react-navigation/native";
@@ -38,29 +34,7 @@ const Register = () => {
     // TODO take care of this garbage error handling
     const register = () =>{
       if(password, phoneNumberIsVerified, phoneInput){
-        axios.post(global.server + '/api/user/register', 
-        {
-          params: {
-            phone_number: phoneInput.substring(1), //takes out the +
-            password: password
-          }
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-        
-        )
-        .then(function (response) {
-          console.log(response);
-        })
-        .catch(function (error) {
-          console.log(error);
-        })
-        .then(function () {
-          // always executed
-        });  
+        registerApi(phoneInput.substring(1), password);
       }
     }
     return (

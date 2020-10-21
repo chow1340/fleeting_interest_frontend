@@ -12,7 +12,6 @@ import { Block, Text, theme } from "galio-framework";
 import { Button } from "../components";
 import { Images, argonTheme } from "../constants";
 import { HeaderHeight } from "../constants/utils";
-import axios from 'axios';
 import {useSelector, useDispatch} from 'react-redux';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {SET_CURRENT_PROFILE} from '../redux/actionTypes/profileTypes'

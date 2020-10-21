@@ -2,18 +2,14 @@ import axios from 'axios';
 import {resolve} from "./resolve"
 
 //Returns user
-export const updateLocationApi = async (location, geocode) => {
-    const URL = global.server + '/api/location/updateLocation';
+export const getMatchesApi = async () => {
+    const URL = global.server + '/api/match/getMatches';
     return await resolve(
         axios(URL, {
-            method: 'POST',
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
             },
-            data:{
-                location : location,
-                geocode : geocode
-            }
         })
         .then(res => res.data)
     );

@@ -11,6 +11,38 @@ export const getCurrentUserApi = async () => {
     );
 }
 
+export const registerApi = async (phone_number, password) => {
+  const URL = global.server + '/api/user/register';
+  return await resolve(
+      axios(URL, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        data:{
+          phone_number: phone_number, //take out the +
+          password: password
+        }
+      })
+  );
+}
+
+export const loginApi = async (phone_number, password) => {
+  const URL = global.server + '/api/user/login';
+  return await resolve(
+      axios(URL, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        data:{
+          phone_number: phone_number, //take out the +
+          password: password
+        }
+      })
+  );
+}
+
 export const logOutApi = () => {
     const URL = global.server + '/api/user/logout';
     return axios(URL, {

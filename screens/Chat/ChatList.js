@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import axios from 'axios';
+import {getMatchesApi} from "../../api/Match"
 import {
   Text,
   View,
@@ -10,7 +10,7 @@ import {
   Dimensions,
   Button
 } from "react-native";
-
+import {getCurrentUserApi} from "../../api/User";
 import {useSelector, useDispatch} from 'react-redux';
 const { width } = Dimensions.get("screen");
 import {SET_CHAT_LIST} from '../../redux/actionTypes/chatTypes'
@@ -71,29 +71,24 @@ const ChatList = ({navigation}) => {
 
     useEffect(() => {
       async function getCurrentProfile() {
-        axios.get(global.server + '/api/user/getCurrentUser')
-        .then(res => {
-          dispatch({type: SET_CURRENT_PROFILE, payload: res.data});
-        })
-        .catch(err => {
-          console.log(err)
-        })
+        const user = await getCurrentUserApi()
+        if(user.data) {
+          dispatch({type: SET_CURRENT_PROFILE, payload: user.data})
+        }
       } 
-      if(Object.keys(currentProfile) === 0 ) {
+      if(currentProfile._id?.$oid === undefined) {
         getCurrentProfile();
       }
-    }, [])  
+    }, [])
 
     useEffect(() => {
         async function getMatches() {
-          axios.get(global.server + '/api/match/getMatches')
-          .then(res => {
-            let sortedMatch = sortList(res.data);
+          const matches = await getMatchesApi();
+          console.log(matches, "matches");
+          if(matches.data){
+            let sortedMatch = sortList(matches.data);
             dispatch({type: SET_CHAT_LIST, payload: sortedMatch});
-          })
-          .catch(err => {
-            console.log(err)
-          })
+          }
         } 
         getMatches();
     }, [])

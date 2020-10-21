@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import axios from 'axios';
+import {getCurrentUserApi, loginApi} from "../api/User"
 import IntlPhoneInput from 'react-native-intl-phone-input';
 import {useSelector, useDispatch} from 'react-redux';
 import {SET_CURRENT_PROFILE} from '../redux/actionTypes/profileTypes'
@@ -30,53 +30,23 @@ const Login = ({navigation}) => {
       }
     };
 
-    useEffect(() => {
-      async function getCurrentProfile() {
-        axios.get(global.server + '/api/user/getCurrentUser')
-        .then(res => {
-          dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
-        })
-        .catch(err => {
-          console.log(err)
-        })
-      }
-      getCurrentProfile();
-    }, [])
-
     // TODO take care of this garbage error handling
-    const login = () =>{
+    const login = async () =>{
       if(password, phoneNumberIsVerified, phoneInput){
-        axios.post(global.server + '/api/user/login', 
-        {
-          params: {
-            phone_number: phoneInput.substring(1), //take out the +
-            password: password
-          }
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-        .then(res=>{
-            if(res.data == "Login Successful") {
+        const loginResult = await loginApi(phoneInput.substring(1), password);
+        if(loginResult.data) {
+            if(loginResult.data.data == "Login Successful") {
               navigation.reset({
                 index: 0,
                 routes:[{name: 'AppStack'}]
               });
 
-              axios.get(global.server + '/api/user/getCurrentUser')
-              .then(res => {
-                dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
-              })
-              .catch(err => {
-                console.log(err)
-              })
+              const user = await getCurrentUserApi();
+              if(user.data) {
+                dispatch({type: SET_CURRENT_PROFILE, payload: user.data})
+              }
             } 
-        })
-        .catch(function (error) {
-          console.log(error);
-        })
+        }
       }
     }
     return (

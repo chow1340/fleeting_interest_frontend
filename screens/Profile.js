@@ -9,11 +9,11 @@ import {
   View,
   TouchableWithoutFeedback
 } from "react-native";
+import {getCurrentUserApi} from "../api/User"
 import { Block, Text, theme } from "galio-framework";
 import { Button } from "../components";
 import { Images, argonTheme } from "../constants";
 import { HeaderHeight } from "../constants/utils";
-import axios from 'axios';
 import {useSelector, useDispatch} from 'react-redux';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {SET_CURRENT_PROFILE} from '../redux/actionTypes/profileTypes'
@@ -35,15 +35,14 @@ const Profile  = ({navigation}) => {
 
     useEffect(() => {
       async function getCurrentProfile() {
-        axios.get(global.server + '/api/user/getCurrentUser')
-        .then(res => {
-          dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
-        })
-        .catch(err => {
-          console.log(err)
-        })
+        const user = await getCurrentUserApi()
+        if(user.data) {
+          dispatch({type: SET_CURRENT_PROFILE, payload: user.data})
+        }
       } 
-      getCurrentProfile();
+      if(currentProfile._id?.$oid === undefined) {
+        getCurrentProfile();
+      }
     }, [])
 
     const capitalize = (string) => {
