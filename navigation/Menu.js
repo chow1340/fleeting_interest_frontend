@@ -7,22 +7,19 @@ import {
   Button
 } from "react-native";
 import { Block, Text, theme } from "galio-framework";
-import axios from 'axios'
 import Images from "../constants/Images";
 import { DrawerItem as DrawerCustomItem } from '../components';
+import {logOutApi} from "../api/User"
 
 function CustomDrawerContent({ drawerPosition, navigation, profile, focused, state, ...rest }) {
   const insets = useSafeArea();
   const logOut = () => {
-    axios.get(global.server + '/api/user/logout')
+    logOutApi()
     .then(res => {
       navigation.reset({
         index: 0,
         routes:[{name: 'Onboarding'}]
       })
-    })
-    .catch(err => {
-      console.log(err)
     })
   }
 

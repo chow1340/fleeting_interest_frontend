@@ -53,24 +53,24 @@ const ChatScreen = ({navigation}) => {
         return
       }
 
-      //Update chat status
-      axios.post(global.server + '/api/chat/updateChatStatus', 
-        {
-          params: {
-            message : message[0].text,
-            chatId: chatId
-          }
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-      }).then(res=>{
+      // //Update chat status
+      // axios.post(global.server + '/api/chat/updateChatStatus', 
+      //   {
+      //     params: {
+      //       message : message[0].text,
+      //       chatId: chatId
+      //     }
+      //   },
+      //   {
+      //     headers: {
+      //       'Content-Type': 'application/json'
+      //     }
+      // }).then(res=>{
       
-      })
-      .catch(err => {
-        console.log(err);
-      })
+      // })
+      // .catch(err => {
+      //   console.log(err);
+      // })
     }
 
     //Scrolling to load more

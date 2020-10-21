@@ -1,5 +1,7 @@
 import React, {useState, useEffect, useRef} from "react";
 import axios from 'axios';
+import {getCurrentUserApi} from '../api/User';
+import {uploadUpdateOrderApi} from '../api/Image'
 import {
   StyleSheet,
   Dimensions,
@@ -19,7 +21,6 @@ import { useDispatch, useSelector } from "react-redux";
 import {SET_CURRENT_PROFILE} from '../redux/actionTypes/profileTypes'
 import * as ImagePicker from 'expo-image-picker';
 import 'react-native-get-random-values';
-
 import { v4 as uuidv4 } from 'uuid';
 import { Ionicons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons'; 
@@ -77,24 +78,36 @@ const EditProfile = ({navigation}) => {
         });
         formdata.append('index', curIndex)
 
-        axios({
-          url: global.server + '/api/image/uploadFileAndUpdatePictureArrayOrder',
-          method: "POST",
-          data: formdata,
-          headers: {
-            'content-type' : 'multipart/form-data'
-          }
-        })
-        .then((res)=>{
+        const upload = await uploadUpdateOrderApi(formdata)
+        console.log(upload);
+
+        if(upload.data) {
           tempArray[curIndex] = {
-            uri: res.data,
+            uri: upload.data,
             key: curIndex.toString(),
-            tempPic: true,
           }
           setPictureArray(tempArray);
- 
-        })
-        .catch(err => console.log(err));
+        }
+        // axios({
+        //   url: global.server + '/api/image/uploadFileAndUpdatePictureArrayOrder',
+        //   method: "POST",
+        //   data: formdata,
+        //   headers: {
+        //     'content-type' : 'multipart/form-data'
+        //   }
+        // })
+
+        // .then((res)=>{
+        //   tempArray[curIndex] = {
+        //     uri: res.data,
+        //     key: curIndex.toString(),
+        //   }
+        //   setPictureArray(tempArray);
+        // })
+        // .catch(err => console.log(err));
+
+
+
         setNextIndex(curIndex + 1)
       }
     };
@@ -103,21 +116,20 @@ const EditProfile = ({navigation}) => {
 
     useEffect(() => {
       async function getCurrentProfile() {
-        axios.get(global.server + '/api/user/getCurrentUser')
-        .then(res => {
-          dispatch({type: SET_CURRENT_PROFILE, payload: res.data})
-        })
-        .catch(err => {
-          console.log(err)
-        })
+        const user = await getCurrentUserApi()
+        if(user.data) {
+          dispatch({type: SET_CURRENT_PROFILE, payload: user.data})
+        }
       } 
-      getCurrentProfile();
+      if(currentProfile._id?.$oid === undefined) {
+        getCurrentProfile();
+      }
     }, [])
     
 
     useEffect(()=>{
       if(currentProfile?.picture){
-        let picture = currentProfile.picture
+        let picture = currentProfile?.picture
         let temp = []
         for(let i = 0; i < picture.length; i++) {
           temp.push({
@@ -141,7 +153,7 @@ const EditProfile = ({navigation}) => {
     },[currentProfile?.picture])
 
     
-    const saveEditProfile = async () => {
+    const saveEditProfile = () => {
 		  axios.post(global.server + '/api/user/editProfile', 
         {
           params: {
@@ -210,7 +222,17 @@ const EditProfile = ({navigation}) => {
             </View>
           </TouchableWithoutFeedback>
         )
-      } 
+      } else if (item.isLoading === true) {
+      return(
+        <TouchableWithoutFeedback onPress={()=>addImage()} >
+          <View 
+            style={styles.item}
+            key={item.key}
+          >
+            <ActivityIndicator size="small" color="#0000ff" />
+          </View>
+        </TouchableWithoutFeedback>
+      )}
       else {
         item.disabledDrag = !gridIsEditable;
         return (
@@ -230,7 +252,7 @@ const EditProfile = ({navigation}) => {
 
             {item.tempPic &&
               <Image
-                source={{ uri: global.s3Endpoint + item.uri }}
+                source={{ uri:item.uri }}
                 style={styles.gridProfile}
               />
             }
@@ -423,7 +445,6 @@ const styles = StyleSheet.create({
     right: -10,
     position: 'absolute',
     zIndex: 99,
-    // backgroundColor: 'black',
     height: 30,
     width: 30,
     justifyContent: 'center'
@@ -442,7 +463,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 8,
-    backgroundColor: "#C0C0C0",
+    // backgroundColor: "#C0C0C0",
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',

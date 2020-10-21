@@ -72,7 +72,6 @@ const ChatListButton = ({isWhite, style, navigation,title }) => {
 
 const MatchButton = ({isWhite, style, navigation,title }) => {
   const dispatch = useDispatch();
-
   if(title === 'Matching'){
     return(
       <TouchableOpacity style={[styles.button, style, styles.highlight]}        
