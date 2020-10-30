@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { max } from 'react-native-reanimated';
 import {resolve} from "./resolve"
 
 //Returns user
@@ -21,7 +22,7 @@ export const updateLocationApi = async (location, geocode) => {
 
 
 //Returns user
-export const getNearbyUsersApi = async () => {
+export const getNearbyUsersApi = async (maxDistance) => {
     const URL = global.server + '/api/location/getNearbyUsers';
     return await resolve(
         axios(URL, {
@@ -29,6 +30,9 @@ export const getNearbyUsersApi = async () => {
             headers: {
                 'Content-Type': 'application/json'
             },
+            params:{
+                maxDistance: maxDistance
+            }
         })
         .then(res => res.data)
     );

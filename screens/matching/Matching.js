@@ -17,15 +17,15 @@ import {
 const { width, height } = Dimensions.get("screen");
 
 const thumbMeasure = (width - 48 - 32) / 3;
-const getNearbyUsersHelper = async () => {
-  const nearbyUsers = await getNearbyUsersApi();
-  console.log(nearbyUsers)
+const getNearbyUsersHelper = async (maxDistance) => {
+  const nearbyUsers = await getNearbyUsersApi(0);
+  console.log(nearbyUsers?.data)
 }
 
 
 const Matching  = ({navigation}) => {
   useEffect(()=> {
-    getNearbyUsersHelper();
+    getNearbyUsersHelper(100);
   },[])
   return(
     <View>

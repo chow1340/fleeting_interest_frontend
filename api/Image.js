@@ -36,7 +36,6 @@ export const updatePictureArrayOrderApi = async (index, uri) => {
 
 export const deleteImageApi = async (fileKey) => {
     const URL = global.server + '/api/image/deleteImage';
-    console.log(fileKey);
     return await resolve(
         axios(URL, {
             method: 'POST',
